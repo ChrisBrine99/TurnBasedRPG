@@ -13,6 +13,9 @@ EngineCore::EngineCore() {
 }
 
 bool EngineCore::OnUserCreate() {
+	if (!GET_SINGLETON(DataManager)->OnUserCreate())
+		return false;
+
 	return GET_SINGLETON(SceneManager)->OnUserCreate();
 }
 

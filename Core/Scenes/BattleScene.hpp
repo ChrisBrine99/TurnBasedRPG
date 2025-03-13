@@ -3,8 +3,6 @@
 
 #include "Scene.hpp"
 
-class BattleMainMenu;
-
 class BattleScene : public Scene {
 public: // Constructor/Destructor Declarations
 	BattleScene(uint32_t _index);
@@ -18,9 +16,6 @@ public: // Main Engine/Engine Extension Function Declarations
 
 	bool OnBeforeUserUpdate(float_t _deltaTime) override;
 	void OnAfterUserUpdate(float_t _deltaTime) override;
-
-private:
-	BattleMainMenu* test;
 };
 
 #endif

@@ -30,11 +30,14 @@ private: // State Function Declarations
 	bool StateBattleLose();
 	bool StateBattleEscape();
 	bool StatePostBattle();
+	
+public:
+	inline uint16_t GetCombatantSpeed(Combatant* _combatant) const;
 
 private: // Combatant Management Function Declarations
 	void AddPlayerCombatant(size_t _partyIndex);
 	void AddEnemyCombatant(uint16_t _enemyID);
-	void RemoveCombatant(size_t _index);
+	void RemoveCombatant(Combatant* _combatant);
 
 public: // Accessible Variable Declarations
 	uint8_t curState;
@@ -45,7 +48,7 @@ public: // Accessible Variable Declarations
 	uint8_t curTurn;		// This keeps track of the turns within those main "turns" that are called rounds in the code. Resets to 0 when the round value is incremented.
 
 	std::vector<Combatant*> combatants;
-	std::vector<uint8_t>	turnOrder;
+	std::vector<size_t>		turnOrder;
 	Combatant*				curCombatant;
 
 	std::vector<std::pair<uint16_t, uint8_t>> curItemRewards;

@@ -22,6 +22,7 @@ public: // Publicly Accessible Utility Function Declarations
 
 	bool AddToActiveRoster(size_t _activeSlot, size_t _partyIndex);
 	bool RemoveFromActiveRoster(uint16_t _characterID);
+	PlayerCharacter* GetActiveRosterMember(size_t _activeSlot);
 
 private: // Hidden Member Variable Declarations
 	std::unordered_map<uint16_t, PlayerCharacter>	partyMembers;		// Stores and manages ALL party members (Even if they aren't in the party at the moment).

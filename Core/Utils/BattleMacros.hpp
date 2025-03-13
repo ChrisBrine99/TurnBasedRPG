@@ -29,13 +29,13 @@
 //	in 4 bytes of space instead of 32 bytes.																							//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define FLAG_COMBATANT_TYPE				0x00000001u
+#define FLAG_COMBATANT_PLAYER			0x00000001u
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that allow a specific Combatant's flags to be checked for the state of each flag found within its "flags" variable.			//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define FLAG_IS_PLAYER_TYPE(_x)			(_x->flags & FLAG_COMBATANT_TYPE)
+#define FLAG_IS_COMBATANT_PLAYER(_x)	(_x->flags & FLAG_COMBATANT_PLAYER)
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for each of the game's affinities. These are utilized by skills to determine how they will function and how they will		//
@@ -76,5 +76,17 @@
 #define TARGET_ALL_ALLY_SELF			0x08ui8
 // --- Targets all allies and enemies; including self --- //
 #define TARGET_EVERYONE					0x09ui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Since all modifier values are packed into a single 16-bit value, the unique values can be grabbed/modified through each of these	//
+//	define statements. Each individual value is an unsigned 3-bit value that ranges from 0 to +7 which is then offset by -3 to			//
+//	calcluate the final stat value after the modification.																				// 
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define ATTACK_MODIFIER					0x0007ui16
+#define DEFENCE_MODIFIER				0x0038ui16
+#define	ACCURACY_MODIFIER				0x01C0ui16
+#define EVASION_MODIFIER				0x0E00ui16
+#define SPEED_MODIFIER					0x7000ui16
 
 #endif

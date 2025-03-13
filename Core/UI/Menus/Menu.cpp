@@ -34,9 +34,12 @@ Menu::Menu() :
 	optionDescriptionY(0),
 	optionSpacingX(0),
 	optionSpacingY(0),
-	alpha(0ui8)
+	alpha(0ui8),
+	optionColor(COLOR_WHITE),
+	optionHoverColor(COLOR_WHITE),
+	optionSelColor(COLOR_WHITE)
 { // Reserve a small portion of memory to store the pointers for the menu options that can exist within a given menu.
-	menuOptions.reserve(5ui64);
+	menuOptions.reserve(10ui64);
 }
 
 bool Menu::OnUserDestroy() {
@@ -217,7 +220,9 @@ void Menu::UpdateCursor(float_t _deltaTime) {
 			// to offset the visible region relative to the region shifting offset and whatnot.
 			_curColumn = curOption % menuWidth;
 			curVisibleColumnOffset = menuWidth - numVisibleColumns;
-			if (_curColumn <= curVisibleColumnOffset) { // The current column is somewhere between the rightmost and leftmost region
+
+			// The current column is somewhere between the rightmost and leftmost region.
+			if (curOption / menuWidth == menuHeight && _curColumn <= curVisibleColumnOffset + columnShiftOffset) { 
 				curVisibleColumnOffset = _curColumn + columnShiftOffset - (numVisibleColumns - 1ui8);
 				if (_curColumn < numVisibleColumns >> 1) // The column is on the left side of the menu; always set to 0.
 					curVisibleColumnOffset = 0ui8;

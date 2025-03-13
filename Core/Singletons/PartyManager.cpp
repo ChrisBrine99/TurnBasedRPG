@@ -74,3 +74,9 @@ bool PartyManager::RemoveFromActiveRoster(uint16_t _characterID) {
 	}
 	return false;
 }
+
+PlayerCharacter* PartyManager::GetActiveRosterMember(size_t _activeSlot){
+	if (_activeSlot >= curActiveRoster.size() || curActiveRoster[_activeSlot] == ID_INVALID)
+		return nullptr;
+	return &partyMembers[curActiveRoster[_activeSlot]];
+}
