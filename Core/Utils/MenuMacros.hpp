@@ -2,6 +2,21 @@
 #define MENU_MACROS_HPP
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Determines how many options can be added to a menu before it will no longer accept any more.										//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define MAX_MENU_OPTIONS				0xFFui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Defines for the intervals of time that the menu cursor must wait to move again as the user is holding a given direction (Right,		//
+//	Left, Up, or Down, respectively) on the very first movement of the cursor as well as all subsequent movements until the user		//
+//	releases the input for said direction.																								//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define MENU_CURSOR_FIRST_SHIFT_TIME	0.65f
+#define MENU_CURSOR_SHIFT_TIME			0.15f
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines that detail what each bit within the "flags" variable for each menu represents in the context of the menu itself. The		//
 //	values detailed here are flags that are required for each menu, and any remaining bits are free to use on a per-menu basis.			//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
@@ -83,14 +98,5 @@
 #define FLAG_IS_MENU_OPTION_ACTIVE		(flags & FLAG_MENU_OPTION_ACTIVE_STATE)
 #define FLAG_IS_MENU_OPTION_SELECTABLE	(flags & FLAG_MENU_OPTION_SELECTABLE)
 #define FLAG_IS_MENU_OPTION_VISIBLE		(flags & FLAG_MENU_OPTION_VISIBLE)
-
-// ------------------------------------------------------------------------------------------------------------------------------------ //
-//	Defines for the intervals of time that the menu cursor must wait to move again as the user is holding a given direction (Right,		//
-//	Left, Up, or Down, respectively) on the very first movement of the cursor as well as all subsequent movements until the user		//
-//	releases the input for said direction.																								//
-// ------------------------------------------------------------------------------------------------------------------------------------ //
-
-#define MENU_CURSOR_FIRST_SHIFT_TIME	0.65f
-#define MENU_CURSOR_SHIFT_TIME			0.15f
 
 #endif

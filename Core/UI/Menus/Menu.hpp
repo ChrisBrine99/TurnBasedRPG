@@ -26,7 +26,7 @@ public: // Publicly Accessible Utility Function Declarations
 	void RemoveOption(size_t _index);
 	void SetOptionFlags(size_t _index, uint32_t _flags, bool _overwrite = true);
 
-protected: // Hideen (Accessible to Children Only) Utility Function Declarations
+protected: // Hidden (Accessible to Children Only) Utility Function Declarations
 	void InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows, uint8_t _visibleColumns, uint8_t _rowShiftOffset = 0ui8, uint8_t _columnShiftOffset = 0ui8,
 		uint8_t _alpha = 0xFFui8, uint32_t _flags = FLAG_MENU_ACTIVE_STATE | FLAG_MENU_VISIBLE);
 	void InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color = COLOR_LIGHT_GRAY, olc::Pixel _hoverColor = COLOR_LIGHT_YELLOW,
