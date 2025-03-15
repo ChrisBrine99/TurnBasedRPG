@@ -8,9 +8,10 @@
 
 #define BATTLE_MAX_ENEMY_SIZE			8ui64
 #define BATTLE_MAX_PARTY_SIZE			3ui64
+#define BATTLE_TOTAL_COMBATANTS			BATTLE_MAX_ENEMY_SIZE + BATTLE_MAX_PARTY_SIZE
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Makes sense of the numbers that represent the BattleController's various states.													//
+//	Makes sense of the numbers that represent the BattleManager's various states.													//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define STATE_BATTLE_INITIALIZE			0ui8
@@ -25,17 +26,31 @@
 #define STATE_POST_BATTLE				9ui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
+//	
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define FLAG_BATTLE_ACTIVE				0x00000001u
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define FLAG_IS_BATTLE_ACTIVE			(flags & FLAG_BATTLE_ACTIVE)
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Values for the bits that represent a certain characteristic within a given Combatant struct. Allows 32 boolean values to be stored	//
 //	in 4 bytes of space instead of 32 bytes.																							//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define FLAG_COMBATANT_PLAYER			0x00000001u
+#define FLAG_COMBATANT_ACTIVE			0x00000002u
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that allow a specific Combatant's flags to be checked for the state of each flag found within its "flags" variable.			//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define FLAG_IS_COMBATANT_PLAYER(_x)	(_x->flags & FLAG_COMBATANT_PLAYER)
+#define FLAG_IS_COMBATANT_ACTIVE(_x)	(_x->flags & FLAG_COMBATANT_ACTIVE)
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for each of the game's affinities. These are utilized by skills to determine how they will function and how they will		//

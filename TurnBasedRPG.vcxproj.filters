@@ -45,6 +45,9 @@
     <ClCompile Include="Core\Singletons\PartyManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\UI\Battle\BattleUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Singletons\EngineCore.hpp">
@@ -117,6 +120,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Utils\DataMacros.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\UI\Battle\BattleUI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
