@@ -22,8 +22,10 @@ struct Skill {
 	uint16_t					basePower;		// Value that is put into the damage formula to determine how much damage it will do to a given target.
 	uint8_t						accuracy;		// The value from 0-255 will represent the accracy of the attack, which determines the percentage out of 100 to hit a target.
 	uint8_t						hitCount;		// Top 4 bits hold the maximum number of hits from 0-15; bottom holds the minimum amount from 0-15.
-	std::array<uint8_t, 4ui64>	addedEffects;	// Stores up to four 8-bit integers that are equal to various status ailments that a skill can apply onto a target when used.
-	std::array<uint8_t, 4ui64>	effectChance;	// Stores another group of four 8-bit integers that simply determine the chance of inflicting each added effect.
+	std::array<uint8_t, SKILL_MAX_UNIQUE_EFFECTS>
+								addedEffects;	// Stores up to four 8-bit integers that are equal to various status ailments that a skill can apply onto a target when used.
+	std::array<uint8_t, SKILL_MAX_UNIQUE_EFFECTS>	
+								effectChance;	// Stores another group of four 8-bit integers that simply determine the chance of inflicting each added effect.
 
 	// The function that will be called upon the skill's use.
 	void (Skill::*useFunction)(Combatant*);
@@ -57,9 +59,11 @@ public: // Skill Use Function Declarations (Defined within Skill.cpp)
 
 private: // Skill Utility Function Declarations (Defined within Skill.cpp)
 	bool AccuracyCheck(Combatant* _caster, Combatant* _target) const;
+	void AdditionalEffectCheck(Combatant* _target);
+
 	float_t PhysicalDamageCalculation(Combatant* _caster, Combatant* _target);
 	float_t MagicDamageCalculation(Combatant* _caster, Combatant* _target);
-	float_t SpecialDamageCalculation(Combatant* _caster, Combatant* _target);
+	float_t VoidDamageCalculation(Combatant* _caster, Combatant* _target);
 
 	// Returns either a value calculated through using the buff formula (The value passed in as the argument was above 0) or 
 	// the debuff formula (The value passed in was below 0).

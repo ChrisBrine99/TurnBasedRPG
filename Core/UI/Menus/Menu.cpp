@@ -1,6 +1,7 @@
 #include "Menu.hpp"
 
 #include "../../Singletons/GameSettings.hpp"
+#include "../../Singletons/MenuManager.hpp"
 
 Menu::Menu() :
 	xPos(0),
@@ -40,16 +41,10 @@ Menu::Menu() :
 	optionSelColor(COLOR_WHITE)
 { // Reserve a small portion of memory to store the pointers for the menu options that can exist within a given menu.
 	menuOptions.reserve(10ui64);
+	GET_SINGLETON(MenuManager)->CreateMenu(this);
 }
 
 bool Menu::OnUserDestroy() {
-	if (subMenu) { // Call sub-menu's OnUserDestroy function before deleting it so it can clean itself and its sub-menus up as well.
-		subMenu->OnUserDestroy();
-		delete subMenu, subMenu = nullptr;
-	}
-
-	delete auxSelect, auxSelect = nullptr;
-	delete auxReturn, auxReturn = nullptr;
 	return true;
 }
 
@@ -66,18 +61,19 @@ bool Menu::OnBeforeUserUpdate(float_t _deltaTime) {
 		(uint32_t(_settings->GetKeyInfo(INPUT_MENU_RETURN).bReleased)	<< 5u );
 
 	if (auxSelect != "") { // Only check for the auxiliary select button if one has been set by the menu.
-		inputFlags |= (uint32_t(_settings->GetKeyInfo(auxSelect).bPressed) << 6u);
+		inputFlags |= (uint32_t(_settings->GetKeyInfo(auxSelect.c_str()).bPressed) << 6u);
 	}
 
 	if (auxReturn != "") { // Only check for the auxiliary return button if one has been set by the menu.
-		inputFlags |= (uint32_t(_settings->GetKeyInfo(auxReturn).bPressed) << 7u);
+		inputFlags |= (uint32_t(_settings->GetKeyInfo(auxReturn.c_str()).bPressed) << 7u);
 	}
 
 	return true;
 }
 
-void Menu::OnAfterUserUpdate(float_t _deltaTime) 
-{}
+void Menu::OnAfterUserUpdate(float_t _deltaTime) {
+	UPDATE_STATE(nextState);
+}
 
 void Menu::AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description, uint8_t _alpha, uint32_t _flags) {
 	if (!FLAG_IS_MENU_ACTIVE || !FLAG_ARE_MENU_OPTIONS_ALLOWED) // Prevent menus from adding options before they've been fully initialized.
@@ -131,7 +127,7 @@ void Menu::InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows
 	alpha = _alpha;
 }
 
-void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color, olc::Pixel _hoverColor, olc::Pixel _selColor, bool _showDescription, int32_t _descriptionX, int32_t _descriptionY) {
+void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color, olc::Pixel _hoverColor, olc::Pixel _selColor) {
 	if (FLAG_ARE_MENU_OPTIONS_ALLOWED)
 		return; // Don't allow initialization of menu option parameters twice.
 	flags |= FLAG_MENU_OPTIONS_ALLOWED;
@@ -150,17 +146,19 @@ void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _s
 	optionColor = _color;
 	optionHoverColor = _hoverColor;
 	optionSelColor = _selColor;
+}
 
-	// Finally, set the position of an option's descriptive text on the screen IF the menu is set to display option descriptions.
-	if (_showDescription) {
-		flags |= FLAG_MENU_SHOW_DESCRIPTIONS;
-		optionDescriptionX = _descriptionX;
-		optionDescriptionY = _descriptionY;
-	}
+void Menu::InitializeDescriptionParams(int32_t _x, int32_t _y) {
+	if (!FLAG_MENU_CAN_SHOW_DESCRIPTION)
+		return;
+
+	flags |= FLAG_MENU_SHOW_DESCRIPTIONS;
+	optionDescriptionX = _x;
+	optionDescriptionY = _y;
 }
 
 void Menu::UpdateCursor(float_t _deltaTime) {
-	if (!FLAG_IS_MENU_INITIALIZED || !FLAG_ARE_MENU_OPTIONS_ALLOWED)
+	if (FLAG_MENU_BLOCKING_INPUT || !FLAG_IS_MENU_INITIALIZED || !FLAG_ARE_MENU_OPTIONS_ALLOWED)
 		return; // Don't bother updating the cursor if the menu isn't even considered initialized.
 
 	// Resetting the flag for a fast cursor movement and also setting the move time to 0 so the next press of a cursor input 
@@ -306,7 +304,7 @@ vertical_cursor_movement_logic:
 }
 
 void Menu::RenderVisibleOptions(float_t _deltaTime) {
-	if (!FLAG_IS_MENU_VISIBLE || !FLAG_IS_MENU_INITIALIZED || !FLAG_ARE_MENU_OPTIONS_ALLOWED)
+	if (!FLAG_IS_MENU_INITIALIZED || !FLAG_ARE_MENU_OPTIONS_ALLOWED)
 		return;
 
 	EngineCore* _engine	= GET_SINGLETON(EngineCore);

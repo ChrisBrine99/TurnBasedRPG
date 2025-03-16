@@ -1,7 +1,10 @@
-#ifndef BATTLE_UI_HPP
+/*#ifndef BATTLE_UI_HPP
 #define BATTLE_UI_HPP
 
 #include "../../Singletons/BattleManager.hpp"
+
+#include <unordered_map>
+#include <string>
 
 struct CombatantInfo;
 
@@ -66,4 +69,4 @@ struct CombatantInfo {
 	CombatantInfo(const Combatant&& _other) = delete;
 };
 
-#endif
+#endif*/

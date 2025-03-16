@@ -2,6 +2,12 @@
 #define MENU_MACROS_HPP
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
+//	A simple macro that denotes the error value for indexes within the MenuManager's vector of existing menu instances.					//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define MENU_INVALID_INDEX				0xFFFFFFFFFFFFFFFFui64
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Determines how many options can be added to a menu before it will no longer accept any more.										//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
@@ -34,7 +40,7 @@
 //	Defines that simplify the formatting required to check for each of a given menu's state-independent flags.							//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define FLAG_MENU_CAN_TAKE_INPUT		(flags & FLAG_MENU_BLOCK_INPUT)
+#define FLAG_MENU_BLOCKING_INPUT		(flags & FLAG_MENU_BLOCK_INPUT)
 #define FLAG_IS_MENU_ACTIVE				(flags & FLAG_MENU_ACTIVE_STATE)
 #define FLAG_IS_MENU_VISIBLE			(flags & FLAG_MENU_VISIBLE)
 #define FLAG_IS_MENU_INITIALIZED		(flags & FLAG_MENU_INITIALIZED)

@@ -12,6 +12,13 @@ public: // Inherited Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float_t _deltaTime) override;
 	bool OnUserRender(float_t _deltaTime) override;
+
+public: // Publicly Accessibly Utility Function Declarations
+	void PrepareForPlayerTurn();
+	void PostPlayerTurn();
+
+private: // State Function Declarations
+	bool StateAcceptInput(float_t _deltaTime);
 };
 
 #endif

@@ -1,13 +1,14 @@
 #ifndef BATTLE_CONTROLLER_HPP
 #define BATTLE_CONTROLLER_HPP
 
-#include "../UI/Menus/Battle/BattleMainMenu.hpp"
 #include "../Utils/GeneralMacros.hpp"
 #include "../Utils/BattleMacros.hpp"
 
+#include <array>
 #include <vector>
 
 struct Combatant;
+class BattleMainMenu;
 
 class BattleManager {
 	// Singleton Initialization/Constructor Declaration

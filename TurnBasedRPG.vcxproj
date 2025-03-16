@@ -145,6 +145,7 @@
     <ClCompile Include="Core\UI\Menus\Menu.cpp" />
     <ClCompile Include="Core\Singletons\GameSettings.cpp" />
     <ClCompile Include="Core\Singletons\PartyManager.cpp" />
+    <ClCompile Include="Core\Singletons\MenuManager.cpp" />
     <ClCompile Include="ThirdParty\olcPixelGameEngine.cpp" />
     <ClInclude Include="Core\UI\Battle\BattleUI.hpp" />
     <ClInclude Include="Core\UI\Menus\Battle\BattleMainMenu.hpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Core\UI\Menus\Menu.hpp" />
     <ClInclude Include="Core\Singletons\GameSettings.hpp" />
     <ClInclude Include="Core\Singletons\PartyManager.hpp" />
+    <ClInclude Include="Core\Singletons\MenuManager.hpp" />
     <ClInclude Include="ThirdParty\json.hpp" />
     <ClInclude Include="ThirdParty\olcPixelGameEngine.hpp" />
   </ItemGroup>

@@ -51,6 +51,9 @@
     <ClCompile Include="Core\Structs\Battle\Skill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Singletons\MenuManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Singletons\EngineCore.hpp">
@@ -126,6 +129,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\UI\Battle\BattleUI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Singletons\MenuManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

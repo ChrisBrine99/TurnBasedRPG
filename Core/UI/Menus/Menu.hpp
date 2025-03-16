@@ -26,11 +26,25 @@ public: // Publicly Accessible Utility Function Declarations
 	void RemoveOption(size_t _index);
 	void SetOptionFlags(size_t _index, uint32_t _flags, bool _overwrite = true);
 
+	// 
+	inline void SetFlags(uint32_t _flags, bool _overwrite = true) {
+		if (_overwrite) {
+			flags = _flags;
+			return;
+		}
+		flags |= _flags;
+	}
+
+	// 
+	inline uint32_t GetFlags() const {
+		return flags;
+	}
 protected: // Hidden (Accessible to Children Only) Utility Function Declarations
 	void InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows, uint8_t _visibleColumns, uint8_t _rowShiftOffset = 0ui8, uint8_t _columnShiftOffset = 0ui8,
 		uint8_t _alpha = 0xFFui8, uint32_t _flags = FLAG_MENU_ACTIVE_STATE | FLAG_MENU_VISIBLE);
 	void InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color = COLOR_WHITE, olc::Pixel _hoverColor = COLOR_LIGHT_YELLOW,
-		olc::Pixel _selColor = COLOR_LIGHT_GREEN, bool _showDescription = false, int32_t _descriptionX = 0u, int32_t _descriptionY = 0u);
+		olc::Pixel _selColor = COLOR_LIGHT_GREEN);
+	void InitializeDescriptionParams(int32_t _x, int32_t _y);
 
 	void UpdateCursor(float_t _deltaTime);
 	void RenderVisibleOptions(float_t _deltaTime);
@@ -42,8 +56,8 @@ protected: // Hidden (Accessible to Children Only) Member Variable Declarations
 	Menu* upperMenu;
 	Menu* subMenu;
 
-	const char* auxSelect;
-	const char* auxReturn;
+	std::string auxSelect;
+	std::string auxReturn;
 
 	uint32_t flags;
 	uint32_t inputFlags;

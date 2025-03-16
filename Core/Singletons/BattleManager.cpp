@@ -2,10 +2,12 @@
 INIT_SINGLETON_CPP(BattleManager)
 
 #include "EngineCore.hpp"
-#include "PartyManager.hpp"
 #include "DataManager.hpp"
+#include "MenuManager.hpp"
+#include "PartyManager.hpp"
 #include "../Structs/Battle/Combatant.hpp"
 #include "../Structs/Characters/EnemyCharacter.hpp"
+#include "../UI/Menus/Battle/BattleMainMenu.hpp"
 
 BattleManager::BattleManager() :
 	actionMenu(nullptr),
@@ -83,7 +85,11 @@ void BattleManager::OnAfterUserUpdate(float_t _deltaTime) {
 }
 
 bool BattleManager::StateInitializeBattle() {
-	AddEnemyCombatant(ID_TEST_ENEMY);
+	actionMenu = new BattleMainMenu();
+	actionMenu->OnUserCreate();
+	actionMenu->SetFlags(FLAG_MENU_BLOCK_INPUT, false);
+
+	//AddEnemyCombatant(ID_TEST_ENEMY);
 
 	for (size_t i = 0ui64; i < PARTY_ACTIVE_MAX_SIZE; i++)
 		AddPlayerCombatant(i);
@@ -120,6 +126,7 @@ bool BattleManager::StateIsPlayerOrEnemyTurn() {
 
 	if (FLAG_IS_COMBATANT_PLAYER(curCombatant)) {
 		SET_NEXT_STATE(STATE_BATTLE_PLAYER_TURN);
+		actionMenu->PrepareForPlayerTurn();
 		return true;
 	}
 

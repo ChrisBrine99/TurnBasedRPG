@@ -12,6 +12,8 @@ bool BattleScene::OnUserCreate() {
 	GET_SINGLETON(PartyManager)->AddToPartyRoster(ID_TEST_PLAYER);
 	GET_SINGLETON(PartyManager)->AddToActiveRoster(0ui64, 0ui64);
 
+	GET_SINGLETON(BattleManager)->SetEncounterID(ID_INVALID);
+
 	return GET_SINGLETON(BattleManager)->OnUserCreate();
 }
 

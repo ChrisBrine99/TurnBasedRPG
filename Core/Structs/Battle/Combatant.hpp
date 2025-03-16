@@ -47,7 +47,7 @@ struct Combatant {
 		statModifiers(0ui16),
 		flags(0u),
 		character(nullptr)
-	{ 
+	{
 		stats.fill(1ui8); // Populate the array with default values of 1 for each stat.
 		activeSkills.reserve(PLAYER_SKILL_LIMIT); // Reserve at least enough memory to store the maximum number of skills a player character can use in battle.
 	}
@@ -100,6 +100,38 @@ struct Combatant {
 		case SPEED_MODIFIER:		return int8_t((statModifiers & SPEED_MODIFIER)		>> 12);
 		default:					return 3i8;
 		}
+	}
+
+	// Determines which ailment group the provided index falls under and then either applies that ailment to the Combatant
+	// if they don't currently have been affected by an ailment from that group OR it doesn't affect the user if the priority
+	// of the new ailment is lower than the priority of the currently inflicted ailment.
+	inline bool InflictStatusAilment(uint8_t _ailmentIndex) {
+		if (_ailmentIndex < AILMENT_NERVE_NONE) {
+			// The Combatant already has a nerve ailment inflicted upon them. Determine if this ailment is above the current
+			// in priority and then perform a coin flip to determine if the new ailment will overwrite it.
+			if (curNerveAilment != AILMENT_NERVE_NONE && (curNerveAilment <= _ailmentIndex || std::rand() % 2 == 0))
+				return false; // Current ailment is already higher priority (Or the same ailment) OR the coin flip failed.
+
+			curNerveAilment = _ailmentIndex;
+			return true;
+		}
+
+		if (_ailmentIndex > AILMENT_NERVE_NONE && _ailmentIndex < AILMENT_MIND_NONE) {
+			// Perform the same coin flip as above, but for the currently inflicted mind ailment vs the new ailment that can
+			// potentially be inflicted if it's higher priority and the coin flip succeeds.
+			if (curMindAilment != AILMENT_NERVE_NONE && (curMindAilment <= _ailmentIndex || std::rand() % 2 == 0))
+				return false;
+
+			curMindAilment = _ailmentIndex;
+			return true;
+		}
+
+		// Unlike mind and nerve ailments, a special ailment will always overwrite the previously inflicted ailment.
+		if (_ailmentIndex == AILMENT_MIND_NONE || _ailmentIndex == AILMENT_SPECIAL_NONE || curSpecialAilment == AILMENT_SPECIAL_NONE)
+			return false;
+
+		curSpecialAilment = _ailmentIndex;
+		return true;
 	}
 };
 
