@@ -17,6 +17,10 @@ struct Combatant {
 
 	std::vector<uint16_t>			activeSkills;
 
+	uint8_t							curNerveAilment;
+	uint8_t							curMindAilment;
+	uint8_t							curSpecialAilment;
+
 	uint16_t						baseSpeed;
 	uint16_t						statModifiers;
 	uint32_t						flags;
@@ -36,6 +40,9 @@ struct Combatant {
 		maxMagicpoints(0ui16),
 		maxMagicpointMultiplier(1.0f),
 		activeSkills(std::vector<uint16_t>()),
+		curNerveAilment(AILMENT_NERVE_NONE),
+		curMindAilment(AILMENT_MIND_NONE),
+		curSpecialAilment(AILMENT_SPECIAL_NONE),
 		baseSpeed(0ui16),
 		statModifiers(0ui16),
 		flags(0u),
@@ -91,7 +98,7 @@ struct Combatant {
 		case ACCURACY_MODIFIER:		return int8_t((statModifiers & ACCURACY_MODIFIER)	>> 6);
 		case EVASION_MODIFIER:		return int8_t((statModifiers & EVASION_MODIFIER)	>> 9);
 		case SPEED_MODIFIER:		return int8_t((statModifiers & SPEED_MODIFIER)		>> 12);
-		default:					return 0i8;
+		default:					return 3i8;
 		}
 	}
 };

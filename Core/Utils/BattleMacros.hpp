@@ -89,8 +89,33 @@
 #define TARGET_ALL_ALLY					0x06ui8
 #define TARGET_ALL_ENEMY_SELF			0x07ui8
 #define TARGET_ALL_ALLY_SELF			0x08ui8
-// --- Targets all allies and enemies; including self --- //
+// --- Targets all allies and enemies --- //
 #define TARGET_EVERYONE					0x09ui8
+#define TARGET_EVERYONE_SELF			0x0Aui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+// --- Nerve Group Status Ailments --- //
+#define AILMENT_NERVE_NONE				0x6Fui8
+#define AILMENT_NERVE_FREEZE			0x00ui8
+#define AILMENT_NERVE_PARALYSIS			0x01ui8
+#define AILMENT_NERVE_BURN				0x02ui8
+#define AILMENT_NERVE_POISON			0x03ui8
+#define AILMENT_NERVE_SLEEP				0x04ui8
+// --- Mind Group Status Ailments --- //
+#define AILMENT_MIND_NONE				0xDFui8
+#define AILMENT_MIND_CHARM				0x70ui8
+#define AILMENT_MIND_CURSE				0x71ui8
+#define AILMENT_MIND_BLIND				0x72ui8
+#define AILMENT_MIND_SILENCE			0x73ui8
+#define AILMENT_MIND_CONFUSION			0x74ui8
+// --- Special Status Ailments --- //
+#define AILMENT_SPECIAL_NONE			0xFEui8
+#define AILMENT_SPECIAL_CRIPPLE			0xE0ui8
+// --- Invalid Value for Ailment Data --- //
+#define AILMENT_INVALID					0xFFui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Since all modifier values are packed into a single 16-bit value, the unique values can be grabbed/modified through each of these	//
@@ -103,5 +128,20 @@
 #define	ACCURACY_MODIFIER				0x01C0ui16
 #define EVASION_MODIFIER				0x0E00ui16
 #define SPEED_MODIFIER					0x7000ui16
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that determine the function that the skill will execute when used in a battle.												//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define SKILL_PHYSICAL_GENERIC			0x0000ui16
+#define SKILL_FIRE_GENERIC				0x0100ui16
+#define SKILL_WATER_GENERIC				0x0200ui16
+#define SKILL_AIR_GENERIC				0x0300ui16
+#define SKILL_EARTH_GENERIC				0x0400ui16
+#define SKILL_SHOCK_GENERIC				0x0500ui16
+#define SKILL_FROST_GENERIC				0x0600ui16
+#define SKILL_LIGHT_GENERIC				0x0700ui16
+#define SKILL_DARK_GENERIC				0x0800ui16
+#define SKILL_VOID_GENERIC				0x0900ui16
 
 #endif

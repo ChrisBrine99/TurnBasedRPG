@@ -8,6 +8,7 @@
 #include <vector>
 
 struct Combatant;
+
 class BattleManager {
 	// Singleton Initialization/Constructor Declaration
 	INIT_SINGLETON_HPP(BattleManager)
@@ -41,7 +42,7 @@ private: // Combatant Management Function Declarations
 	void AddEnemyCombatant(uint16_t _enemyID);
 	void RemoveCombatant(size_t _index);
 
-public: // Accessible Variable Declarations
+public: // Accessible Member Variable Declarations
 	BattleMainMenu* actionMenu;
 	Combatant* curCombatant;
 
@@ -55,7 +56,7 @@ public: // Accessible Variable Declarations
 	uint8_t nextState;
 	uint8_t lastState;
 
-private: 
+private: // Hidden Member Variable Declarations 
 	uint8_t curTurn;
 	uint16_t encounterID;
 	uint16_t curRound;

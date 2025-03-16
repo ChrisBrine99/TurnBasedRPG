@@ -148,7 +148,7 @@
 //	
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define PARTY_ROSTER_MAX_SIZE			8ui64
+#define PARTY_ROSTER_MAX_SIZE			5ui64
 #define PARTY_ACTIVE_MAX_SIZE			3ui64
 
 #endif

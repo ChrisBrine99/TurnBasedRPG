@@ -24,9 +24,11 @@ public: // Main Engine Function Declarations
 
 public: // Accessible Utility Function Declarations
 	void LoadCharacterData(uint16_t _id);
+	void LoadSkillData(uint16_t _id);
 
 private: // Hidden Utility Function Declarations
 	inline void LoadSharedCharacterData(uint16_t _id, json& _data);
+	inline void SetSkillUseFunction(Skill* _skill, uint16_t _id);
 
 	template<class T>
 	inline void RemoveDataFromStorage(std::unordered_map<uint16_t, T>& _storage);
@@ -43,6 +45,8 @@ private: // Hidden Member Variable Declarations
 	std::unordered_map<uint16_t, Skill*>			skills;
 
 	json characterData;
+	json skillData;
+	json encounterData;
 };
 
 #endif

@@ -2,8 +2,8 @@
 #define DATA_MACROS_HPP
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Macros that hold key values for each element found within a character's data. Certain values are unique to only enemy or friendly	//
-//	characters, respectively.																											//
+//	Macros that hold key values for each element found within a character's raw JSON data. Certain values are unique to only enemy or	//
+//	friendly characters, respectively.																									//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define KEY_NAME						"name"
@@ -27,6 +27,24 @@
 #define KEY_KNOWN_SKILLS				"kSkills"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Macros that hold key values for each element found within a skill's raw JSON data.													//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define KEY_SKILL_NAME					"name"
+#define KEY_SKILL_INFO					"info"
+#define KEY_SKILL_TYPE					"type"
+#define KEY_SKILL_TARGET				"target"
+#define KEY_SKILL_HP_COST				"hCost"
+#define KEY_SKILL_MP_COST				"mCost"
+#define KEY_SKILL_POWER					"power"
+#define KEY_SKILL_ACCURACY				"acc"
+#define KEY_SKILL_MINIMUM_HITS			"minHit"
+#define KEY_SKILL_MAXIMUM_HITS			"maxHit"
+#define KEY_SKILL_EFFECTS				"effects"
+#define KEY_SKILL_EFFECT_CHANCE			"chance"
+#define KEY_SKILL_USE_FUNCTION			"use"
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the unique ID values for each character/enemy within the game.												//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
@@ -36,6 +54,12 @@
 #define ID_BOUNDARY						0xF000ui16
 // --- Master list of playable character IDs --- //
 #define ID_TEST_PLAYER					0xF001ui16
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that represent the unique ID values for each skill within the game.															//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define ID_IGNIA						0x0000ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	A simple default value that represents an invalid ID within the various data structures in the game. As a result, they must all be	//

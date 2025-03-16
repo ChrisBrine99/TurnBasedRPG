@@ -48,6 +48,9 @@
     <ClCompile Include="Core\UI\Battle\BattleUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Structs\Battle\Skill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Singletons\EngineCore.hpp">
@@ -129,5 +132,7 @@
   <ItemGroup>
     <None Include="settings.ini" />
     <None Include="Resources\characters.json" />
+    <None Include="Resources\encounters.json" />
+    <None Include="Resources\skills.json" />
   </ItemGroup>
 </Project>

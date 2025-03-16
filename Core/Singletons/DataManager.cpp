@@ -28,11 +28,14 @@ bool DataManager::OnUserDestroy() {
 }
 
 bool DataManager::OnBeforeUserCreate() {
-	std::ifstream _file("Resources/characters.json");
-	characterData = json::parse(_file);
+	characterData	= json::parse(std::ifstream("Resources/characters.json"));
+	skillData		= json::parse(std::ifstream("Resources/skills.json"));
+	encounterData	= json::parse(std::ifstream("Resources/encounters.json"));
 
 	LoadCharacterData(ID_TEST_PLAYER);
 	LoadCharacterData(ID_TEST_ENEMY);
+
+	LoadSkillData(ID_IGNIA);
 
 	return true;
 }
@@ -102,6 +105,33 @@ void DataManager::LoadCharacterData(uint16_t _id) {
 	_newEnemyChar->basicAttack			= uint16_t(_data[KEY_BASIC_ATTACK]);
 }
 
+void DataManager::LoadSkillData(uint16_t _id) {
+	// Don't attempt to load in a skill that already exists.
+	if (skills.find(_id) != skills.end())
+		return;
+
+	// Don't try loading in a skill if the relevant data couldn't be retrieved at the specified ID.
+	json& _data = skillData[std::to_string(_id)];
+	if (_data.is_null())
+		return;
+
+	Skill* _newSkill		= new Skill();
+	skills[_id]				= _newSkill;
+	_newSkill->name			= _data[KEY_SKILL_NAME];
+	_newSkill->description	= _data[KEY_SKILL_INFO];
+	_newSkill->id			= _id;
+	_newSkill->basePower	= _data[KEY_SKILL_POWER];
+	_newSkill->affinity		= _data[KEY_SKILL_TYPE];
+	_newSkill->accuracy		= _data[KEY_SKILL_ACCURACY];
+	_newSkill->hpCost		= _data[KEY_SKILL_HP_COST];
+	_newSkill->mpCost		= _data[KEY_SKILL_MP_COST];
+	_newSkill->targeting	= _data[KEY_SKILL_TARGET];
+	_newSkill->hitCount		= _data[KEY_SKILL_MINIMUM_HITS] | (_data[KEY_SKILL_MAXIMUM_HITS] << 4);
+	_newSkill->addedEffects = _data[KEY_SKILL_EFFECTS];
+	_newSkill->effectChance = _data[KEY_SKILL_EFFECT_CHANCE];
+	SetSkillUseFunction(_newSkill, _data[KEY_SKILL_USE_FUNCTION]);
+}
+
 inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 	// It's assumed that the supplied ID is valid since this function is only ever called by the Data Manager when it
 	// is reading its data from the JSON format into the actual Class that can be referenced/manipulated in the code.
@@ -129,6 +159,22 @@ inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 		if (skills.find(_skillID) == skills.end())
 			break;
 		_character->activeSkills.push_back(_skillID);
+	}
+}
+
+inline void DataManager::SetSkillUseFunction(Skill* _skill, uint16_t _id) {
+	switch (_id) {
+	default:
+	case SKILL_PHYSICAL_GENERIC:	_skill->useFunction = &Skill::UsePhysicalSkillGeneric;	return;
+	case SKILL_WATER_GENERIC:
+	case SKILL_AIR_GENERIC:
+	case SKILL_EARTH_GENERIC:		_skill->useFunction = &Skill::UseMagicSkillGeneric;		return;
+	case SKILL_FIRE_GENERIC:		
+	case SKILL_SHOCK_GENERIC:
+	case SKILL_FROST_GENERIC:		
+	case SKILL_LIGHT_GENERIC:		
+	case SKILL_DARK_GENERIC:		_skill->useFunction = &Skill::UseMagicSkillPlusEffect;	return;
+	case SKILL_VOID_GENERIC:		_skill->useFunction = &Skill::UseVoidSkillGeneric;		return;
 	}
 }
 
