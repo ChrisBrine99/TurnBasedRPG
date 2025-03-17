@@ -60,7 +60,8 @@ public: // Accessible Member Variable Declarations
 private: // Hidden Member Variable Declarations 
 	uint8_t curTurn;
 	uint16_t encounterID;
-	uint16_t curRound;
+	uint8_t curRound;
+	uint8_t numCombatants;
 
 	uint32_t flags;
 

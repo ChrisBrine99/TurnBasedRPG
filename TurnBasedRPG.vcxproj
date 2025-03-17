@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\Structs\Battle\Skill.cpp" />
+    <ClCompile Include="Core\Structs\Characters\EnemyCharacter.cpp" />
     <ClCompile Include="Core\UI\Battle\BattleUI.cpp" />
     <ClCompile Include="Core\UI\Menus\Battle\BattleMainMenu.cpp" />
     <ClCompile Include="Core\Singletons\BattleManager.cpp" />

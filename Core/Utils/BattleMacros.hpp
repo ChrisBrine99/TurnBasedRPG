@@ -150,4 +150,10 @@
 #define SKILL_DARK_GENERIC				0x0800ui16
 #define SKILL_VOID_GENERIC				0x0900ui16
 
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that determine the function that an enemy will use during its turn in a given battle.										//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define	ENEMY_AI_SIMPLE					0x0000ui16
+
 #endif

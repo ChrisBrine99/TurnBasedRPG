@@ -79,11 +79,14 @@ void DataManager::LoadCharacterData(uint16_t _id) {
 		_newPlayerChar->nextLevelExperience = _newPlayerChar->DetermineRequiredExperience(_newPlayerChar->level + 1ui8);
 
 		// Then initialize the starting base maximum HP and MP value since both require the player character's level as well
-		// as their Endurance and Magic stats, respectively.
+		// as their Endurance and Magic stats, respectively. The current HP and MP are also set to those calculated maximums.
 		_newPlayerChar->maxHitpointBase		= _newPlayerChar->CalculateMaxBaseHitpoints();
+		_newPlayerChar->curHitpoints		= _newPlayerChar->GetMaxHitpointsTotal();
 		_newPlayerChar->maxMagicpointBase	= _newPlayerChar->CalculateMaxBaseMagicpoints();
+		_newPlayerChar->curMagicpoints		= _newPlayerChar->GetMaxMagicpointsTotal();
 
 		// TODO -- Load in equipment item IDs here.
+		return;
 	}
 
 	// Try to find the container for the character's data. Exit and return nullptr if the required container doesn't exist.
@@ -97,12 +100,17 @@ void DataManager::LoadCharacterData(uint16_t _id) {
 	LoadSharedCharacterData(_id, _data);
 
 	// Unique to enemy character's is a maximum HP and MP value that aren't calculated by a formula, so they're set here by
-	// simply reading the contents of that data within the JSON object.
+	// simply reading the contents of that data within the JSON object. The current HP and MP are also set to those maximums.
 	_newEnemyChar->maxHitpointBase		= uint16_t(_data[KEY_MAXIMUM_HP]);
+	_newEnemyChar->curHitpoints			= _newEnemyChar->GetMaxHitpointsTotal();
 	_newEnemyChar->maxMagicpointBase	= uint16_t(_data[KEY_MAXIMUM_MP]);
+	_newEnemyChar->curMagicpoints		= _newEnemyChar->GetMaxMagicpointsTotal();
 
 	// Another element unique to an enemy is a dedicated basic attack, which is set in the same way the above elements were.
 	_newEnemyChar->basicAttack			= uint16_t(_data[KEY_BASIC_ATTACK]);
+
+	// Finally, assign the proper AI function to the enemy that it will utilize in battle.
+	SetEnemyAIFunction(_newEnemyChar, _data[KEY_ENEMY_AI]);
 }
 
 void DataManager::LoadSkillData(uint16_t _id) {
@@ -159,6 +167,13 @@ inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 		if (skills.find(_skillID) == skills.end())
 			break;
 		_character->activeSkills.push_back(_skillID);
+	}
+}
+
+inline void DataManager::SetEnemyAIFunction(EnemyCharacter* _enemy, uint16_t _id) {
+	switch (_id) {
+	default:
+	case ENEMY_AI_SIMPLE:			_enemy->battleAI = &EnemyCharacter::EnemySimpleAI;		return;
 	}
 }
 

@@ -58,3 +58,16 @@ Menu* MenuManager::CreateMenu(Menu* _menu) {
 	activeMenus.push_back(_menu);
 	return _menu; // Returned itself; the menu was successfully added to the manager.
 }
+
+void MenuManager::DestroyMenu(Menu* _menu) {
+	// Make sure the menu actuall exists before the code attempts to remove it from memory.
+	auto _iter = std::find(activeMenus.begin(), activeMenus.end(), _menu);
+	if (_iter == activeMenus.end())
+		return; // Menu doesn't exist; exit now.
+
+	_menu->OnUserDestroy(); // Make sure the menu is cleaned up before its deallocated.
+	delete _menu, _menu = nullptr;
+
+	// Finally, remove the element formally storing the now-deleted menu from the list.
+	activeMenus.erase(_iter);
+}

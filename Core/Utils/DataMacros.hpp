@@ -21,6 +21,7 @@
 #define KEY_MAXIMUM_HP					"hp"
 #define KEY_MAXIMUM_MP					"mp"
 #define KEY_BASIC_ATTACK				"bAtk"
+#define KEY_ENEMY_AI					"ai"
 // --- Keys that are unique to player characters --- //
 #define KEY_FRIENDLIES					"friendlies"
 #define KEY_EQUIPMENT					"equip"
@@ -43,6 +44,14 @@
 #define KEY_SKILL_EFFECTS				"effects"
 #define KEY_SKILL_EFFECT_CHANCE			"chance"
 #define KEY_SKILL_USE_FUNCTION			"use"
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Macros that hold key values for each element found within an encounter's raw JSON data.												//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define KEY_ENCOUNTER_ENEMIES			"enemies"
+#define KEY_ENCOUNTER_SPAWN_COUNT		"max"
+#define KEY_ENCOUNTER_SPAWN_CHANCE		"spawn"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the unique ID values for each character/enemy within the game.												//

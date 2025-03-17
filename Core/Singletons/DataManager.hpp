@@ -10,6 +10,7 @@
 using json = nlohmann::json;
 
 struct BaseCharacter;
+struct EnemyCharacter;
 struct Skill;
 
 class DataManager {
@@ -28,6 +29,7 @@ public: // Accessible Utility Function Declarations
 
 private: // Hidden Utility Function Declarations
 	inline void LoadSharedCharacterData(uint16_t _id, json& _data);
+	inline void SetEnemyAIFunction(EnemyCharacter* _enemy, uint16_t _id);
 	inline void SetSkillUseFunction(Skill* _skill, uint16_t _id);
 
 	template<class T>
@@ -40,6 +42,9 @@ public: // Getters and Setters for data held by this singleton
 		return characters.at(_id);
 	}
 
+	inline json& GetEncounterData(uint16_t _id) {
+		return encounterData[std::to_string(_id)];
+	}
 private: // Hidden Member Variable Declarations
 	std::unordered_map<uint16_t, BaseCharacter*>	characters;
 	std::unordered_map<uint16_t, Skill*>			skills;

@@ -12,7 +12,7 @@ struct EnemyCharacter : public BaseCharacter {
 	uint16_t									itemRewardWeight;
 	std::vector<std::pair<uint16_t, uint8_t>>	itemRewards;
 
-	void										(*battleAI)(float_t _deltaTime);
+	void										(EnemyCharacter::*battleAI)(float_t _deltaTime);
 
 	// An enemy character's default constructor. It simply populates all variables unique to an enemy (Money/exp rewards, item 
 	// rewards, etc.) with their default values. On top of that, it calls the parent constructor to initialize all inherited
@@ -32,6 +32,15 @@ struct EnemyCharacter : public BaseCharacter {
 	// An enemy character should never be copied from the master list of enemy data that it currently resides in throughout 
 	// the game's execution. As such, the copy constructor is deleted to prevent any accidental copying.
 	EnemyCharacter(EnemyCharacter& _other) = delete;
+
+	inline void ExecuteAI(float_t _deltaTime) {
+		if (battleAI == nullptr)
+			return;
+		((*this).*(this->battleAI))(_deltaTime);
+	}
+
+public: // Enemy AI Function Declarations
+	void EnemySimpleAI(float_t _deltaTime);
 };
 
 #endif
