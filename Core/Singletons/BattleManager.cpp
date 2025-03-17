@@ -92,7 +92,6 @@ bool BattleManager::StateInitializeBattle() {
 
 	actionMenu = new BattleMainMenu();
 	actionMenu->OnUserCreate();
-	actionMenu->SetFlags(FLAG_MENU_BLOCK_INPUT, false);
 
 	// Attempt to fetch the relevant encounter data from within the data that was loaded on startup. The attempt to initialize
 	// the battle will fail if the data returned is null.
@@ -156,7 +155,7 @@ bool BattleManager::StateIsPlayerOrEnemyTurn() {
 
 	if (FLAG_IS_COMBATANT_PLAYER(curCombatant)) {
 		SET_NEXT_STATE(STATE_BATTLE_PLAYER_TURN);
-		actionMenu->PrepareForPlayerTurn();
+		actionMenu->PrepareForPlayerTurn(curCombatant);
 		return true;
 	}
 

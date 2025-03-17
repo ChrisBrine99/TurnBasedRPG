@@ -1,15 +1,15 @@
-#ifndef BATTLE_MAIN_MENU_HPP
-#define BATTLE_MAIN_MENU_HPP
+#ifndef BATTLE_SKILL_MENU_HPP
+#define BATTLE_SKILL_MENU_HPP
 
 #include "../Menu.hpp"
 
 struct Combatant;
-class BattleSkillMenu;
+class BattleMainMenu;
 
-class BattleMainMenu : public Menu {
+class BattleSkillMenu : public Menu {
 public: // Constructor/Destructor Declaration
-	BattleMainMenu();
-	~BattleMainMenu() = default;
+	BattleSkillMenu();
+	~BattleSkillMenu() = default;
 
 public: // Inherited Function Declarations
 	bool OnUserCreate() override;
@@ -17,16 +17,12 @@ public: // Inherited Function Declarations
 	bool OnUserRender(float_t _deltaTime) override;
 
 public: // Publicly Accessibly Utility Function Declarations
-	void PrepareForPlayerTurn(Combatant* _curCombatant);
-	void PostPlayerTurn();
+	void GenerateMenuOptions(Combatant* _curCombatant);
+	void PrepareForActivation(BattleMainMenu* _bMainMenu);
+	void PrepareForDeactivation();
 
 private: // State Function Declarations
 	bool StateDefault(float_t _deltaTime);
-	bool StateProcessSelection();
-	bool StateInsideSkills();
-
-private: // Hidden Member Variable Declarations
-	BattleSkillMenu* skillMenu;
 };
 
 #endif

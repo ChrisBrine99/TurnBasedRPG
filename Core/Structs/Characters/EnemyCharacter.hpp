@@ -29,10 +29,8 @@ struct EnemyCharacter : public BaseCharacter {
 		itemRewards.reserve(3ui64);
 	}
 
-	// An enemy character should never be copied from the master list of enemy data that it currently resides in throughout 
-	// the game's execution. As such, the copy constructor is deleted to prevent any accidental copying.
-	EnemyCharacter(EnemyCharacter& _other) = delete;
-
+	// The function that is responsible for executing the Enemy's ai function. If the value in "battleAI" is nullptr, this 
+	// function will do nothing and the enemy's turn is completely skipped as a result.
 	inline void ExecuteAI(float_t _deltaTime) {
 		if (battleAI == nullptr)
 			return;

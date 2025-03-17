@@ -8,8 +8,6 @@ INIT_SINGLETON_CPP(DataManager)
 #include "../Structs/Characters/EnemyCharacter.hpp"
 #include "../Structs/Battle/Skill.hpp"
 
-#include <filesystem>
-
 DataManager::DataManager() :
 	characterData(),
 	characters(),
@@ -32,10 +30,10 @@ bool DataManager::OnBeforeUserCreate() {
 	skillData		= json::parse(std::ifstream("Resources/skills.json"));
 	encounterData	= json::parse(std::ifstream("Resources/encounters.json"));
 
+	LoadSkillData(ID_IGNIA);
+
 	LoadCharacterData(ID_TEST_PLAYER);
 	LoadCharacterData(ID_TEST_ENEMY);
-
-	LoadSkillData(ID_IGNIA);
 
 	return true;
 }
@@ -160,7 +158,7 @@ inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 
 	// Finally, load in the character's active skills. This is automatically limited to 6 skills for playable characters.
 	json& _skillData	= _data[KEY_ACTIVE_SKILLS];
-	size_t _length		= (_id >= ID_BOUNDARY) ? PLAYER_SKILL_LIMIT : _skillData.size();
+	size_t _length		= (_id > ID_BOUNDARY) ? std::min(_skillData.size(), PLAYER_SKILL_LIMIT) : _skillData.size();
 	uint16_t _skillID	= ID_INVALID;
 	for (size_t i = 0ui64; i < _length; i++) {
 		_skillID = _skillData[i];

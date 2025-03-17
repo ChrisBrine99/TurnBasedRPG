@@ -18,7 +18,8 @@ struct PlayerCharacter : public BaseCharacter {
 		knownSkills()
 	{}
 
-	// 
+	// The player character's copy constructor, which is utilized in order to create an instance of the player character from
+	// what is stored witin the currently loaded character data so that original data isn't overwritten by the party manager.
 	PlayerCharacter(PlayerCharacter& _other) {
 		level					= _other.level;
 

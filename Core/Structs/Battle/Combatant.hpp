@@ -2,6 +2,7 @@
 #define COMBATANT_HPP
 
 #include "../Characters/BaseCharacter.hpp"
+#include "../../Utils/BattleMacros.hpp"
 
 struct Combatant {
 	uint8_t							level;

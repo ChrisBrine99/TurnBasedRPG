@@ -27,15 +27,6 @@ public: // Publicly Accessible Utility Function Declarations
 	void SetOptionFlags(size_t _index, uint32_t _flags, bool _overwrite = true);
 
 	// 
-	inline void SetFlags(uint32_t _flags, bool _overwrite = true) {
-		if (_overwrite) {
-			flags = _flags;
-			return;
-		}
-		flags |= _flags;
-	}
-
-	// 
 	inline uint32_t GetFlags() const {
 		return flags;
 	}

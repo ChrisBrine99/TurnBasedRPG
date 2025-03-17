@@ -1,11 +1,12 @@
 #ifndef DATA_MANAGER_HPP
 #define DATA_MANAGER_HPP
 
-#include "EngineCore.hpp"
 #include "../../ThirdParty/json.hpp"
+#include "../Utils/GeneralMacros.hpp"
 #include "../Utils/DataMacros.hpp"
 
 #include <fstream>
+#include <unordered_map>
 
 using json = nlohmann::json;
 
@@ -40,6 +41,12 @@ public: // Getters and Setters for data held by this singleton
 		if (characters.find(_id) == characters.end())
 			return nullptr;
 		return characters.at(_id);
+	}
+
+	inline Skill* GetSkill(uint16_t _id) const {
+		if (skills.find(_id) == skills.end())
+			return nullptr;
+		return skills.at(_id);
 	}
 
 	inline json& GetEncounterData(uint16_t _id) {

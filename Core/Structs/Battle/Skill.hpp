@@ -50,6 +50,14 @@ struct Skill {
 		effectChance.fill(0ui8);
 	}
 
+	// The function that is responsible for executing the Skill's "use" function. If the value in "useFunction" is nullptr, 
+	// this function will do nothing and the skill will do nothing within the battle.
+	inline void ExecuteUseFunction(Combatant* _target) {
+		if (useFunction == nullptr)
+			return;
+		((*this).*(this->useFunction))(_target);
+	}
+
 public: // Skill Use Function Declarations (Defined within Skill.cpp)
 	void UsePhysicalSkillGeneric(Combatant* _target);
 	void UseMagicSkillGeneric(Combatant* _target);

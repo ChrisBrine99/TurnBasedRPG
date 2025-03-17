@@ -76,7 +76,7 @@ void Menu::OnAfterUserUpdate(float_t _deltaTime) {
 }
 
 void Menu::AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description, uint8_t _alpha, uint32_t _flags) {
-	if (!FLAG_IS_MENU_ACTIVE || !FLAG_ARE_MENU_OPTIONS_ALLOWED) // Prevent menus from adding options before they've been fully initialized.
+	if (!FLAG_ARE_MENU_OPTIONS_ALLOWED) // Prevent menus from adding options before they've been fully initialized.
 		return;
 
 	MenuOption _newOption{
@@ -111,12 +111,12 @@ void Menu::InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows
 	SET_NEXT_STATE(_state);
 
 	// Assign the menu's height, but prevent it from being 0.
-	menuWidth = std::max(_width, 0x01ui8);
+	menuWidth = std::max(_width, 1ui8);
 
 	// Assign the menu's total number of visible options along the x and y axes. Much like the menu's width, these values cannot 
 	// be set to 0.
-	numVisibleRows = std::max(_visibleRows, 0x01ui8);
-	numVisibleColumns = std::max(_visibleColumns, 0x01ui8);
+	numVisibleRows = std::max(_visibleRows, 1ui8);
+	numVisibleColumns = std::max(_visibleColumns, 1ui8);
 
 	// Assign the buffer region between the cursor and edge of the visible portion of the menu before the options get shifted by one 
 	// row/column relative to the direction the cursor happens to move in. Unlike above, these values can be set to 0 with no issue.
@@ -278,8 +278,10 @@ vertical_cursor_movement_logic:
 
 			// Since a row will only ever have one element absent from it in the case of a menu element count and width/height total
 			// mismatch, the visible region's offset will always be set to the menu's height minus its visible region height. No other
-			// checks or considerations are required.
-			curVisibleRowOffset = menuHeight - numVisibleRows;
+			// checks or considerations are required aside from a check to see if the subtraction is "negative" which will default the
+			// value to zero to avoid any issues.
+			if (int8_t(menuHeight - numVisibleRows) > 0i8)	{ curVisibleRowOffset = menuHeight - numVisibleRows; } 
+			else											{ curVisibleRowOffset = 0ui8; }
 			return; // Similar to the goto used above, this will skip needing to set _vMovement to 0 and a 0 add to curOption.
 		}
 	} else if (_vMovement == 1i8) {
@@ -320,13 +322,13 @@ void Menu::RenderVisibleOptions(float_t _deltaTime) {
 	for (uint8_t yy = 0ui8; yy < numVisibleRows; yy++) {	// Starts from 0 to ensure option positions arent't offset once the top-left visible option is no longer the 0th row/column.
 		for (uint8_t xx = 0ui8; xx < numVisibleColumns; xx++) {
 			_index = size_t(menuWidth * _yyOffset) + _xxOffset;
-			if (_index >= _menuSize)
+			if (_index >= _menuSize) 
 				break;
 			
 			// Determine the color of the option relative to what index is currently being hovered over by the cursor, selected 
 			// by the user, or simply visible (Active vs. Inactive will alter the default color).
-			if (_index == curOption)		{ _color = optionHoverColor; }
-			else if (_index == selOption)	{ _color = optionSelColor; }
+			if (_index == selOption)		{ _color = optionSelColor; }
+			else if (_index == curOption)	{ _color = optionHoverColor; }
 			else							{ _color = optionColor; }
 
 			menuOptions[_index].DrawSelf(_engine, optionAnchorX + (optionSpacingX * xx), optionAnchorY + (optionSpacingY * yy), _color, alpha);
