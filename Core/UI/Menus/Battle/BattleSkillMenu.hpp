@@ -2,8 +2,9 @@
 #define BATTLE_SKILL_MENU_HPP
 
 #include "../Menu.hpp"
+#include "../../../Structs/Battle/Combatant.hpp"
+#include "../../../Structs/Battle/Skill.hpp"
 
-struct Combatant;
 class BattleMainMenu;
 
 class BattleSkillMenu : public Menu {
@@ -18,11 +19,23 @@ public: // Inherited Function Declarations
 
 public: // Publicly Accessibly Utility Function Declarations
 	void GenerateMenuOptions(Combatant* _curCombatant);
-	void PrepareForActivation(BattleMainMenu* _bMainMenu);
+	void PrepareForActivation(uint8_t _state, BattleMainMenu* _bMainMenu);
 	void PrepareForDeactivation();
 
+private: // Hidden Utility Function Declarations
+	inline bool SkillHpCostCheck(Combatant* _curCombatant, uint8_t _cost) {
+		return (_curCombatant->curHitpoints > _cost);
+	}
+
+	inline bool SkillMpCostCheck(Combatant* _curCombatant, uint8_t _cost) {
+		return (_curCombatant->curMagicpoints >= _cost);
+	}
+
 private: // State Function Declarations
-	bool StateDefault(float_t _deltaTime);
+	bool StateProcessSelection() override;
+
+private: // Hidden Member Variable Declarations
+	std::vector<std::string> skillCost;
 };
 
 #endif

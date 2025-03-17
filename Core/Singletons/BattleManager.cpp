@@ -155,7 +155,7 @@ bool BattleManager::StateIsPlayerOrEnemyTurn() {
 
 	if (FLAG_IS_COMBATANT_PLAYER(curCombatant)) {
 		SET_NEXT_STATE(STATE_BATTLE_PLAYER_TURN);
-		actionMenu->PrepareForPlayerTurn(curCombatant);
+		actionMenu->PrepareForActivation(MENU_STATE_DEFAULT, curCombatant);
 		return true;
 	}
 

@@ -11,7 +11,13 @@
 //	Determines how many options can be added to a menu before it will no longer accept any more.										//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define MAX_MENU_OPTIONS				0xFFui8
+#define MAX_MENU_OPTIONS				0xFEui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+//	The default value for "selOption" which is also what is used to determine if nothing has been selected on the menu by the user.		//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define MENU_SELECTION_INVALID			0xFFui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for the intervals of time that the menu cursor must wait to move again as the user is holding a given direction (Right,		//
@@ -92,17 +98,17 @@
 //	Defines that represent the bit found within a menu option's "flags" variable. These can be toggled to change how the option works.	//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define FLAG_MENU_OPTION_ACTIVE_STATE	0x00000001ui32
-#define FLAG_MENU_OPTION_SELECTABLE		0x00000002ui32
-#define FLAG_MENU_OPTION_VISIBLE		0x00000004ui32
+#define FLAG_MOPTION_ACTIVE_STATE		0x00000001ui32
+#define FLAG_MOPTION_SELECTABLE			0x00000002ui32
+#define FLAG_MOPTION_VISIBLE			0x00000004ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines that "condense" the code required to check the various flags that affect the functionality of individual menu options into	//
 //	easy to use constants for use throughout the code.																				//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define FLAG_IS_MENU_OPTION_ACTIVE		(flags & FLAG_MENU_OPTION_ACTIVE_STATE)
-#define FLAG_IS_MENU_OPTION_SELECTABLE	(flags & FLAG_MENU_OPTION_SELECTABLE)
-#define FLAG_IS_MENU_OPTION_VISIBLE		(flags & FLAG_MENU_OPTION_VISIBLE)
+#define FLAG_IS_MOPTION_ACTIVE(_x)		(menuOptions[_x].flags & FLAG_MOPTION_ACTIVE_STATE)
+#define FLAG_IS_MOPTION_SELECTABLE(_x)	((menuOptions[_x].flags & FLAG_MOPTION_SELECTABLE) && (menuOptions[_x].flags & FLAG_MOPTION_ACTIVE_STATE))
+#define FLAG_IS_MOPTION_VISIBLE(_x)		(menuOptions[_x]flags & FLAG_MOPTION_VISIBLE)
 
 #endif

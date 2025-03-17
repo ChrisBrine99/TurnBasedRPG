@@ -18,8 +18,8 @@ Menu::Menu() :
 	lastState(INVALID_STATE),
 	menuOptions(),
 	curOption(0ui8),
-	selOption(0xFFui8),
-	auxSelOption(0xFFui8),
+	selOption(MENU_SELECTION_INVALID),
+	auxSelOption(MENU_SELECTION_INVALID),
 	cursorMoveTimer(0.0f),
 	numVisibleRows(0ui8),
 	numVisibleColumns(0ui8),
@@ -38,13 +38,31 @@ Menu::Menu() :
 	alpha(0ui8),
 	optionColor(COLOR_WHITE),
 	optionHoverColor(COLOR_WHITE),
-	optionSelColor(COLOR_WHITE)
+	optionSelColor(COLOR_WHITE),
+	optionInactiveColor(COLOR_WHITE)
 { // Reserve a small portion of memory to store the pointers for the menu options that can exist within a given menu.
 	menuOptions.reserve(10ui64);
 	GET_SINGLETON(MenuManager)->CreateMenu(this);
 }
 
 bool Menu::OnUserDestroy() {
+	menuOptions.clear();
+	menuOptions.shrink_to_fit();
+	return true;
+}
+
+bool Menu::OnUserUpdate(float_t _deltaTime) {
+	switch (curState) {
+	case MENU_STATE_DEFAULT:			return StateDefault(_deltaTime);
+	case MENU_STATE_PROCESS_SELECTION:	return StateProcessSelection();
+	case INVALID_STATE:					return true;
+	}
+	
+	return false;
+}
+
+bool Menu::OnUserRender(float_t _deltaTime) {
+	RenderVisibleOptions(_deltaTime);
 	return true;
 }
 
@@ -127,7 +145,7 @@ void Menu::InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows
 	alpha = _alpha;
 }
 
-void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color, olc::Pixel _hoverColor, olc::Pixel _selColor) {
+void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color, olc::Pixel _hoverColor, olc::Pixel _selColor, olc::Pixel _inactiveColor) {
 	if (FLAG_ARE_MENU_OPTIONS_ALLOWED)
 		return; // Don't allow initialization of menu option parameters twice.
 	flags |= FLAG_MENU_OPTIONS_ALLOWED;
@@ -143,9 +161,10 @@ void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _s
 
 	// Assign the text color parameters for when a menu option is visible, being hovered over by the user's cursor, and when it has 
 	// been selected by said user, respectively.
-	optionColor = _color;
-	optionHoverColor = _hoverColor;
-	optionSelColor = _selColor;
+	optionColor			= _color;
+	optionHoverColor	= _hoverColor;
+	optionSelColor		= _selColor;
+	optionInactiveColor = _inactiveColor;
 }
 
 void Menu::InitializeDescriptionParams(int32_t _x, int32_t _y) {
@@ -326,10 +345,15 @@ void Menu::RenderVisibleOptions(float_t _deltaTime) {
 				break;
 			
 			// Determine the color of the option relative to what index is currently being hovered over by the cursor, selected 
-			// by the user, or simply visible (Active vs. Inactive will alter the default color).
-			if (_index == selOption)		{ _color = optionSelColor; }
-			else if (_index == curOption)	{ _color = optionHoverColor; }
-			else							{ _color = optionColor; }
+			// by the user, or simply visible (Active vs. Inactive will alter the default color). The option being inactive will
+			// override all other color changes.
+			if (!FLAG_IS_MOPTION_ACTIVE(_index)) {
+				_color = optionInactiveColor;
+			} else { // Choose a color as normal for an active option.
+				if (_index == selOption)		{ _color = optionSelColor; }
+				else if (_index == curOption)	{ _color = optionHoverColor; }
+				else							{ _color = optionColor; }
+			}
 
 			menuOptions[_index].DrawSelf(_engine, optionAnchorX + (optionSpacingX * xx), optionAnchorY + (optionSpacingY * yy), _color, alpha);
 			_xxOffset++;
@@ -337,4 +361,37 @@ void Menu::RenderVisibleOptions(float_t _deltaTime) {
 		_xxOffset = curVisibleColumnOffset;
 		_yyOffset++;
 	}
+}
+
+void Menu::PrepareForActivation(uint8_t _state) {
+	SET_NEXT_STATE(_state);
+
+	curOption = 0ui8; // Wipe whatever was selected by the user previously within the menu.
+	selOption = MENU_SELECTION_INVALID;
+
+	flags &= ~FLAG_MENU_BLOCK_INPUT; // Ensure the menu is visible and can also accept input from the user.
+	flags |= FLAG_MENU_VISIBLE | FLAG_MENU_ACTIVE_STATE;
+}
+
+void Menu::PrepareForDeactivation() {
+	SET_NEXT_STATE(INVALID_STATE);
+
+	inputFlags = 0; // Clear any active input flags.
+	prevInputFlags = 0;
+
+	flags |= FLAG_MENU_BLOCK_INPUT; // Make sure the menu can no longer accept input from the user and is also switched to invisible.
+	flags &= ~(FLAG_MENU_VISIBLE | FLAG_MENU_ACTIVE_STATE);
+}
+
+bool Menu::StateDefault(float_t _deltaTime) {
+	// Capture what option was selected so it can be parsed in the next state, but only if the option is considered selectable.
+	if (FLAG_IS_MENU_SELECT_ACTIVE && FLAG_IS_MOPTION_SELECTABLE(curOption)) {
+		std::cout << FLAG_IS_MOPTION_SELECTABLE(curOption) << std::endl;
+		SET_NEXT_STATE(MENU_STATE_PROCESS_SELECTION);
+		selOption = curOption;
+		return true;
+	}
+
+	UpdateCursor(_deltaTime);
+	return true;
 }

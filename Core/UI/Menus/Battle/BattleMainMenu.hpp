@@ -5,6 +5,7 @@
 
 struct Combatant;
 class BattleSkillMenu;
+class ConfirmWindow;
 
 class BattleMainMenu : public Menu {
 public: // Constructor/Destructor Declaration
@@ -14,19 +15,18 @@ public: // Constructor/Destructor Declaration
 public: // Inherited Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float_t _deltaTime) override;
-	bool OnUserRender(float_t _deltaTime) override;
 
 public: // Publicly Accessibly Utility Function Declarations
-	void PrepareForPlayerTurn(Combatant* _curCombatant);
-	void PostPlayerTurn();
+	void PrepareForActivation(uint8_t _state, Combatant* _curCombatant);
 
 private: // State Function Declarations
-	bool StateDefault(float_t _deltaTime);
-	bool StateProcessSelection();
+	bool StateProcessSelection() override;
 	bool StateInsideSkills();
+	bool StateInsideItems();
 
 private: // Hidden Member Variable Declarations
-	BattleSkillMenu* skillMenu;
+	BattleSkillMenu*	skillMenu;
+	ConfirmWindow*		confirmWindow;
 };
 
 #endif

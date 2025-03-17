@@ -1,16 +1,16 @@
 #include "BattleMainMenu.hpp"
 
 #include "../../../Structs/Battle/Combatant.hpp"
+#include "../General/ConfirmWindow.hpp"
 #include "BattleSkillMenu.hpp"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Defines that explain how the number they contain is utilized by the menu's state machine. Defined here since these values aren't	//
-//	used in this context anywhere outside of this menu.																					//
+//	Defines that explain how the number they contain is utilized by this menu's state machine. Defined here since these values aren't	//
+//	used in this context anywhere outside of this menu.	The first two values are already used by inherited menu states.					//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define BTL_MENU_STATE_DEFAULT			0ui8
-#define BTL_MENU_PROCESS_SELECTION		1ui8
 #define BTL_MENU_STATE_IN_SKILLS		2ui8
+#define BTL_MENU_STATE_IN_ITEMS			3ui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that are the index values for the options they represent within the menu's option vector. Defined here since no other		//
@@ -25,7 +25,8 @@
 
 BattleMainMenu::BattleMainMenu() :
 	Menu(),
-	skillMenu(nullptr)
+	skillMenu(nullptr),
+	confirmWindow(nullptr)
 {}
 
 bool BattleMainMenu::OnUserCreate() {
@@ -47,57 +48,30 @@ bool BattleMainMenu::OnUserCreate() {
 
 bool BattleMainMenu::OnUserUpdate(float_t _deltaTime) {
 	switch (curState) {
-	case BTL_MENU_STATE_DEFAULT:		return StateDefault(_deltaTime);
-	case BTL_MENU_PROCESS_SELECTION:	return StateProcessSelection();
+	case MENU_STATE_DEFAULT:			return StateDefault(_deltaTime);
+	case MENU_STATE_PROCESS_SELECTION:	return StateProcessSelection();
 	case BTL_MENU_STATE_IN_SKILLS:		return StateInsideSkills();
+	case BTL_MENU_STATE_IN_ITEMS:		return StateInsideItems();
 	case INVALID_STATE:					return true;
 	}
 
 	return false;
 }
 
-bool BattleMainMenu::OnUserRender(float_t _deltaTime) {
-	RenderVisibleOptions(_deltaTime);
-	return true;
-}
-
-void BattleMainMenu::PrepareForPlayerTurn(Combatant* _curCombatant) {
-	SET_NEXT_STATE(BTL_MENU_STATE_DEFAULT);
+void BattleMainMenu::PrepareForActivation(uint8_t _state, Combatant* _curCombatant) {
+	Menu::PrepareForActivation(_state);
 	skillMenu->GenerateMenuOptions(_curCombatant);
-
-	curOption = 0ui8;
-	selOption = 0xFFui8;
-
-	flags &= ~FLAG_MENU_BLOCK_INPUT;
-	flags |=  FLAG_MENU_VISIBLE | FLAG_MENU_ACTIVE_STATE;
-}
-
-void BattleMainMenu::PostPlayerTurn() {
-	SET_NEXT_STATE(INVALID_STATE);
-
-	flags |=   FLAG_MENU_BLOCK_INPUT;
-	flags &= ~(FLAG_MENU_VISIBLE | FLAG_MENU_ACTIVE_STATE);
-}
-
-bool BattleMainMenu::StateDefault(float_t _deltaTime) {
-	if (FLAG_IS_MENU_SELECT_ACTIVE) { // Capture what option was selected so it can be parsed in the next state.
-		SET_NEXT_STATE(BTL_MENU_PROCESS_SELECTION);
-		selOption = curOption;
-		return true;
-	}
-
-	UpdateCursor(_deltaTime);
-	return true;
 }
 
 bool BattleMainMenu::StateProcessSelection() {
 	switch (selOption) {
 	case BTL_MENU_OPTION_SKILLS: // Switches primary control to the skill menu so the use can select a skill to utilize.
 		SET_NEXT_STATE(BTL_MENU_STATE_IN_SKILLS);
-		skillMenu->PrepareForActivation(this);
+		skillMenu->PrepareForActivation(MENU_STATE_DEFAULT, this);
 		break;
 	case BTL_MENU_OPTION_ITEMS:
-		// TODO -- Move control over to the battle's item menu.
+		SET_NEXT_STATE(BTL_MENU_STATE_IN_ITEMS);
+		// TODO -- Prepare item menu for activation here.
 		break;
 	case BTL_MENU_OPTION_GUARD:
 		// TODO -- Open confirmation window asking user if they wish to guard with this character.
@@ -115,8 +89,17 @@ bool BattleMainMenu::StateProcessSelection() {
 
 bool BattleMainMenu::StateInsideSkills() {
 	if (FLAG_IS_MENU_RETURN_ACTIVE) {
-		SET_NEXT_STATE(BTL_MENU_STATE_DEFAULT);
 		skillMenu->PrepareForDeactivation();
+		selOption = 0xFFui8;
+	}
+
+	return true;
+}
+
+bool BattleMainMenu::StateInsideItems() {
+	if (FLAG_IS_MENU_RETURN_ACTIVE) {
+		SET_NEXT_STATE(MENU_STATE_DEFAULT);
+		// TODO -- Deactivate the item menu here.
 		selOption = 0xFFui8;
 	}
 

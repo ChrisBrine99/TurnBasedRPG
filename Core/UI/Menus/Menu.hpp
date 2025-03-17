@@ -4,6 +4,14 @@
 #include "../../Singletons/EngineCore.hpp"
 #include "../../Utils/MenuMacros.hpp"
 
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines for the default states that all menus have available to them. ANy indexes not found here can be used on a per menu basis.	//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define MENU_STATE_DEFAULT				0ui8
+#define MENU_STATE_PROCESS_SELECTION	1ui8
+// NOTE -- Values between 2 (0x02) and 254 (0xFE) are free for child menu states to use.
+
 struct MenuOption;
 
 class Menu {
@@ -13,20 +21,29 @@ public: // Constructor and Destructor Declarations
 
 public: // Main Engine Function Declarations
 	virtual bool OnUserCreate() = 0;
-	bool OnUserDestroy();
-	virtual bool OnUserUpdate(float_t _deltaTime) = 0;
-	virtual bool OnUserRender(float_t _deltaTime) = 0;
+	virtual bool OnUserDestroy();
+	virtual bool OnUserUpdate(float_t _deltaTime);
+	virtual bool OnUserRender(float_t _deltaTime);
 
 	bool OnBeforeUserUpdate(float_t _deltaTime);
 	void OnAfterUserUpdate(float_t _deltaTime);
 
 public: // Publicly Accessible Utility Function Declarations
 	void AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description = "", uint8_t _alpha = 0xFFui8,
-		uint32_t _flags = FLAG_MENU_OPTION_ACTIVE_STATE | FLAG_MENU_OPTION_SELECTABLE | FLAG_MENU_OPTION_VISIBLE);
+		uint32_t _flags = FLAG_MOPTION_ACTIVE_STATE | FLAG_MOPTION_SELECTABLE | FLAG_MOPTION_VISIBLE);
 	void RemoveOption(size_t _index);
 	void SetOptionFlags(size_t _index, uint32_t _flags, bool _overwrite = true);
 
-	// 
+	// An extension of the standard "SetNextState" function that is utilized by all classes containing a state machine. On top 
+	// of updating the current state as required, it can also free the menu from being locked due to the selOption value being
+	// set to a valid menu option index.
+	inline void MenuSetNextState(uint8_t _state, bool _resetSelOption = false) {
+		SET_NEXT_STATE(_state);
+		if (_resetSelOption) // Optional addition that reset the selected option for the menu to the default.
+			selOption = MENU_SELECTION_INVALID;
+	}
+
+	// Simply returns the current flags that are enabled or disabled for the menu.
 	inline uint32_t GetFlags() const {
 		return flags;
 	}
@@ -34,11 +51,19 @@ protected: // Hidden (Accessible to Children Only) Utility Function Declarations
 	void InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows, uint8_t _visibleColumns, uint8_t _rowShiftOffset = 0ui8, uint8_t _columnShiftOffset = 0ui8,
 		uint8_t _alpha = 0xFFui8, uint32_t _flags = FLAG_MENU_ACTIVE_STATE | FLAG_MENU_VISIBLE);
 	void InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color = COLOR_WHITE, olc::Pixel _hoverColor = COLOR_LIGHT_YELLOW,
-		olc::Pixel _selColor = COLOR_LIGHT_GREEN);
+		olc::Pixel _selColor = COLOR_LIGHT_GREEN, olc::Pixel _inactiveColor = COLOR_GRAY);
 	void InitializeDescriptionParams(int32_t _x, int32_t _y);
 
 	void UpdateCursor(float_t _deltaTime);
 	void RenderVisibleOptions(float_t _deltaTime);
+
+public: // Publicly Accessible Utility Function Declarations
+	void PrepareForActivation(uint8_t _state);
+	void PrepareForDeactivation();
+
+protected: // Hidden (Accessible to Children Only) State Function Declarations
+	bool StateDefault(float_t _deltaTime);
+	virtual bool StateProcessSelection() = 0;
 
 protected: // Hidden (Accessible to Children Only) Member Variable Declarations
 	int32_t xPos;
@@ -88,9 +113,10 @@ protected: // Hidden (Accessible to Children Only) Member Variable Declarations
 	int32_t optionSpacingX;			// Determines the gap (Excluding the dimensions of the option's contents itself) between options along the x and y axis.
 	int32_t optionSpacingY;
 
-	olc::Pixel optionColor;			// Each stores the color of a menu option depending on if it's visible, below the cursor, or selected.
+	olc::Pixel optionColor;			// Each stores the color of a menu option depending on if it's visible, below the cursor, selected, or inactive.
 	olc::Pixel optionHoverColor;
 	olc::Pixel optionSelColor;
+	olc::Pixel optionInactiveColor;
 };
 
 struct MenuTitle {

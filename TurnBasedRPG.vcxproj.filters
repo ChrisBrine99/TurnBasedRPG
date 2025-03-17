@@ -45,7 +45,7 @@
     <ClCompile Include="Core\Singletons\PartyManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\UI\Battle\BattleUI.cpp">
+    <ClCompile Include="Core\UI\Battle\BattlePartyInfoUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Structs\Battle\Skill.cpp">
@@ -58,6 +58,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\UI\Menus\Battle\BattleSkillMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\UI\Menus\General\ConfirmWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,13 +137,16 @@
     <ClInclude Include="Core\Utils\DataMacros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\UI\Battle\BattleUI.hpp">
+    <ClInclude Include="Core\UI\Battle\BattlePartyInfoUI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Singletons\MenuManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\UI\Menus\Battle\BattleSkillMenu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\UI\Menus\General\ConfirmWindow.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

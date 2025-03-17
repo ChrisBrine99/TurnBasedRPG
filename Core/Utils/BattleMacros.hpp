@@ -71,7 +71,7 @@
 #define AFFINITY_LIGHT					0x20ui8
 #define AFFINITY_DARK					0x21ui8
 // --- Strength AND Magic-based affinities --- //
-#define AFFINITY_VOID					0x30ui8
+#define AFFINITY_VOID					0x80ui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that will determine how a skill will function within a battle with regards to the targets it can affect when used.			//
