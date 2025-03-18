@@ -13,9 +13,9 @@ Menu::Menu() :
 	flags(0ui32),
 	inputFlags(0ui32),
 	prevInputFlags(0ui32),
-	curState(INVALID_STATE),
-	nextState(INVALID_STATE),
-	lastState(INVALID_STATE),
+	curState(STATE_INVALID),
+	nextState(STATE_INVALID),
+	lastState(STATE_INVALID),
 	menuOptions(),
 	curOption(0ui8),
 	selOption(MENU_SELECTION_INVALID),
@@ -53,9 +53,9 @@ bool Menu::OnUserDestroy() {
 
 bool Menu::OnUserUpdate(float_t _deltaTime) {
 	switch (curState) {
-	case MENU_STATE_DEFAULT:			return StateDefault(_deltaTime);
-	case MENU_STATE_PROCESS_SELECTION:	return StateProcessSelection();
-	case INVALID_STATE:					return true;
+	case STATE_MENU_DEFAULT:			return StateDefault(_deltaTime);
+	case STATE_MENU_PROCESS_SELECTION:	return StateProcessSelection();
+	case STATE_INVALID:					return true;
 	}
 	
 	return false;
@@ -67,6 +67,8 @@ bool Menu::OnUserRender(float_t _deltaTime) {
 }
 
 bool Menu::OnBeforeUserUpdate(float_t _deltaTime) {
+	if (MENU_IS_BLOCKING_INPUT)
+		return true;
 	prevInputFlags = inputFlags;
 
 	GameSettings* _settings = GET_SINGLETON(GameSettings);
@@ -94,7 +96,7 @@ void Menu::OnAfterUserUpdate(float_t _deltaTime) {
 }
 
 void Menu::AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description, uint8_t _alpha, uint32_t _flags) {
-	if (!FLAG_ARE_MENU_OPTIONS_ALLOWED) // Prevent menus from adding options before they've been fully initialized.
+	if (!MENU_ARE_OPTIONS_ALLOWED) // Prevent menus from adding options before they've been fully initialized.
 		return;
 
 	MenuOption _newOption{
@@ -108,7 +110,7 @@ void Menu::AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText,
 }
 
 void Menu::RemoveOption(size_t _index) {
-	if (_index >= menuOptions.size() || !FLAG_IS_MENU_ACTIVE)
+	if (_index >= menuOptions.size() || !MENU_IS_ACTIVE)
 		return;
 	menuOptions.erase(menuOptions.begin() + _index);
 	menuHeight = 1ui8 + uint8_t(menuOptions.size()) / menuWidth;
@@ -123,7 +125,7 @@ void Menu::SetOptionFlags(size_t _index, uint32_t _flags, bool _overwrite) {
 }
 
 void Menu::InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows, uint8_t _visibleColumns, uint8_t _rowShiftOffset, uint8_t _columnShiftOffset, uint8_t _alpha, uint32_t _flags) {
-	if (FLAG_IS_MENU_INITIALIZED)
+	if (MENU_IS_INITIALIZED)
 		return; // Don't allow initialization of a menu twice.
 	flags = _flags | FLAG_MENU_INITIALIZED;
 	SET_NEXT_STATE(_state);
@@ -146,7 +148,7 @@ void Menu::InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows
 }
 
 void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color, olc::Pixel _hoverColor, olc::Pixel _selColor, olc::Pixel _inactiveColor) {
-	if (FLAG_ARE_MENU_OPTIONS_ALLOWED)
+	if (MENU_ARE_OPTIONS_ALLOWED)
 		return; // Don't allow initialization of menu option parameters twice.
 	flags |= FLAG_MENU_OPTIONS_ALLOWED;
 
@@ -168,7 +170,7 @@ void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _s
 }
 
 void Menu::InitializeDescriptionParams(int32_t _x, int32_t _y) {
-	if (!FLAG_MENU_CAN_SHOW_DESCRIPTION)
+	if (!MENU_CAN_SHOW_DESCRIPTION)
 		return;
 
 	flags |= FLAG_MENU_SHOW_DESCRIPTIONS;
@@ -177,12 +179,12 @@ void Menu::InitializeDescriptionParams(int32_t _x, int32_t _y) {
 }
 
 void Menu::UpdateCursor(float_t _deltaTime) {
-	if (FLAG_MENU_BLOCKING_INPUT || !FLAG_IS_MENU_INITIALIZED || !FLAG_ARE_MENU_OPTIONS_ALLOWED)
+	if (MENU_IS_BLOCKING_INPUT || !MENU_IS_INITIALIZED || !MENU_ARE_OPTIONS_ALLOWED)
 		return; // Don't bother updating the cursor if the menu isn't even considered initialized.
 
 	// Resetting the flag for a fast cursor movement and also setting the move time to 0 so the next press of a cursor input 
 	// will result in instantaneous movement processing.
-	if (FLAG_NO_MENU_MOVE_INPUTS) {
+	if (MINPUT_NO_CURSOR_INPUTS) {
 		flags |=  FLAG_MENU_WAIT_CURSOR;
 		flags &= ~FLAG_MENU_FAST_CURSOR;
 		cursorMoveTimer = 0.0f;
@@ -191,14 +193,14 @@ void Menu::UpdateCursor(float_t _deltaTime) {
 
 	// The menu is waiting for the cursor's timer to run out. Without this, the cursor would update its position on every game
 	// frame, and that would be completely unusable. Instead, a frame-independent amount of time in seconds is used.
-	if (FLAG_IS_MENU_CURSOR_WAITING) {
+	if (MENU_IS_CURSOR_WAITING) {
 		cursorMoveTimer -= _deltaTime;
 		if (cursorMoveTimer <= 0.0f) { // Signal that the menu can move the cursor on the next frame.
 			flags &= ~FLAG_MENU_WAIT_CURSOR;
 
 			// Makes the cursor autoscroll update slightly slower on the first movement of the cursor. Every subsequent movement 
 			// will be the same interval of time until the user releases all menu cursor movement inputs.
-			if (FLAG_IS_MENU_CURSOR_FAST) { 
+			if (MENU_IS_CURSOR_FAST) { 
 				cursorMoveTimer = MENU_CURSOR_SHIFT_TIME;
 			} else {
 				flags |= FLAG_MENU_FAST_CURSOR;
@@ -212,7 +214,7 @@ void Menu::UpdateCursor(float_t _deltaTime) {
 	// Determine the horizontal movement of the cursor by converting two booleans into 8-bit integers. Then, take the result of the
 	// right cursor state and subtract the left cursor state from it. This will mean the value is +1 for cursor movement to the right,
 	// -1 for movement to the left, and 0 for movement in either both or neither direction.
-	int8_t _hMovement = int8_t(FLAG_IS_MENU_RIGHT_ACTIVE) - int8_t(FLAG_IS_MENU_LEFT_ACTIVE);
+	int8_t _hMovement = int8_t(MINPUT_IS_RIGHT_ACTIVE) - int8_t(MINPUT_IS_LEFT_ACTIVE);
 	if (menuWidth == 1ui8 || _hMovement == 0ui8)
 		goto vertical_cursor_movement_logic; // No movement required; completely skip the horizontal cursor logic and move onto processing vertical cursor movement.
 
@@ -275,7 +277,7 @@ vertical_cursor_movement_logic:
 	// Similar to above, the keyboard's required inputs are checked for their state, and then those booleans are converted into two ints
 	// that are either the value's +1 or -1. Then, the upward input state's value is subtracted from the downward state's; resulting in
 	// the value being +1 for downward movement, -1 for upward, and 0 for both simultaneously or none.
-	int8_t _vMovement = int8_t(FLAG_IS_MENU_DOWN_ACTIVE) - int8_t(FLAG_IS_MENU_UP_ACTIVE);
+	int8_t _vMovement = int8_t(MINPUT_IS_DOWN_ACTIVE) - int8_t(MINPUT_IS_UP_ACTIVE);
 	if (menuHeight == 1ui8 || _vMovement == 0i8)
 		return; // No other code after this, so the function can exit early instead of needing a goto.
 
@@ -325,7 +327,7 @@ vertical_cursor_movement_logic:
 }
 
 void Menu::RenderVisibleOptions(float_t _deltaTime) {
-	if (!FLAG_IS_MENU_INITIALIZED || !FLAG_ARE_MENU_OPTIONS_ALLOWED)
+	if (!MENU_IS_INITIALIZED || !MENU_ARE_OPTIONS_ALLOWED)
 		return;
 
 	EngineCore* _engine	= GET_SINGLETON(EngineCore);
@@ -347,7 +349,7 @@ void Menu::RenderVisibleOptions(float_t _deltaTime) {
 			// Determine the color of the option relative to what index is currently being hovered over by the cursor, selected 
 			// by the user, or simply visible (Active vs. Inactive will alter the default color). The option being inactive will
 			// override all other color changes.
-			if (!FLAG_IS_MOPTION_ACTIVE(_index)) {
+			if (!MOPTION_IS_ACTIVE(_index)) {
 				_color = optionInactiveColor;
 			} else { // Choose a color as normal for an active option.
 				if (_index == selOption)		{ _color = optionSelColor; }
@@ -374,10 +376,11 @@ void Menu::PrepareForActivation(uint8_t _state) {
 }
 
 void Menu::PrepareForDeactivation() {
-	SET_NEXT_STATE(INVALID_STATE);
+	curState = STATE_INVALID;	// Bypass the wait for the end of the frame and just update it instantly upon deactivation.
+	nextState = STATE_INVALID;
 
-	inputFlags = 0; // Clear any active input flags.
-	prevInputFlags = 0;
+	inputFlags = 0u; // Clear out any active input flags upon deactivation of the menu.
+	prevInputFlags = 0u;
 
 	flags |= FLAG_MENU_BLOCK_INPUT; // Make sure the menu can no longer accept input from the user and is also switched to invisible.
 	flags &= ~(FLAG_MENU_VISIBLE | FLAG_MENU_ACTIVE_STATE);
@@ -385,9 +388,8 @@ void Menu::PrepareForDeactivation() {
 
 bool Menu::StateDefault(float_t _deltaTime) {
 	// Capture what option was selected so it can be parsed in the next state, but only if the option is considered selectable.
-	if (FLAG_IS_MENU_SELECT_ACTIVE && FLAG_IS_MOPTION_SELECTABLE(curOption)) {
-		std::cout << FLAG_IS_MOPTION_SELECTABLE(curOption) << std::endl;
-		SET_NEXT_STATE(MENU_STATE_PROCESS_SELECTION);
+	if (MINPUT_IS_SELECT_PRESSED && MOPTION_IS_SELECTABLE(curOption)) {
+		SET_NEXT_STATE(STATE_MENU_PROCESS_SELECTION);
 		selOption = curOption;
 		return true;
 	}

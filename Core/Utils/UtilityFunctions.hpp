@@ -41,4 +41,25 @@ inline T ValueClamp(T _value, T _min, T _max) {
 	return _value;
 }
 
+// 
+template<typename T>
+inline void ValueSetLinear(T& _curValue, T _targetValue, T _amount) {
+	if (_curValue == _targetValue)
+		return;
+
+	if (_curValue < _targetValue) {
+		_curValue += _amount;
+		if (_curValue >= _targetValue)
+			_curValue = _targetValue;
+		return;
+	}
+	
+	if (_curValue > _targetValue) {
+		_curValue -= _amount;
+		if (_curValue <= _targetValue)
+			_curValue = _targetValue;
+		return;
+	}
+}
+
 #endif

@@ -1,17 +1,17 @@
-#ifndef BATTLE_PARTY_INFO_UI_HPP
-#define BATTLE_PARTY_INFO_UP_HPP
+#ifndef BATTLE_ENEMY_UI_HPP
+#define BATTLE_ENEMY_UI_HPP
 
 #include "../../Structs/Battle/Combatant.hpp"
 
 #include <string>
 #include <vector>
 
-struct PartyMemberUI;
+struct EnemyUI;
 
-class BattlePartyInfoUI {
+class BattleEnemyUI {
 public: // Constructor and Destructor Declarations
-	BattlePartyInfoUI();
-	~BattlePartyInfoUI() = default;
+	BattleEnemyUI();
+	~BattleEnemyUI() = default;
 
 public: // Main Engine Function Declarations
 	bool OnUserCreate();
@@ -21,14 +21,10 @@ public: // Main Engine Function Declarations
 public: // Publicly Accessible Utility Function Declarations
 	void ActivateElement(Combatant* _combatant, int32_t _startX, int32_t _startY);
 	void DeactivateElement(Combatant* _combatant);
-	void UpdateOnScreenElements(uint32_t _numerator, uint32_t _denominator, uint32_t& _barValueWidth, std::string& _barValueString);
-
-public: // Publicly Accessible Member Variable Declarations
-	int32_t xPos;
-	int32_t yPos;
+	void UpdateElement(Combatant* _combatant);
 
 private: // Hidden Member Variable Declarations
-	std::vector<PartyMemberUI> uiElements;
+	std::vector<EnemyUI> uiElements;
 };
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
@@ -36,56 +32,43 @@ private: // Hidden Member Variable Declarations
 //  aspects of the struct from executing specific pieces of code during rendering.														//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define FLAG_PMINFO_VISIBLE				0x00000001ui32
-#define FLAG_PMINFO_OCCUPIED			0x00000002ui32
+#define FLAG_ENINFO_VISIBLE				0x00000001ui32
+#define FLAG_ENINFO_OCCUPIED			0x00000002ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that condense the check required to see if a flag bit is set to 0 or 1 within a party member ui struct within the code.		//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define PMINFO_IS_VISIBLE(_x)			(_x.flags & FLAG_PMINFO_VISIBLE)
-#define PMINFO_IS_OCCUPIED(_x)			(_x.flags & FLAG_PMINFO_OCCUPIED)
+#define ENINFO_IS_VISIBLE(_x)			(_x.flags & FLAG_ENINFO_VISIBLE)
+#define ENINFO_IS_OCCUPIED(_x)			(_x.flags & FLAG_ENINFO_OCCUPIED)
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Define for the maximum possible width of the HP and MP bars on the party info UI.													//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define PMINFO_UI_BAR_WIDTH				48
+#define EN_INFO_HP_BAR_WIDTH			48
 
-struct PartyMemberUI {
-	int32_t				xPos;
-	int32_t				yPos;
+struct EnemyUI {
+	int32_t		xPos;
+	int32_t		yPos;
+	uint32_t	flags;
+	uint32_t	hpBarWidth;
+	uint16_t	curHitpoints;
+	uint16_t	targetHitpoints;
+	float_t		barUpdateTimer;
+	float_t		visibilityTimer;
+	Combatant*	combatant;
 
-	std::string			sName;
-	std::string			sLevel;
-	std::string			sCurHitpoints;
-	std::string			sCurMagicpoints;
-
-	uint32_t			flags;
-
-	uint32_t			hpBarWidth;
-	uint32_t			mpBarWidth;
-
-	uint16_t			curHitpoints;
-	uint16_t			curMagicpoints;
-	float_t				sUpdateTimer;
-
-	Combatant*			combatant;
-
-	// The default constructor for the PartyMemberUI struct. It simply initializes all variables with default values.
-	PartyMemberUI() :
+	// The default constructor for the EnemyUI struct. It simply initializes all variables with default values.
+	EnemyUI() : 
 		xPos(0),
 		yPos(0),
-		sName(""),
-		sLevel(""),
-		sCurHitpoints(""),
-		sCurMagicpoints(""),
 		flags(0u),
 		hpBarWidth(0u),
-		mpBarWidth(0u),
 		curHitpoints(0ui16),
-		curMagicpoints(0ui16),
-		sUpdateTimer(0.0f),
+		targetHitpoints(0ui16),
+		barUpdateTimer(0.0f),
+		visibilityTimer(0.0f),
 		combatant(nullptr)
 	{}
 };

@@ -60,6 +60,12 @@
 #define WINDOW_SCALE					2
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
+//	
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define GAME_UPDATE_INTERVAL			0.0167f
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Condenses the code required for initializing a singleton (Within the .hpp file of said singleton class) into a single-line define.	//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
@@ -93,7 +99,7 @@
 //	Defines that are important for the state machine systems that can be utilized within various classes.								//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define INVALID_STATE					0xFFui8
+#define STATE_INVALID					0xFFui8
 #define SET_NEXT_STATE(_state)			SetNextState(_state, nextState)
 #define UPDATE_STATE(_state)			UpdateCurrentState(_state, curState, lastState)
 
@@ -145,7 +151,8 @@
 // ---------------------------------------------------------- //
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
-//	
+//	Defines that will determine how many party members the player can have in their roster at once, as well as the amount of those		//
+//	that can set to the active roster versus the reserve roster.																		//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
 #define PARTY_ROSTER_MAX_SIZE			5ui64

@@ -3,6 +3,25 @@
 
 #include "../Menu.hpp"
 
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that explain how the number they contain is utilized by this menu's state machine. Defined here since these values aren't	//
+//	used in this context anywhere outside of this menu.	The first two values are already used by inherited menu states.					//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define STATE_BTLMENU_IN_SKILLS			2ui8
+#define STATE_BTLMENU_IN_ITEMS			3ui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that are the index values for the options they represent within the menu's option vector. Defined here since no other		//
+//	class/piece of code should ever require these defines outside of this menu.															//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define OPTION_BTLMENU_SKILLS			0ui64
+#define OPTION_BTLMENU_ITEMS			1ui64
+#define OPTION_BTLMENU_GUARD			2ui64
+#define OPTION_BTLMENU_SWITCH			3ui64
+#define OPTION_BTLMENU_ESCAPE			4ui64
+
 struct Combatant;
 class BattleSkillMenu;
 class ConfirmWindow;

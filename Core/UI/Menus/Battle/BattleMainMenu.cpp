@@ -4,25 +4,6 @@
 #include "../General/ConfirmWindow.hpp"
 #include "BattleSkillMenu.hpp"
 
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Defines that explain how the number they contain is utilized by this menu's state machine. Defined here since these values aren't	//
-//	used in this context anywhere outside of this menu.	The first two values are already used by inherited menu states.					//
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-
-#define BTL_MENU_STATE_IN_SKILLS		2ui8
-#define BTL_MENU_STATE_IN_ITEMS			3ui8
-
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Defines that are the index values for the options they represent within the menu's option vector. Defined here since no other		//
-//	class/piece of code should ever require these defines outside of this menu.															//
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-
-#define BTL_MENU_OPTION_SKILLS			0ui64
-#define BTL_MENU_OPTION_ITEMS			1ui64
-#define BTL_MENU_OPTION_GUARD			2ui64
-#define BTL_MENU_OPTION_SWITCH			3ui64
-#define BTL_MENU_OPTION_ESCAPE			4ui64
-
 BattleMainMenu::BattleMainMenu() :
 	Menu(),
 	skillMenu(nullptr),
@@ -30,7 +11,7 @@ BattleMainMenu::BattleMainMenu() :
 {}
 
 bool BattleMainMenu::OnUserCreate() {
-	InitializeParams(INVALID_STATE, 1ui8, 7ui8, 1ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
+	InitializeParams(STATE_INVALID, 1ui8, 7ui8, 1ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
 	InitializeOptionParams(15, 200, 0, 10);
 	//InitializeDescriptionParams(VIEWPORT_WIDTH >> 1, VIEWPORT_HEIGHT - 15);
 
@@ -48,11 +29,11 @@ bool BattleMainMenu::OnUserCreate() {
 
 bool BattleMainMenu::OnUserUpdate(float_t _deltaTime) {
 	switch (curState) {
-	case MENU_STATE_DEFAULT:			return StateDefault(_deltaTime);
-	case MENU_STATE_PROCESS_SELECTION:	return StateProcessSelection();
-	case BTL_MENU_STATE_IN_SKILLS:		return StateInsideSkills();
-	case BTL_MENU_STATE_IN_ITEMS:		return StateInsideItems();
-	case INVALID_STATE:					return true;
+	case STATE_MENU_DEFAULT:			return StateDefault(_deltaTime);
+	case STATE_MENU_PROCESS_SELECTION:	return StateProcessSelection();
+	case STATE_BTLMENU_IN_SKILLS:		return StateInsideSkills();
+	case STATE_BTLMENU_IN_ITEMS:		return StateInsideItems();
+	case STATE_INVALID:					return true;
 	}
 
 	return false;
@@ -64,22 +45,31 @@ void BattleMainMenu::PrepareForActivation(uint8_t _state, Combatant* _curCombata
 }
 
 bool BattleMainMenu::StateProcessSelection() {
+	flags |= FLAG_MENU_BLOCK_INPUT;
+
 	switch (selOption) {
-	case BTL_MENU_OPTION_SKILLS: // Switches primary control to the skill menu so the use can select a skill to utilize.
-		SET_NEXT_STATE(BTL_MENU_STATE_IN_SKILLS);
-		skillMenu->PrepareForActivation(MENU_STATE_DEFAULT, this);
+	case OPTION_BTLMENU_SKILLS: // Switches primary control to the skill menu so the use can select a skill to utilize.
+		SET_NEXT_STATE(STATE_BTLMENU_IN_SKILLS);
+		skillMenu->PrepareForActivation(STATE_MENU_DEFAULT, this);
 		break;
-	case BTL_MENU_OPTION_ITEMS:
-		SET_NEXT_STATE(BTL_MENU_STATE_IN_ITEMS);
+	case OPTION_BTLMENU_ITEMS:
+		SET_NEXT_STATE(STATE_BTLMENU_IN_ITEMS);
+		flags &= ~FLAG_MENU_BLOCK_INPUT;
 		// TODO -- Prepare item menu for activation here.
 		break;
-	case BTL_MENU_OPTION_GUARD:
+	case OPTION_BTLMENU_GUARD:
+		SET_NEXT_STATE(STATE_BTLMENU_IN_ITEMS);
+		flags &= ~FLAG_MENU_BLOCK_INPUT;
 		// TODO -- Open confirmation window asking user if they wish to guard with this character.
 		break;
-	case BTL_MENU_OPTION_SWITCH:
+	case OPTION_BTLMENU_SWITCH:
+		SET_NEXT_STATE(STATE_BTLMENU_IN_ITEMS);
+		flags &= ~FLAG_MENU_BLOCK_INPUT;
 		// TODO -- Open battle's party roster selection menu.
 		break;
-	case BTL_MENU_OPTION_ESCAPE:
+	case OPTION_BTLMENU_ESCAPE:
+		SET_NEXT_STATE(STATE_BTLMENU_IN_ITEMS);
+		flags &= ~FLAG_MENU_BLOCK_INPUT;
 		// TODO -- Open confimation window asking user if they wish to flee.
 		break;
 	}
@@ -88,19 +78,17 @@ bool BattleMainMenu::StateProcessSelection() {
 }
 
 bool BattleMainMenu::StateInsideSkills() {
-	if (FLAG_IS_MENU_RETURN_ACTIVE) {
+	if (skillMenu->GetPressedInputs() & FLAG_INPUT_MENU_RETURN)
 		skillMenu->PrepareForDeactivation();
-		selOption = 0xFFui8;
-	}
 
 	return true;
 }
 
 bool BattleMainMenu::StateInsideItems() {
-	if (FLAG_IS_MENU_RETURN_ACTIVE) {
-		SET_NEXT_STATE(MENU_STATE_DEFAULT);
+	if (MINPUT_IS_RETURN_PRESSED) {
+		SET_NEXT_STATE(STATE_MENU_DEFAULT);
 		// TODO -- Deactivate the item menu here.
-		selOption = 0xFFui8;
+		selOption = MENU_SELECTION_INVALID;
 	}
 
 	return true;

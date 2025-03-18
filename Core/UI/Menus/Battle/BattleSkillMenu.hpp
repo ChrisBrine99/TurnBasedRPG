@@ -4,6 +4,21 @@
 #include "../Menu.hpp"
 #include "../../../Structs/Battle/Combatant.hpp"
 
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that explain how the number they contain is utilized by this menu's state machine. Defined here since these values aren't	//
+//	used in this context anywhere outside of this menu.	The first two values are already used by inherited menu states.					//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define STATE_SKLMENU_TARGET_SELECT		2ui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that are the index values for the options they represent within the menu's option vector. Defined here since no other		//
+//	class/piece of code should ever require these defines outside of this menu.															//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define	OPTION_SKLMENU_ATTACK			0ui8
+#define OPTION_SKLMENU_BACK				uint8_t(menuOptions.size() - 1ui64)
+
 class BattleMainMenu;
 
 class BattleSkillMenu : public Menu {
@@ -39,7 +54,9 @@ private: // State Function Declarations
 	bool StateTargetSelect();
 
 private: // Hidden Member Variable Declarations
-	std::vector<std::string> skillCost;
+	std::vector<std::string>	sSkillCost;
+	std::vector<uint16_t>		skillIDs;
+	Combatant*					curCombatant;
 };
 
 #endif

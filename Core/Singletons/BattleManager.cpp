@@ -19,9 +19,9 @@ BattleManager::BattleManager() :
 	curMoneyReward(0ui32),
 	curExpReward(0ui32),
 	turnDelay(0.0f),
-	curState(INVALID_STATE),
-	nextState(INVALID_STATE),
-	lastState(INVALID_STATE),
+	curState(STATE_INVALID),
+	nextState(STATE_INVALID),
+	lastState(STATE_INVALID),
 	curTurn(0ui8),
 	encounterID(ID_INVALID),
 	curRound(0ui8),
@@ -73,8 +73,8 @@ bool BattleManager::OnUserUpdate(float_t _deltaTime) {
 	case STATE_BATTLE_WIN:				return StateBattleWin();
 	case STATE_BATTLE_LOSE:				return StateBattleLose();
 	case STATE_BATTLE_ESCAPE:			return StateBattleEscape();
-	case STATE_POST_BATTLE:				return StatePostBattle();
-	case INVALID_STATE:					return true;
+	case STATE_BATTLE_POST:				return StatePostBattle();
+	case STATE_INVALID:					return true;
 	}
 
 	return false;
@@ -97,7 +97,7 @@ void BattleManager::OnAfterUserUpdate(float_t _deltaTime) {
 }
 
 bool BattleManager::StateInitializeBattle() {
-	if (FLAG_IS_BATTLE_ACTIVE)
+	if (BATTLE_IS_ACTIVE)
 		return true; // Prevents a battle from being initialized when one is already active.
 	flags |= FLAG_BATTLE_ACTIVE;
 
@@ -159,6 +159,10 @@ bool BattleManager::StateDetermineTurnOrder() {
 			}
 		}
 	}
+	std::cout << "Turn Order: { ";
+	for (size_t i : turnOrder)
+		std::cout << i << " ";
+	std::cout << "}" << std::endl;
 
 	SET_NEXT_STATE(STATE_BATTLE_CHECK_TURN_TYPE);
 	return true;
@@ -167,9 +171,9 @@ bool BattleManager::StateDetermineTurnOrder() {
 bool BattleManager::StateIsPlayerOrEnemyTurn() {
 	curCombatant = combatants[turnOrder[curTurn]];
 
-	if (FLAG_IS_COMBATANT_PLAYER(curCombatant)) {
+	if (COMBATANT_IS_PLAYER(curCombatant)) {
 		SET_NEXT_STATE(STATE_BATTLE_PLAYER_TURN);
-		actionMenu->PrepareForActivation(MENU_STATE_DEFAULT, curCombatant);
+		actionMenu->PrepareForActivation(STATE_MENU_DEFAULT, curCombatant);
 		return true;
 	}
 
@@ -181,14 +185,13 @@ bool BattleManager::StatePlayerTurn(float_t _deltaTime) {
 	if (GET_SINGLETON(EngineCore)->GetKey(olc::SPACE).bPressed) {
 		curCombatant->curHitpoints = uint16_t(std::rand() % curCombatant->maxHitpoints);
 		curCombatant->curMagicpoints = uint16_t(std::rand() % curCombatant->maxMagicpoints);
-		partyInfoUI->UpdateElement(curCombatant);
 	}
 	return true;
 }
 
 bool BattleManager::StateEnemyTurn(float_t _deltaTime) {
-	EnemyCharacter* _enemy = static_cast<EnemyCharacter*>(curCombatant->character);
-	if (typeid(*_enemy) == typeid(EnemyCharacter)) {
+	EnemyCharacter* _enemy = (EnemyCharacter*)curCombatant->character;
+	if (typeid(*_enemy).hash_code() == typeid(EnemyCharacter).hash_code()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
 		_enemy->ExecuteAI(_deltaTime);
 		return true;
@@ -220,7 +223,7 @@ bool BattleManager::StateIsRoundFinished() {
 			continue;
 		}
 
-		if (FLAG_IS_COMBATANT_PLAYER(_combatants)) {
+		if (COMBATANT_IS_PLAYER(_combatants)) {
 			_playersRemaining++;
 			continue;
 		}
@@ -273,7 +276,7 @@ bool BattleManager::StatePostBattle() {
 	curMoneyReward = 0ui32;
 	curExpReward = 0ui32;
 
-	SET_NEXT_STATE(INVALID_STATE);
+	SET_NEXT_STATE(STATE_INVALID);
 	return true;
 }
 
@@ -282,7 +285,7 @@ void BattleManager::ExecuteSkill(Skill* _skill) {
 }
 
 void BattleManager::SetEncounterID(uint16_t _encounterID) {
-	if (FLAG_IS_BATTLE_ACTIVE)
+	if (BATTLE_IS_ACTIVE)
 		return;
 	encounterID = _encounterID;
 	SET_NEXT_STATE(STATE_BATTLE_INITIALIZE);
@@ -306,7 +309,7 @@ void BattleManager::AddPlayerCombatant(size_t _partyIndex) {
 		return;
 
 	for (size_t i = 0ui64; i < combatants.size(); i++) {
-		if (FLAG_IS_COMBATANT_ACTIVE(combatants[i]))
+		if (COMBATANT_IS_ACTIVE(combatants[i]))
 			continue;
 
 		combatants[i]->ActivateCombatant(_player, FLAG_COMBATANT_PLAYER);
@@ -321,12 +324,12 @@ void BattleManager::AddEnemyCombatant(uint16_t _enemyID) {
 	if (turnOrder.size() >= BATTLE_TOTAL_COMBATANTS)
 		return;
 
-	EnemyCharacter* _enemy = static_cast<EnemyCharacter*>(GET_SINGLETON(DataManager)->GetCharacter(_enemyID));
-	if (typeid(*_enemy) != typeid(EnemyCharacter))
+	EnemyCharacter* _enemy = (EnemyCharacter*)GET_SINGLETON(DataManager)->GetCharacter(_enemyID);
+	if (typeid(*_enemy).hash_code() != typeid(EnemyCharacter).hash_code())
 		return;
 
 	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++) {
-		if (FLAG_IS_COMBATANT_ACTIVE(combatants[i]))
+		if (COMBATANT_IS_ACTIVE(combatants[i]))
 			continue;
 		combatants[i]->ActivateCombatant(_enemy, 0u);
 		turnOrder.push_back(i);

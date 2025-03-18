@@ -4,14 +4,6 @@
 #include "../../Singletons/EngineCore.hpp"
 #include "../../Utils/MenuMacros.hpp"
 
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Defines for the default states that all menus have available to them. ANy indexes not found here can be used on a per menu basis.	//
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-
-#define MENU_STATE_DEFAULT				0ui8
-#define MENU_STATE_PROCESS_SELECTION	1ui8
-// NOTE -- Values between 2 (0x02) and 254 (0xFE) are free for child menu states to use.
-
 struct MenuOption;
 
 class Menu {
@@ -43,9 +35,25 @@ public: // Publicly Accessible Utility Function Declarations
 			selOption = MENU_SELECTION_INVALID;
 	}
 
+	// Allows other menus/obejcts to manipulate the menu's current flags. Useful when passing control between menus.
+	inline void SetFlags(int32_t _flags) {
+		flags &= _flags;
+	}
+
 	// Simply returns the current flags that are enabled or disabled for the menu.
 	inline uint32_t GetFlags() const {
 		return flags;
+	}
+
+	// Similar to the function above, but return the menu's current input flags instead of its general flags. It doesn't take 
+	// into account if the input has been pressed or not; only if it's currently held or not held by the user.
+	inline uint32_t GetActiveInputs() const {
+		return inputFlags;
+	}
+
+	// ANother input flag function, but for only when the inputs have been pressed instead of pressed or held by the user.
+	inline uint32_t GetPressedInputs() const {
+		return inputFlags ^ prevInputFlags;
 	}
 protected: // Hidden (Accessible to Children Only) Utility Function Declarations
 	void InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows, uint8_t _visibleColumns, uint8_t _rowShiftOffset = 0ui8, uint8_t _columnShiftOffset = 0ui8,

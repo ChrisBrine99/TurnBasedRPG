@@ -36,7 +36,7 @@ bool SceneManager::OnUserRender(float_t _deltaTime) {
 }
 
 bool SceneManager::OnBeforeUserUpdate(float_t _deltaTime) {
-	if (FLAG_SHOULD_SCENE_CHANGE) {
+	if (SCENE_SHOULD_CHANGE) {
 		flags &= ~FLAG_SCENE_CHANGE;
 
 		if (!currentScene->OnUserCreate())
@@ -49,7 +49,7 @@ bool SceneManager::OnBeforeUserUpdate(float_t _deltaTime) {
 bool SceneManager::OnAfterUserUpdate(float_t _deltaTime) {
 	currentScene->OnAfterUserUpdate(_deltaTime);
 
-	if (!FLAG_SHOULD_SCENE_CHANGE)
+	if (!SCENE_SHOULD_CHANGE)
 		return true;
 
 	if (!currentScene->OnUserDestroy()) {
@@ -96,5 +96,5 @@ void SceneManager::ChangeScene(uint32_t _index) {
 		return;
 
 	currentSceneIndex = _index;
-	flags |= FLAG_SHOULD_SCENE_CHANGE;
+	flags |= FLAG_SCENE_CHANGE;
 }

@@ -20,6 +20,6 @@
 //	to execute	and/or certain parts of the SceneManager's functionality to be enabled or disabled on-the-fly.							//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define FLAG_SHOULD_SCENE_CHANGE		(flags & FLAG_SCENE_CHANGE)
+#define SCENE_SHOULD_CHANGE				(flags & FLAG_SCENE_CHANGE)
 
 #endif

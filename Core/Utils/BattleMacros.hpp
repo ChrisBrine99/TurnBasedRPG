@@ -23,19 +23,20 @@
 #define STATE_BATTLE_WIN				6ui8
 #define STATE_BATTLE_LOSE				7ui8
 #define STATE_BATTLE_ESCAPE				8ui8
-#define STATE_POST_BATTLE				9ui8
+#define STATE_BATTLE_POST				9ui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	
+//	Defines that represent the bits that can be used within the battle manager's "flags" variable to enable or disable certain			//
+//	functionalities of itself without overwriting any state function is may be executing.												//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define FLAG_BATTLE_ACTIVE				0x00000001u
 
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-//	
-// ------------------------------------------------------------------------------------------------------------------------------------	//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Defines that simplify the formatting required to check for each of the battle manager's state-independent flags.					//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define FLAG_IS_BATTLE_ACTIVE			(flags & FLAG_BATTLE_ACTIVE)
+#define BATTLE_IS_ACTIVE				(flags & FLAG_BATTLE_ACTIVE)
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Values for the bits that represent a certain characteristic within a given Combatant struct. Allows 32 boolean values to be stored	//
@@ -49,8 +50,8 @@
 //	Defines that allow a specific Combatant's flags to be checked for the state of each flag found within its "flags" variable.			//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define FLAG_IS_COMBATANT_PLAYER(_x)	(_x->flags & FLAG_COMBATANT_PLAYER)
-#define FLAG_IS_COMBATANT_ACTIVE(_x)	(_x->flags & FLAG_COMBATANT_ACTIVE)
+#define COMBATANT_IS_PLAYER(_x)			(_x->flags & FLAG_COMBATANT_PLAYER)
+#define COMBATANT_IS_ACTIVE(_x)			(_x->flags & FLAG_COMBATANT_ACTIVE)
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for each of the game's affinities. These are utilized by skills to determine how they will function and how they will		//
@@ -94,7 +95,8 @@
 #define TARGET_EVERYONE_SELF			0x0Aui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	
+//	Defines that represent the internal ID values for each ailment within the game. They are grouped into three distinct groups: mind,	//
+//	nerve, and special; each group having ranked priority based on which ailment has the smaller index in each group.					//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 // --- Nerve Group Status Ailments --- //
@@ -129,11 +131,12 @@
 //	calcluate the final stat value after the modification.																				// 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define ATTACK_MODIFIER					0x0007ui16
-#define DEFENCE_MODIFIER				0x0038ui16
-#define	ACCURACY_MODIFIER				0x01C0ui16
-#define EVASION_MODIFIER				0x0E00ui16
-#define SPEED_MODIFIER					0x7000ui16
+#define ATTACK_MODIFIER					0x0007ui16	// 00000000 00000111
+#define DEFENCE_MODIFIER				0x0038ui16	// 00000000 00111000
+#define	ACCURACY_MODIFIER				0x01C0ui16	// 00000001 11000000
+#define EVASION_MODIFIER				0x0E00ui16	// 00001110 00000000
+#define SPEED_MODIFIER					0x7000ui16	// 01110000 00000000
+// The sixteenth bit in the variable is unused.
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that determine the function that the skill will execute when used in a battle.												//

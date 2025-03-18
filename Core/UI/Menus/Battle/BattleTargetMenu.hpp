@@ -15,18 +15,19 @@ public: // Inherited Function Declarations
 	bool OnUserCreate() override;
 
 public: // Publicly Accessibly Utility Function Declarations
-	void PrepareForActivation(uint8_t _state, BattleSkillMenu* _bSkillMenu, Skill* _skill);
+	void PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, Skill* _skill);
 	void PrepareForDeactivation();
 
 private: // Hidden Utility Function Declarations
 	void DetermineValidTargets(uint8_t _targeting);
 
 private: // Hidden (Accessible to Children Only) State Function Declarations
+	bool StateDefault(float_t _deltaTime);
 	bool StateProcessSelection();
-	bool StateConfirmSkillUse();
 
 private: // Hidden Member Variable Declarations
 	std::vector<size_t> validTargets;
+	Skill* skillToUse;
 };
 
 #endif
