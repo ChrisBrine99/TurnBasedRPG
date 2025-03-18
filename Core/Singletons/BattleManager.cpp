@@ -8,9 +8,11 @@ INIT_SINGLETON_CPP(BattleManager)
 #include "../Structs/Battle/Combatant.hpp"
 #include "../Structs/Characters/EnemyCharacter.hpp"
 #include "../UI/Menus/Battle/BattleMainMenu.hpp"
+#include "../UI/Battle/BattlePartyInfoUI.hpp"
 
 BattleManager::BattleManager() :
 	actionMenu(nullptr),
+	partyInfoUI(nullptr),
 	curCombatant(nullptr),
 	curItemRewards(),
 	curMoneyReward(0ui32),
@@ -51,6 +53,8 @@ bool BattleManager::OnUserDestroy() {
 }
 
 bool BattleManager::OnUserUpdate(float_t _deltaTime) {
+	if (partyInfoUI != nullptr) { partyInfoUI->OnUserUpdate(_deltaTime); }
+
 	if (turnDelay > 0.0f) {
 		turnDelay -= _deltaTime;
 		if (turnDelay < 0.0f)
@@ -75,6 +79,12 @@ bool BattleManager::OnUserUpdate(float_t _deltaTime) {
 	return false;
 }
 
+bool BattleManager::OnUserRender(float_t _deltaTime) {
+	if (partyInfoUI == nullptr)
+		return true;
+	return partyInfoUI->OnUserRender(_deltaTime);
+}
+
 bool BattleManager::OnBeforeUserUpdate(float_t _deltaTime) {
 	(void)(_deltaTime);
 	return true;
@@ -92,6 +102,9 @@ bool BattleManager::StateInitializeBattle() {
 
 	actionMenu = new BattleMainMenu();
 	actionMenu->OnUserCreate();
+
+	partyInfoUI = new BattlePartyInfoUI();
+	partyInfoUI->OnUserCreate();
 
 	// Attempt to fetch the relevant encounter data from within the data that was loaded on startup. The attempt to initialize
 	// the battle will fail if the data returned is null.
@@ -164,6 +177,11 @@ bool BattleManager::StateIsPlayerOrEnemyTurn() {
 }
 
 bool BattleManager::StatePlayerTurn(float_t _deltaTime) {
+	if (GET_SINGLETON(EngineCore)->GetKey(olc::SPACE).bPressed) {
+		curCombatant->curHitpoints = uint16_t(std::rand() % curCombatant->maxHitpoints);
+		curCombatant->curMagicpoints = uint16_t(std::rand() % curCombatant->maxMagicpoints);
+		partyInfoUI->UpdateElement(curCombatant);
+	}
 	return true;
 }
 
@@ -285,7 +303,9 @@ void BattleManager::AddPlayerCombatant(size_t _partyIndex) {
 	for (size_t i = 0ui64; i < combatants.size(); i++) {
 		if (FLAG_IS_COMBATANT_ACTIVE(combatants[i]))
 			continue;
+
 		combatants[i]->ActivateCombatant(_player, FLAG_COMBATANT_PLAYER);
+		partyInfoUI->ActivateElement(combatants[i], 320, 180 + int32_t(i * 15));
 		turnOrder.push_back(i);
 		numCombatants++;
 		return;

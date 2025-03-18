@@ -16,6 +16,7 @@ public: // Main Engine Function Declarations
 public: // Publicly Accessible Utility Function Declarations
 	void AddPartyMember(uint16_t _characterID);
 	void RemovePartyMember(uint16_t _characterID);
+	uint16_t GetPartyMemberID(size_t _partyIndex);
 
 	void AddToPartyRoster(uint16_t _characterID);
 	void RemoveFromPartyRoster(std::vector<uint16_t>::iterator& _position);

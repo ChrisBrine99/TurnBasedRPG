@@ -41,6 +41,12 @@ void PartyManager::RemovePartyMember(uint16_t _characterID) {
 	RemoveFromActiveRoster(_characterID);
 }
 
+uint16_t PartyManager::GetPartyMemberID(size_t _activeIndex) {
+	if (_activeIndex >= curActiveRoster.size())
+		return ID_INVALID;
+	return curPartyRoster[curActiveRoster[_activeIndex]];
+}
+
 void PartyManager::AddToPartyRoster(uint16_t _characterID) {
 	if (partyMembers.find(_characterID) == partyMembers.end() || 
 			std::find(curPartyRoster.begin(), curPartyRoster.end(), _characterID) != curPartyRoster.end())

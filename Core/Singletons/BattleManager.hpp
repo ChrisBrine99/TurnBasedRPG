@@ -7,8 +7,9 @@
 #include <array>
 #include <vector>
 
-struct Combatant;
 class BattleMainMenu;
+class BattlePartyInfoUI;
+struct Combatant;
 
 class BattleManager {
 	// Singleton Initialization/Constructor Declaration
@@ -18,6 +19,7 @@ public: // Main Engine Function Declarations
 	bool OnUserCreate();
 	bool OnUserDestroy();
 	bool OnUserUpdate(float_t _deltaTime);
+	bool OnUserRender(float_t _deltaTime);
 
 	bool OnBeforeUserUpdate(float_t _deltaTime);
 	void OnAfterUserUpdate(float_t _deltaTime);
@@ -45,6 +47,7 @@ private: // Combatant Management Function Declarations
 
 public: // Accessible Member Variable Declarations
 	BattleMainMenu* actionMenu;
+	BattlePartyInfoUI* partyInfoUI;
 	Combatant* curCombatant;
 
 	std::vector<std::pair<uint16_t, uint8_t>> curItemRewards;

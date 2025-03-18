@@ -3,6 +3,8 @@
 #include "../Singletons/BattleManager.hpp"
 #include "../Singletons/PartyManager.hpp"
 
+#include "../Singletons/EngineCore.hpp"
+
 BattleScene::BattleScene(uint32_t _index) :
 	Scene(_index)
 {}
@@ -26,7 +28,7 @@ bool BattleScene::OnUserUpdate(float_t _deltaTime) {
 }
 
 bool BattleScene::OnUserRender(float_t _deltaTime) {
-	return true;
+	return GET_SINGLETON(BattleManager)->OnUserRender(_deltaTime);
 }
 
 bool BattleScene::OnBeforeUserUpdate(float_t _deltaTime) {
