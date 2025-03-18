@@ -6,6 +6,7 @@ INIT_SINGLETON_CPP(BattleManager)
 #include "MenuManager.hpp"
 #include "PartyManager.hpp"
 #include "../Structs/Battle/Combatant.hpp"
+#include "../Structs/Battle/Skill.hpp"
 #include "../Structs/Characters/EnemyCharacter.hpp"
 #include "../UI/Menus/Battle/BattleMainMenu.hpp"
 #include "../UI/Battle/BattlePartyInfoUI.hpp"
@@ -274,6 +275,10 @@ bool BattleManager::StatePostBattle() {
 
 	SET_NEXT_STATE(INVALID_STATE);
 	return true;
+}
+
+void BattleManager::ExecuteSkill(Skill* _skill) {
+
 }
 
 void BattleManager::SetEncounterID(uint16_t _encounterID) {

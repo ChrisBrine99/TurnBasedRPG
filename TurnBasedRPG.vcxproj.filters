@@ -63,6 +63,9 @@
     <ClCompile Include="Core\UI\Menus\General\ConfirmWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\UI\Menus\Battle\BattleTargetMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Singletons\EngineCore.hpp">
@@ -147,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\UI\Menus\General\ConfirmWindow.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\UI\Menus\Battle\BattleTargetMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

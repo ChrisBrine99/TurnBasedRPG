@@ -10,6 +10,7 @@
 class BattleMainMenu;
 class BattlePartyInfoUI;
 struct Combatant;
+struct Skill;
 
 class BattleManager {
 	// Singleton Initialization/Constructor Declaration
@@ -37,6 +38,8 @@ private: // State Function Declarations
 	bool StatePostBattle();
 	
 public: // Publicly Accessible Utility Function Declarations
+	void ExecuteSkill(Skill* _skill);
+
 	void SetEncounterID(uint16_t _encounterID);
 	uint16_t GetCombatantSpeed(Combatant* _combatant) const;
 
@@ -54,6 +57,10 @@ public: // Accessible Member Variable Declarations
 	uint32_t curMoneyReward;
 	uint32_t curExpReward;
 
+	std::array<Combatant*, BATTLE_TOTAL_COMBATANTS> combatants;
+	std::vector<size_t>	turnOrder;
+	std::vector<size_t> targets;
+
 	float_t turnDelay;
 
 	uint8_t curState;
@@ -67,9 +74,6 @@ private: // Hidden Member Variable Declarations
 	uint8_t numCombatants;
 
 	uint32_t flags;
-
-	std::array<Combatant*, BATTLE_TOTAL_COMBATANTS> combatants;
-	std::vector<size_t>	turnOrder;
 };
 
 #endif

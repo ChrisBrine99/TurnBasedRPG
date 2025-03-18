@@ -1,9 +1,16 @@
 #include "BattleSkillMenu.hpp"
 
-#include "../../../Structs/Battle/Combatant.hpp"
-#include "../../../Structs/Battle/Skill.hpp"
 #include "../../../Singletons/DataManager.hpp"
+#include "../../../Structs/Battle/Skill.hpp"
 #include "BattleMainMenu.hpp"
+#include "BattleTargetMenu.hpp"
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that explain how the number they contain is utilized by this menu's state machine. Defined here since these values aren't	//
+//	used in this context anywhere outside of this menu.	The first two values are already used by inherited menu states.					//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define SKL_MENU_STATE_TARGET_SELECT	2ui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that are the index values for the options they represent within the menu's option vector. Defined here since no other		//
@@ -23,16 +30,27 @@ BattleSkillMenu::BattleSkillMenu() :
 bool BattleSkillMenu::OnUserCreate() {
 	InitializeParams(INVALID_STATE, 1ui8, 8ui8, 1ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
 	InitializeOptionParams(80, 200, 0, 10);
+
+	subMenu = new BattleTargetMenu();
+	subMenu->OnUserCreate();
 	
 	return true;
 }
 
 bool BattleSkillMenu::OnUserUpdate(float_t _deltaTime) {
-	Menu::OnUserUpdate(_deltaTime);
-
-	if (FLAG_IS_MENU_RETURN_ACTIVE)
+	if (FLAG_IS_MENU_RETURN_ACTIVE) {
 		PrepareForDeactivation();
-	return true;
+		return true;
+	}
+
+	switch (curState) {
+	case MENU_STATE_DEFAULT:			return StateDefault(_deltaTime);
+	case MENU_STATE_PROCESS_SELECTION:	return StateProcessSelection();
+	case SKL_MENU_STATE_TARGET_SELECT:	return StateTargetSelect();
+	case INVALID_STATE:					return true;
+	}
+
+	return false;
 }
 
 bool BattleSkillMenu::OnUserRender(float_t _deltaTime) {
@@ -122,5 +140,9 @@ bool BattleSkillMenu::StateProcessSelection() {
 		break;
 	}
 
+	return true;
+}
+
+bool BattleSkillMenu::StateTargetSelect() {
 	return true;
 }
