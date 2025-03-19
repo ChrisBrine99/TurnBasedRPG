@@ -18,47 +18,38 @@ inline void UpdateCurrentState(uint8_t _state, uint8_t& _curState, uint8_t& _las
 	_curState = _state;
 }
 
-// A simple function that checks a value to see if has gone below the second supplied value. If so, the function will 
-// return the second value. Otherwise, the value passed into the first argument parameter is returned.
+// A simple function that will ensure a value will not be allowed to go below the supplied limit. If it does, the value in
+// question will be replaced by the limit. Otherwise, the funtion does nothing to the value.
 template<typename T>
-inline T ValueLowerLimit(T _value, T _limit) {
+inline void ValueLowerLimit(T& _value, T _limit) {
 	if (_value < _limit)
-		return _limit;
-	return _value;
+		_value = _limit;
 }
 
-// A simple function that will limit the given value to be between the supplied minimum and maximum values. If the given
-// value has to be outside of that range, the minimum or maximum will be returned depending on if the value is lower than
-// the minimum or higher than that maximum, respectively.
+// A simple function for ensuring a value will never go above or below the range determined by the second and third 
+// arguments. If the value happens to be outside of the range, the value will be set to the minimum for undershooting the
+// range and the maximum for overshooting it.
 template<typename T>
-inline T ValueClamp(T _value, T _min, T _max) {
-	if (_value < _min)
-		return _min;
-
-	if (_value > _max)
-		return _max;
-
-	return _value;
+inline void ValueClamp(T& _value, T _min, T _max) {
+	if (_value < _min)		{ _value = _min; }
+	else if (_value > _max) { _value = _max; }
 }
 
-// 
+// A simple function that allows a value to approach another by a linear amount; the true speed being determined by how
+// many times per second the code requires this function to be called.
 template<typename T>
-inline void ValueSetLinear(T& _curValue, T _targetValue, T _amount) {
-	if (_curValue == _targetValue)
-		return;
+inline void ValueSetLinear(T& _value, T _target, T _amount) {
+	if (_value == _target)
+		return; // The value and target are already equal.
 
-	if (_curValue < _targetValue) {
-		_curValue += _amount;
-		if (_curValue >= _targetValue)
-			_curValue = _targetValue;
-		return;
-	}
-	
-	if (_curValue > _targetValue) {
-		_curValue -= _amount;
-		if (_curValue <= _targetValue)
-			_curValue = _targetValue;
-		return;
+	if (_value < _target) {			// The value is lower than the target.
+		_value += _amount;
+		if (_value >= _target)		// Prevent the value from overshooting.
+			_value = _target;
+	} else if (_value > _target) {	// The value is higher than the target.
+		_value -= _amount;
+		if (_value <= _target)		// Prevent the value from undershooting.
+			_value = _target;
 	}
 }
 

@@ -8,10 +8,10 @@
 
 struct PartyMemberUI;
 
-class BattlePartyInfoUI {
+class BattlePartyUI {
 public: // Constructor and Destructor Declarations
-	BattlePartyInfoUI();
-	~BattlePartyInfoUI() = default;
+	BattlePartyUI();
+	~BattlePartyUI() = default;
 
 public: // Main Engine Function Declarations
 	bool OnUserCreate();
@@ -40,7 +40,7 @@ private: // Hidden Member Variable Declarations
 #define FLAG_PMINFO_OCCUPIED			0x00000002ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Defines that condense the check required to see if a flag bit is set to 0 or 1 within a party member ui struct within the code.		//
+//	Defines that condense the check required to see if a flag bit is set to 0 or 1 within a given party member ui struct.				//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define PMINFO_IS_VISIBLE(_x)			(_x.flags & FLAG_PMINFO_VISIBLE)
@@ -68,7 +68,7 @@ struct PartyMemberUI {
 
 	uint16_t			curHitpoints;
 	uint16_t			curMagicpoints;
-	float_t				sUpdateTimer;
+	float_t				updateTimer;
 
 	Combatant*			combatant;
 
@@ -85,7 +85,7 @@ struct PartyMemberUI {
 		mpBarWidth(0u),
 		curHitpoints(0ui16),
 		curMagicpoints(0ui16),
-		sUpdateTimer(0.0f),
+		updateTimer(0.0f),
 		combatant(nullptr)
 	{}
 };

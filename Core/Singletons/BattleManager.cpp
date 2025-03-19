@@ -9,11 +9,13 @@ INIT_SINGLETON_CPP(BattleManager)
 #include "../Structs/Battle/Skill.hpp"
 #include "../Structs/Characters/EnemyCharacter.hpp"
 #include "../UI/Menus/Battle/BattleMainMenu.hpp"
-#include "../UI/Battle/BattlePartyInfoUI.hpp"
+#include "../UI/Battle/BattlePartyUI.hpp"
+#include "../UI/Battle/BattleEnemyUI.hpp"
 
 BattleManager::BattleManager() :
 	actionMenu(nullptr),
-	partyInfoUI(nullptr),
+	partyUI(nullptr),
+	enemyUI(nullptr),
 	curCombatant(nullptr),
 	curItemRewards(),
 	curMoneyReward(0ui32),
@@ -54,7 +56,8 @@ bool BattleManager::OnUserDestroy() {
 }
 
 bool BattleManager::OnUserUpdate(float_t _deltaTime) {
-	if (partyInfoUI != nullptr) { partyInfoUI->OnUserUpdate(_deltaTime); }
+	if (enemyUI) { enemyUI->OnUserUpdate(_deltaTime); }
+	if (partyUI) { partyUI->OnUserUpdate(_deltaTime); }
 
 	if (turnDelay > 0.0f) {
 		turnDelay -= _deltaTime;
@@ -67,7 +70,7 @@ bool BattleManager::OnUserUpdate(float_t _deltaTime) {
 	case STATE_BATTLE_INITIALIZE:		return StateInitializeBattle();
 	case STATE_BATTLE_SET_TURN_ORDER:	return StateDetermineTurnOrder();
 	case STATE_BATTLE_CHECK_TURN_TYPE:	return StateIsPlayerOrEnemyTurn();
-	case STATE_BATTLE_PLAYER_TURN:		return StatePlayerTurn(_deltaTime);
+	case STATE_BATTLE_PLAYER_TURN:		return StatePlayerTurn();
 	case STATE_BATTLE_ENEMY_TURN:		return StateEnemyTurn(_deltaTime);
 	case STATE_BATTLE_IS_ROUND_DONE:	return StateIsRoundFinished();
 	case STATE_BATTLE_WIN:				return StateBattleWin();
@@ -81,9 +84,9 @@ bool BattleManager::OnUserUpdate(float_t _deltaTime) {
 }
 
 bool BattleManager::OnUserRender(float_t _deltaTime) {
-	if (partyInfoUI == nullptr)
-		return true;
-	return partyInfoUI->OnUserRender(_deltaTime);
+	if (enemyUI) { enemyUI->OnUserRender(_deltaTime); }
+	if (partyUI) { partyUI->OnUserRender(_deltaTime); }
+	return true;
 }
 
 bool BattleManager::OnBeforeUserUpdate(float_t _deltaTime) {
@@ -104,8 +107,11 @@ bool BattleManager::StateInitializeBattle() {
 	actionMenu = new BattleMainMenu();
 	actionMenu->OnUserCreate();
 
-	partyInfoUI = new BattlePartyInfoUI();
-	partyInfoUI->OnUserCreate();
+	partyUI = new BattlePartyUI();
+	partyUI->OnUserCreate();
+
+	enemyUI = new BattleEnemyUI();
+	enemyUI->OnUserCreate();
 
 	// Attempt to fetch the relevant encounter data from within the data that was loaded on startup. The attempt to initialize
 	// the battle will fail if the data returned is null.
@@ -181,11 +187,7 @@ bool BattleManager::StateIsPlayerOrEnemyTurn() {
 	return true;
 }
 
-bool BattleManager::StatePlayerTurn(float_t _deltaTime) {
-	if (GET_SINGLETON(EngineCore)->GetKey(olc::SPACE).bPressed) {
-		curCombatant->curHitpoints = uint16_t(std::rand() % curCombatant->maxHitpoints);
-		curCombatant->curMagicpoints = uint16_t(std::rand() % curCombatant->maxMagicpoints);
-	}
+bool BattleManager::StatePlayerTurn() {
 	return true;
 }
 
@@ -313,7 +315,7 @@ void BattleManager::AddPlayerCombatant(size_t _partyIndex) {
 			continue;
 
 		combatants[i]->ActivateCombatant(_player, FLAG_COMBATANT_PLAYER);
-		partyInfoUI->ActivateElement(combatants[i], 320, 180 + int32_t(i * 15));
+		partyUI->ActivateElement(combatants[i], 320, 180 + int32_t(i * 15));
 		turnOrder.push_back(i);
 		numCombatants++;
 		return;
@@ -332,6 +334,7 @@ void BattleManager::AddEnemyCombatant(uint16_t _enemyID) {
 		if (COMBATANT_IS_ACTIVE(combatants[i]))
 			continue;
 		combatants[i]->ActivateCombatant(_enemy, 0u);
+		enemyUI->ActivateElement(combatants[i]);
 		turnOrder.push_back(i);
 		numCombatants++;
 		return;

@@ -19,34 +19,35 @@ public: // Main Engine Function Declarations
 	bool OnUserRender(float_t _deltaTime);
 
 public: // Publicly Accessible Utility Function Declarations
-	void ActivateElement(Combatant* _combatant, int32_t _startX, int32_t _startY);
+	void ActivateElement(Combatant* _combatant);
 	void DeactivateElement(Combatant* _combatant);
-	void UpdateElement(Combatant* _combatant);
+	void ShowElement(Combatant* _combatant, float_t _time);
 
 private: // Hidden Member Variable Declarations
 	std::vector<EnemyUI> uiElements;
+	uint32_t totalActiveElements;
 };
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Values that are positions for bits within the player member infomation "flags" variable. Toggling them will allow or prevent		//
-//  aspects of the struct from executing specific pieces of code during rendering.														//
+//	Values that are positions for bits within the enemy infomation "flags" variable. Toggling them will allow or prevent aspects of		//
+//	the struct from executing specific pieces of code during rendering.																	//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define FLAG_ENINFO_VISIBLE				0x00000001ui32
 #define FLAG_ENINFO_OCCUPIED			0x00000002ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Defines that condense the check required to see if a flag bit is set to 0 or 1 within a party member ui struct within the code.		//
+//	Defines that condense the check required to see if a flag bit is set to 0 or 1 within a given enemy ui struct.						//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define ENINFO_IS_VISIBLE(_x)			(_x.flags & FLAG_ENINFO_VISIBLE)
 #define ENINFO_IS_OCCUPIED(_x)			(_x.flags & FLAG_ENINFO_OCCUPIED)
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Define for the maximum possible width of the HP and MP bars on the party info UI.													//
+//	Define for the maximum possible width of the enemy's hp bar on the UI.																//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define EN_INFO_HP_BAR_WIDTH			48
+#define ENINFO_HP_BAR_WIDTH				30
 
 struct EnemyUI {
 	int32_t		xPos;
@@ -54,8 +55,7 @@ struct EnemyUI {
 	uint32_t	flags;
 	uint32_t	hpBarWidth;
 	uint16_t	curHitpoints;
-	uint16_t	targetHitpoints;
-	float_t		barUpdateTimer;
+	float_t		updateTimer;
 	float_t		visibilityTimer;
 	Combatant*	combatant;
 
@@ -66,8 +66,7 @@ struct EnemyUI {
 		flags(0u),
 		hpBarWidth(0u),
 		curHitpoints(0ui16),
-		targetHitpoints(0ui16),
-		barUpdateTimer(0.0f),
+		updateTimer(0.0f),
 		visibilityTimer(0.0f),
 		combatant(nullptr)
 	{}

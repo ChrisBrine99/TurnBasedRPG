@@ -29,6 +29,14 @@ struct EnemyCharacter : public BaseCharacter {
 		itemRewards.reserve(3ui64);
 	}
 
+	// The enemy character's destructor which will simply clear all the data structures managed by it and also de-allocate
+	// pointers to memory occupied by its member variables as required.
+	~EnemyCharacter() {
+		itemRewards.clear();
+		itemRewards.shrink_to_fit();
+		battleAI = nullptr;
+	}
+
 	// The function that is responsible for executing the Enemy's ai function. If the value in "battleAI" is nullptr, this 
 	// function will do nothing and the enemy's turn is completely skipped as a result.
 	inline void ExecuteAI(float_t _deltaTime) {

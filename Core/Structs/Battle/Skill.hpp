@@ -27,7 +27,7 @@ struct Skill {
 	std::array<uint8_t, SKILL_MAX_UNIQUE_EFFECTS>	
 								effectChance;	// Stores another group of four 8-bit integers that simply determine the chance of inflicting each added effect.
 
-	// The function that will be called upon the skill's use.
+	// The function that will be called upon the skill's use in battle.
 	void (Skill::*useFunction)(Combatant*);
 
 	// A skill's default constructor; initializes every one of its variables with default values.

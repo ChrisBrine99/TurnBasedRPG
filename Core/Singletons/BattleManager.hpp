@@ -8,7 +8,8 @@
 #include <vector>
 
 class BattleMainMenu;
-class BattlePartyInfoUI;
+class BattlePartyUI;
+class BattleEnemyUI;
 struct Combatant;
 struct Skill;
 
@@ -29,7 +30,7 @@ private: // State Function Declarations
 	bool StateInitializeBattle();
 	bool StateDetermineTurnOrder();
 	bool StateIsPlayerOrEnemyTurn();
-	bool StatePlayerTurn(float_t _deltaTime);
+	bool StatePlayerTurn();
 	bool StateEnemyTurn(float_t _deltaTime);
 	bool StateIsRoundFinished();
 	bool StateBattleWin();
@@ -50,7 +51,9 @@ private: // Combatant Management Function Declarations
 
 public: // Accessible Member Variable Declarations
 	BattleMainMenu* actionMenu;
-	BattlePartyInfoUI* partyInfoUI;
+	BattlePartyUI* partyUI;
+	BattleEnemyUI* enemyUI;
+
 	Combatant* curCombatant;
 
 	std::vector<std::pair<uint16_t, uint8_t>> curItemRewards;

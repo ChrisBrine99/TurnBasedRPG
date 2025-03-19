@@ -52,6 +52,13 @@ struct PlayerCharacter : public BaseCharacter {
 			knownSkills.push_back(_other.knownSkills[c]);
 	}
 
+	// The player character's destructor which will simply clear all the data structures managed by it and also de-allocate
+	// pointers to memory occupied by its member variables as required.
+	~PlayerCharacter() {
+		knownSkills.clear();
+		knownSkills.shrink_to_fit();
+	}
+
 	// Adds the given amount to the player character's current experience value. Then it checks to see if that value exceeds
 	// the current requirement to reach the next level. If so, a loop will begin that increases their level until the 
 	// calculated requirement exceeds the current experience value OR their level reaches 100. The character's max HP and MP 

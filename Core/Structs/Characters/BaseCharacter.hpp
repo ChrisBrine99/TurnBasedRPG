@@ -67,21 +67,28 @@ struct BaseCharacter {
 	inline uint8_t GetCurrentStatTotal(uint8_t _index) const {
 		if (_index >= STAT_COUNT) // Invalid indexes are defaulted to a stat value of one.
 			return MINIMUM_STAT_VALUE;
-		return ValueClamp((uint8_t)((statBase[_index] + statBonus[_index]) * statMultiplier[_index]), MINIMUM_STAT_VALUE, MAXIMUM_STAT_VALUE);
+
+		uint8_t _statValue = uint8_t((statBase[_index] + statBonus[_index]) * statMultiplier[_index]);
+		ValueClamp(_statValue, MINIMUM_STAT_VALUE, MAXIMUM_STAT_VALUE);
+		return _statValue;
 	}
 
 	// Returns the character's current maximum hitpoints; a combination of the base and bonus values added together which are 
 	// then multiplied by whatever the value within "maxHitpointsMultiplier". currently is. This value is then truncated into 
 	// a uint16_t before it is returned as a constant value. The default lowest value is 1 hitpoint for any character.
 	inline uint16_t GetMaxHitpointsTotal() const {
-		return ValueLowerLimit((uint16_t)((maxHitpointBase + maxHitpointBonus) * maxHitpointMultiplier), MINIMUM_HP_AND_MP);
+		uint16_t _maxHitpoints = uint16_t((maxHitpointBase + maxHitpointBonus) * maxHitpointMultiplier);
+		ValueLowerLimit(_maxHitpoints, MINIMUM_HP_AND_MP);
+		return _maxHitpoints;
 	}
 
 	// Returns the character's current maximum magicpoints; a combination of the base and bonus values added together which 
 	// are then multiplied by whatever the value within "maxMagicpointsMultiplier". currently is. This value is then truncated 
 	// into a uint16_t before it is returned as a constant value. The default lowest value is 1 magicpoint for any character.
 	inline uint16_t GetMaxMagicpointsTotal() const {
-		return ValueLowerLimit((uint16_t)((maxMagicpointBase + maxMagicpointBonus) * maxMagicpointMultiplier), MINIMUM_HP_AND_MP);
+		uint16_t _maxMagicpoints = uint16_t((maxMagicpointBase + maxMagicpointBonus) * maxMagicpointMultiplier);
+		ValueLowerLimit(_maxMagicpoints, MINIMUM_HP_AND_MP);
+		return _maxMagicpoints;
 	}
 };
 

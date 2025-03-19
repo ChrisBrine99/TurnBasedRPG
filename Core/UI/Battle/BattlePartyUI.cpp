@@ -1,9 +1,9 @@
-#include "BattlePartyInfoUI.hpp"
+#include "BattlePartyUI.hpp"
 
 #include "../../Singletons/EngineCore.hpp"
 #include "../../Utils/BattleMacros.hpp"
 
-BattlePartyInfoUI::BattlePartyInfoUI() :
+BattlePartyUI::BattlePartyUI() :
 	xPos(0),
 	yPos(0),
 	uiElements()
@@ -11,21 +11,21 @@ BattlePartyInfoUI::BattlePartyInfoUI() :
 	uiElements.reserve(BATTLE_MAX_PARTY_SIZE);
 }
 
-bool BattlePartyInfoUI::OnUserCreate() {
+bool BattlePartyUI::OnUserCreate() {
 	for (size_t i = 0ui64; i < BATTLE_MAX_PARTY_SIZE; i++)
 		uiElements.push_back(PartyMemberUI()); // Initialize all three instaces upon creation of the UI.
 	return true;
 }
 
-bool BattlePartyInfoUI::OnUserUpdate(float_t _deltaTime) {
+bool BattlePartyUI::OnUserUpdate(float_t _deltaTime) {
 	for (PartyMemberUI& _element : uiElements) {
 		if (!PMINFO_IS_OCCUPIED(_element))
 			continue; // Skip over inactive UI elements in case the active party isn't full.
 
-		_element.sUpdateTimer -= _deltaTime;
-		if (_element.sUpdateTimer > 0.0f)
+		_element.updateTimer -= _deltaTime;
+		if (_element.updateTimer > 0.0f)
 			continue;
-		_element.sUpdateTimer = GAME_UPDATE_INTERVAL;
+		_element.updateTimer = GAME_UPDATE_INTERVAL;
 
 		// Update the UI element's current values shown for the party member's current HP by having the shown value approach the target
 		// value (The combatant's true hitpoint value) at a fixed interval of about 60 updates per second.
@@ -44,7 +44,7 @@ bool BattlePartyInfoUI::OnUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-bool BattlePartyInfoUI::OnUserRender(float_t _deltaTime) {
+bool BattlePartyUI::OnUserRender(float_t _deltaTime) {
 	(void)(_deltaTime);
 
 	EngineCore* _engine = GET_SINGLETON(EngineCore);
@@ -87,12 +87,12 @@ bool BattlePartyInfoUI::OnUserRender(float_t _deltaTime) {
 	return true;
 }
 
-void BattlePartyInfoUI::ActivateElement(Combatant* _combatant, int32_t _startX, int32_t _startY) {
+void BattlePartyUI::ActivateElement(Combatant* _combatant, int32_t _startX, int32_t _startY) {
 	for (PartyMemberUI& _element : uiElements) {
 		if (PMINFO_IS_OCCUPIED(_element))
 			continue;
 
-		// Populate the UI element's data with what is found within the combatant.
+		// Populate the UI element's data with what is relevant within the combatant.
 		_element.xPos				= _startX;
 		_element.yPos				= _startY;
 		_element.sName				= _combatant->character->name;
@@ -105,7 +105,7 @@ void BattlePartyInfoUI::ActivateElement(Combatant* _combatant, int32_t _startX, 
 	}
 }
 
-void BattlePartyInfoUI::DeactivateElement(Combatant* _combatant) {
+void BattlePartyUI::DeactivateElement(Combatant* _combatant) {
 	for (PartyMemberUI& _element : uiElements) {
 		if (_element.combatant != _combatant)
 			continue;
@@ -116,7 +116,7 @@ void BattlePartyInfoUI::DeactivateElement(Combatant* _combatant) {
 	}
 }
 
-void BattlePartyInfoUI::UpdateOnScreenElements(uint32_t _numerator, uint32_t _denominator, uint32_t& _barValueWidth, std::string& _barValueString) {
+void BattlePartyUI::UpdateOnScreenElements(uint32_t _numerator, uint32_t _denominator, uint32_t& _barValueWidth, std::string& _barValueString) {
 	_barValueWidth = uint32_t(_numerator / float_t(_denominator) * float_t(PMINFO_UI_BAR_WIDTH));
 	_barValueString = std::to_string(_numerator);
 }
