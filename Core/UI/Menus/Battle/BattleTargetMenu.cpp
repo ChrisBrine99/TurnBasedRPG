@@ -1,6 +1,7 @@
 #include "BattleTargetMenu.hpp"
 
 #include "../../../Singletons/BattleManager.hpp"
+#include "../../../Singletons/MenuManager.hpp"
 #include "../../../Structs/Battle/Skill.hpp"
 #include "BattleSkillMenu.hpp"
 
@@ -26,10 +27,8 @@ void BattleTargetMenu::PrepareForActivation(uint8_t _state, BattleSkillMenu* _sk
 	Menu::PrepareForActivation(_state);
 	upperMenu = _skillMenu;
 
-	if (_skill != skillToUse) {
-		DetermineValidTargets(_skill->targeting);
-		skillToUse = _skill;
-	}
+	DetermineValidTargets(_skill->targeting);
+	skillToUse = _skill;
 }
 
 void BattleTargetMenu::PrepareForDeactivation() {
@@ -41,9 +40,8 @@ void BattleTargetMenu::PrepareForDeactivation() {
 void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 	if (_targeting == TARGET_INVALID)
 		return;
-
-	if (validTargets.size() > 0ui64)
-		validTargets.clear();
+	menuOptions.clear();
+	validTargets.clear();
 
 	BattleManager* _manager		= GET_SINGLETON(BattleManager);
 	Combatant* _curCombatant	= _manager->curCombatant;
@@ -93,8 +91,13 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 
 bool BattleTargetMenu::StateDefault(float_t _deltaTime) {
 	if (TGTMENU_CAN_ONLY_CONFIRM) {
-		if (MINPUT_IS_SELECT_PRESSED)
-			SET_NEXT_STATE(STATE_MENU_PROCESS_SELECTION);
+		if (MINPUT_IS_SELECT_PRESSED) {
+			GET_SINGLETON(MenuManager)->DeactivateAllMenus();
+
+			BattleManager* _manager = GET_SINGLETON(BattleManager);
+			std::copy(validTargets.begin(), validTargets.end(), _manager->targets.begin());
+			_manager->ExecuteSkill(skillToUse);
+		}
 		return true;
 	}
 
@@ -102,5 +105,10 @@ bool BattleTargetMenu::StateDefault(float_t _deltaTime) {
 }
 
 bool BattleTargetMenu::StateProcessSelection() {
+	GET_SINGLETON(MenuManager)->DeactivateAllMenus();
+
+	BattleManager* _manager = GET_SINGLETON(BattleManager);
+	_manager->targets.push_back(validTargets[selOption]);
+	_manager->ExecuteSkill(skillToUse);
 	return true;
 }

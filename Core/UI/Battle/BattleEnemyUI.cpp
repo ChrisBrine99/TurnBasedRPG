@@ -1,6 +1,7 @@
 #include "BattleEnemyUI.hpp"
 
 #include "../../Singletons/EngineCore.hpp"
+#include "../../Singletons/BattleManager.hpp"
 #include "../../Utils/BattleMacros.hpp"
 
 BattleEnemyUI::BattleEnemyUI() :
@@ -17,35 +18,44 @@ bool BattleEnemyUI::OnUserCreate() {
 }
 
 bool BattleEnemyUI::OnUserUpdate(float_t _deltaTime) {
-	uint16_t _trueCurHitpoints = 0ui16;
-	uint16_t _curHitpoints = 0ui16;
-
+	uint16_t _curHitpoints		= 0ui16;
+	uint16_t _trueCurHitpoints	= 0ui16;
 	for (EnemyUI& _element : uiElements) {
 		if (!ENINFO_IS_OCCUPIED(_element))
-			continue; // Skip over inactive UI elements in case of empty instances due to not enough enemies being in battle.
+			continue;
 
-		_trueCurHitpoints = _element.combatant->curHitpoints;
-		_curHitpoints = _element.curHitpoints;
+		// 
+		_curHitpoints		= _element.curHitpoints;
+		_trueCurHitpoints	= _element.combatant->curHitpoints;
+		if (_curHitpoints == _trueCurHitpoints && _element.visibilityTimer == 0.0f)
+			continue;
 
+		// 
 		_element.visibilityTimer -= _deltaTime;
-		if (_element.visibilityTimer < 0.0f && _curHitpoints == _trueCurHitpoints) {
-			_element.flags &= ~FLAG_ENINFO_VISIBLE;
+		if (_element.visibilityTimer < 0.0f) {
 			_element.visibilityTimer = 0.0f;
+
+			if (_trueCurHitpoints == 0ui16) {
+				_element.combatant = nullptr;
+				_element.flags = 0u;
+				totalActiveElements--;
+				continue;
+			}
+
+			_element.flags &= ~FLAG_ENINFO_VISIBLE;
 			continue;
 		}
 
+		// 
 		_element.updateTimer -= _deltaTime;
 		if (_element.updateTimer > 0.0f)
 			continue;
 		_element.updateTimer = GAME_UPDATE_INTERVAL;
 
-		// Update the UI element's current values shown for the party member's current HP by having the shown value approach the target
-		// value (The combatant's true hitpoint value) at a fixed interval of about 60 updates per second.
-		if (_curHitpoints != _trueCurHitpoints) {
-			ValueSetLinear(_curHitpoints, _trueCurHitpoints, 1ui16);
-			_element.hpBarWidth = uint32_t(_curHitpoints / float_t(_trueCurHitpoints) * float_t(ENINFO_HP_BAR_WIDTH));
-			_element.curHitpoints = _curHitpoints;
-		}
+		// 
+		ValueSetLinear(_curHitpoints, _trueCurHitpoints, 1ui16);
+		_element.hpBarWidth = uint32_t(_curHitpoints / float_t(_element.combatant->maxHitpoints) * float_t(ENINFO_HP_BAR_WIDTH));
+		_element.curHitpoints = _curHitpoints;
 	}
 
 	return true;
@@ -86,7 +96,7 @@ void BattleEnemyUI::ActivateElement(Combatant* _combatant) {
 		totalActiveElements++;
 
 		// Populate the UI element's data with what is relevant within the combatant.
-		_element.curHitpoints	= _combatant->maxHitpoints - 1ui16;
+		_element.curHitpoints	= 0ui16;
 		_element.combatant		= _combatant;
 		_element.flags			= FLAG_ENINFO_OCCUPIED;
 		return;

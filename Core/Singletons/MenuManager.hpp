@@ -22,6 +22,7 @@ public: // Main Engine Function Declarations
 public: // Publicly Accessible Utility Funciton Declarations
 	Menu* CreateMenu(Menu* _menu);
 	void DestroyMenu(Menu* _menu);
+	void DeactivateAllMenus();
 
 private: // Hidden Member Variable Declarations
 	std::vector<Menu*> activeMenus;

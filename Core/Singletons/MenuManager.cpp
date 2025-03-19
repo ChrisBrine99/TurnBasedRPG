@@ -71,3 +71,8 @@ void MenuManager::DestroyMenu(Menu* _menu) {
 	// Finally, remove the element formally storing the now-deleted menu from the list.
 	activeMenus.erase(_iter);
 }
+
+void MenuManager::DeactivateAllMenus() {
+	for (Menu* _menu : activeMenus)
+		_menu->PrepareForDeactivation();
+}

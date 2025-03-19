@@ -32,6 +32,7 @@ private: // State Function Declarations
 	bool StateIsPlayerOrEnemyTurn();
 	bool StatePlayerTurn();
 	bool StateEnemyTurn(float_t _deltaTime);
+	bool StateExecuteSkill();
 	bool StateIsRoundFinished();
 	bool StateBattleWin();
 	bool StateBattleLose();
@@ -40,14 +41,16 @@ private: // State Function Declarations
 	
 public: // Publicly Accessible Utility Function Declarations
 	void ExecuteSkill(Skill* _skill);
+	void UpdateHitpoints(Combatant* _combatant, uint16_t _value);
+	void UpdateMagicpoints(Combatant* _combatant, uint16_t _value);
 
 	void SetEncounterID(uint16_t _encounterID);
 	uint16_t GetCombatantSpeed(Combatant* _combatant) const;
 
-private: // Combatant Management Function Declarations
+public: // Combatant Management Function Declarations
 	void AddPlayerCombatant(size_t _partyIndex);
 	void AddEnemyCombatant(uint16_t _enemyID);
-	void RemoveCombatant(size_t _index);
+	void RemoveCombatant(Combatant* _combatant);
 
 public: // Accessible Member Variable Declarations
 	BattleMainMenu* actionMenu;
@@ -74,9 +77,11 @@ private: // Hidden Member Variable Declarations
 	uint8_t curTurn;
 	uint16_t encounterID;
 	uint8_t curRound;
-	uint8_t numCombatants;
+	uint8_t curSkillTarget;
 
 	uint32_t flags;
+
+	Skill* skillToUse;
 };
 
 #endif

@@ -20,6 +20,8 @@ BattleManager::BattleManager() :
 	curItemRewards(),
 	curMoneyReward(0ui32),
 	curExpReward(0ui32),
+	combatants(),
+	turnOrder(),
 	turnDelay(0.0f),
 	curState(STATE_INVALID),
 	nextState(STATE_INVALID),
@@ -27,10 +29,9 @@ BattleManager::BattleManager() :
 	curTurn(0ui8),
 	encounterID(ID_INVALID),
 	curRound(0ui8),
-	numCombatants(0ui8),
+	curSkillTarget(0ui8),
 	flags(0u),
-	combatants(),
-	turnOrder()
+	skillToUse(nullptr)
 {
 	combatants.fill(nullptr); // Fill all indexes with nullptr to avoid unintended behavior before the array is populated.
 	turnOrder.reserve(BATTLE_TOTAL_COMBATANTS); // Reserve the memory for the vector's maximum number of elements.
@@ -43,6 +44,9 @@ bool BattleManager::OnUserCreate() {
 }
 
 bool BattleManager::OnUserDestroy() {
+	if (partyUI) { delete partyUI, partyUI = nullptr; }
+	if (enemyUI) { delete enemyUI, enemyUI = nullptr; }
+
 	for (Combatant* _c : combatants)
 		delete _c, _c = nullptr;
 
@@ -72,6 +76,7 @@ bool BattleManager::OnUserUpdate(float_t _deltaTime) {
 	case STATE_BATTLE_CHECK_TURN_TYPE:	return StateIsPlayerOrEnemyTurn();
 	case STATE_BATTLE_PLAYER_TURN:		return StatePlayerTurn();
 	case STATE_BATTLE_ENEMY_TURN:		return StateEnemyTurn(_deltaTime);
+	case STATE_BATTLE_EXECUTE_SKILL:	return StateExecuteSkill();
 	case STATE_BATTLE_IS_ROUND_DONE:	return StateIsRoundFinished();
 	case STATE_BATTLE_WIN:				return StateBattleWin();
 	case STATE_BATTLE_LOSE:				return StateBattleLose();
@@ -188,6 +193,10 @@ bool BattleManager::StateIsPlayerOrEnemyTurn() {
 }
 
 bool BattleManager::StatePlayerTurn() {
+	if (GET_SINGLETON(EngineCore)->GetKey(olc::SPACE).bPressed) {
+		curCombatant->curHitpoints = std::rand() % curCombatant->maxHitpoints;
+		curCombatant->curMagicpoints = std::rand() % curCombatant->maxMagicpoints;
+	}
 	return true;
 }
 
@@ -198,54 +207,84 @@ bool BattleManager::StateEnemyTurn(float_t _deltaTime) {
 		_enemy->ExecuteAI(_deltaTime);
 		return true;
 	}
-	std::cout << "Non-enemy Combatant attempted to execute an enemy turn. Terminating program now..." << std::endl;
+
 	return false;
 }
 
-bool BattleManager::StateIsRoundFinished() {
-	curTurn++;
+bool BattleManager::StateExecuteSkill() {
+	if (skillToUse == nullptr || curSkillTarget >= targets.size())
+		return false;
 
-	// The current round has finished, so reset the "curTurn" value back to 0 and increment the round number to reflect
-	// that. Then, update the turn order for the next round of turns.
-	if (curTurn == numCombatants) {
-		SET_NEXT_STATE(STATE_BATTLE_SET_TURN_ORDER);
-		curTurn = 0ui8;
-		curRound++;
-		return true;
+	Combatant* _target = combatants[targets[curSkillTarget]];
+	skillToUse->ExecuteUseFunction(_target);
+	turnDelay = 0.5f;
+
+	if (!COMBATANT_IS_PLAYER(_target))
+		enemyUI->ShowElement(_target, 1.0f);
+
+	curSkillTarget++;
+	if (curSkillTarget == targets.size()) {
+		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
+		skillToUse = nullptr;
+		targets.clear();
 	}
+	return true;
+}
 
-	Combatant* _combatants = nullptr;
+void BattleManager::UpdateHitpoints(Combatant* _combatant, uint16_t _value) {
+	if (_value > _combatant->curHitpoints) { 
+		_combatant->curHitpoints = 0ui16;
+		RemoveCombatant(_combatant);
+		return;
+	}
+	_combatant->curHitpoints -= _value;
+}
+
+void BattleManager::UpdateMagicpoints(Combatant* _combatant, uint16_t _value) {
+	if (_value > _combatant->curMagicpoints) {
+		_combatant->curMagicpoints = 0ui16;
+		return;
+	}
+	_combatant->curMagicpoints -= _value;
+}
+
+bool BattleManager::StateIsRoundFinished() {
+	// Perform a check to see how many party members and enemies are left in the battle.
 	size_t _playersRemaining = 0ui64;
 	size_t _enemiesRemaining = 0ui64;
 	for (size_t i = 0ui64; i < turnOrder.size(); i++) {
-		_combatants = combatants[turnOrder[i]];
-		if (_combatants->curHitpoints == 0ui16) {
-			RemoveCombatant(turnOrder[i]);
-			i--; // Decrement by 1 to account for the current index being deleted.
-			continue;
-		}
-
-		if (COMBATANT_IS_PLAYER(_combatants)) {
+		if (COMBATANT_IS_PLAYER(combatants[turnOrder[i]])) {
 			_playersRemaining++;
 			continue;
 		}
 		_enemiesRemaining++;
 	}
 
-	// Get the total number of player party members still in the battle. If the value is 0, the player has lost the battle.
-	std::cout << "Allies Remaining: " << _playersRemaining << std::endl;
+	// If the number of player party members remaining in the battle is zero the battle has been lost, and the battle 
+	// will switch to its loss state to reflect that.
 	if (_playersRemaining == 0ui64) {
 		SET_NEXT_STATE(STATE_BATTLE_LOSE);
 		return true;
 	}
 
-	// If there are still party members, count the total number of remaining enemies. If that value is 0, the battle is won.
-	std::cout << "Enemies Remaining: " << _enemiesRemaining << std::endl;
+	// If the number of enemies remaining in the battle is zero the battle has been lost, and the battle  will switch 
+	// to its win state to reflect that.
 	if (_enemiesRemaining == 0ui64) {
 		SET_NEXT_STATE(STATE_BATTLE_WIN);
 		return true;
 	}
 
+	// If the battle should continue, increment the turn counter and then check if the value exceeds the current number 
+	// of active combatants. If so, the round counter will increment and start the turn loop once again.
+	curTurn++;
+	if (curTurn >= turnOrder.size()) {
+		SET_NEXT_STATE(STATE_BATTLE_SET_TURN_ORDER);
+		curTurn = 0ui8;
+		curRound++;
+		return true;
+	}
+
+	// The battle hasn't finished in a win, loss, or escape, and the round hasn't finished; conitnue onto the next turn.
 	SET_NEXT_STATE(STATE_BATTLE_CHECK_TURN_TYPE);
 	return true;
 }
@@ -264,6 +303,8 @@ bool BattleManager::StateBattleEscape() {
 
 bool BattleManager::StatePostBattle() {
 	GET_SINGLETON(MenuManager)->DestroyMenu(actionMenu);
+	delete partyUI, partyUI = nullptr;
+	delete enemyUI, enemyUI = nullptr;
 
 	curRound = 0ui8;
 	curTurn = 0ui8;
@@ -272,7 +313,6 @@ bool BattleManager::StatePostBattle() {
 		_c->flags = 0u;
 	turnOrder.clear();
 	curCombatant = nullptr;
-	numCombatants = 0ui8;
 
 	curItemRewards.clear();
 	curMoneyReward = 0ui32;
@@ -283,7 +323,15 @@ bool BattleManager::StatePostBattle() {
 }
 
 void BattleManager::ExecuteSkill(Skill* _skill) {
+	if (skillToUse)
+		return;
 
+	if (_skill->hpCost > 0ui16) { UpdateHitpoints(curCombatant,   _skill->hpCost); }
+	if (_skill->mpCost > 0ui16) { UpdateMagicpoints(curCombatant, _skill->mpCost); }
+
+	skillToUse = _skill;
+	curSkillTarget = 0ui8;
+	SET_NEXT_STATE(STATE_BATTLE_EXECUTE_SKILL);
 }
 
 void BattleManager::SetEncounterID(uint16_t _encounterID) {
@@ -317,7 +365,6 @@ void BattleManager::AddPlayerCombatant(size_t _partyIndex) {
 		combatants[i]->ActivateCombatant(_player, FLAG_COMBATANT_PLAYER);
 		partyUI->ActivateElement(combatants[i], 320, 180 + int32_t(i * 15));
 		turnOrder.push_back(i);
-		numCombatants++;
 		return;
 	}
 }
@@ -336,20 +383,18 @@ void BattleManager::AddEnemyCombatant(uint16_t _enemyID) {
 		combatants[i]->ActivateCombatant(_enemy, 0u);
 		enemyUI->ActivateElement(combatants[i]);
 		turnOrder.push_back(i);
-		numCombatants++;
 		return;
 	}
 }
 
-void BattleManager::RemoveCombatant(size_t _index) {
-	combatants[_index]->flags = 0u; // Reset all flags
-
-	for (size_t j = 0ui64; j < turnOrder.size(); j++){
-		if (turnOrder[j] != _index)
+void BattleManager::RemoveCombatant(Combatant* _combatant) {
+	for (size_t i = 0ui64; i < turnOrder.size(); i++){
+		if (combatants[turnOrder[i]] != _combatant)
 			continue;
 
-		turnOrder.erase(turnOrder.begin() + j);
-		numCombatants--;
+		turnOrder.erase(turnOrder.begin() + i);
+		_combatant->flags = 0u;
+		i--; // Offset to compensate for the removed value.
 		return;
 	}
 }

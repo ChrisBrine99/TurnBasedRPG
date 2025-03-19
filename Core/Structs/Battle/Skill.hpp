@@ -69,9 +69,9 @@ private: // Skill Utility Function Declarations (Defined within Skill.cpp)
 	bool AccuracyCheck(Combatant* _caster, Combatant* _target) const;
 	void AdditionalEffectCheck(Combatant* _target);
 
-	float_t PhysicalDamageCalculation(Combatant* _caster, Combatant* _target);
-	float_t MagicDamageCalculation(Combatant* _caster, Combatant* _target);
-	float_t VoidDamageCalculation(Combatant* _caster, Combatant* _target);
+	uint16_t PhysicalDamageCalculation(Combatant* _caster, Combatant* _target);
+	uint16_t MagicDamageCalculation(Combatant* _caster, Combatant* _target);
+	uint16_t VoidDamageCalculation(Combatant* _caster, Combatant* _target);
 
 	// Returns either a value calculated through using the buff formula (The value passed in as the argument was above 0) or 
 	// the debuff formula (The value passed in was below 0).
@@ -79,6 +79,11 @@ private: // Skill Utility Function Declarations (Defined within Skill.cpp)
 		if (_buffValue > 0ui8)		{ return (4.0f + float_t(_buffValue)) / 4.0f; }
 		else if (_buffValue < 0ui8)	{ return (4.0f / 4.0f - float_t(_buffValue)); }
 		return 1.0f; // No multiplicative adjustment is required; return a floating point one.
+	}
+
+	// Returns a value that is between an arbitrary range that defaults to 95% ro 105% of the input value.
+	inline float_t DamageRandomize(float_t _damage, float_t _high = 1.05f, float_t _low = 0.95f) {
+		return _damage * (_low + float_t(std::rand()) / float_t(RAND_MAX / (_high - _low)));
 	}
 };
 

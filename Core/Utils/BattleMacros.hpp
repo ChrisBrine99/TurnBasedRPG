@@ -14,16 +14,17 @@
 //	Makes sense of the numbers that represent the BattleManager's various states.													//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define STATE_BATTLE_INITIALIZE			0ui8
-#define STATE_BATTLE_SET_TURN_ORDER		1ui8
-#define STATE_BATTLE_CHECK_TURN_TYPE	2ui8
-#define STATE_BATTLE_PLAYER_TURN		3ui8
-#define STATE_BATTLE_ENEMY_TURN			4ui8
-#define STATE_BATTLE_IS_ROUND_DONE		5ui8
-#define STATE_BATTLE_WIN				6ui8
-#define STATE_BATTLE_LOSE				7ui8
-#define STATE_BATTLE_ESCAPE				8ui8
-#define STATE_BATTLE_POST				9ui8
+#define STATE_BATTLE_INITIALIZE			0x00ui8
+#define STATE_BATTLE_SET_TURN_ORDER		0x01ui8
+#define STATE_BATTLE_CHECK_TURN_TYPE	0x02ui8
+#define STATE_BATTLE_PLAYER_TURN		0x03ui8
+#define STATE_BATTLE_ENEMY_TURN			0x04ui8
+#define STATE_BATTLE_EXECUTE_SKILL		0x05ui8
+#define STATE_BATTLE_IS_ROUND_DONE		0x10ui8
+#define STATE_BATTLE_WIN				0x11ui8
+#define STATE_BATTLE_LOSE				0x12ui8
+#define STATE_BATTLE_ESCAPE				0x13ui8
+#define STATE_BATTLE_POST				0x14ui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the bits that can be used within the battle manager's "flags" variable to enable or disable certain			//
