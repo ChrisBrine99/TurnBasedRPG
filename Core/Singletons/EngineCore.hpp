@@ -6,29 +6,16 @@
 
 class EngineCoreExt;
 class EngineCore : public olc::PixelGameEngine {
-	// Singleton Initialization/Constructor Declaration
+	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
 	INIT_SINGLETON_HPP(EngineCore)
-	EngineCore();
 public: // Main Engine Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
 	bool OnUserUpdate(float_t _deltaTime) override;
-	bool OnUserRender(float_t _deltaTime);
+	bool OnUserRender(float_t _deltaTime) override;
 
 private: // Hidden Member Variable Declarations
-	EngineCoreExt* engineExt;
-};
-
-class EngineCoreExt : public olc::PGEX {
-public: // Constructor and Destructor Declaration
-	EngineCoreExt(bool _hook) : PGEX(_hook) {}
-	~EngineCoreExt() {};
-
-public: // Overridden Function Declarations
-	void OnBeforeUserCreate() override;
-	void OnAfterUserCreate() override;
-	bool OnBeforeUserUpdate(float_t& _elapsedTime) override;
-	void OnAfterUserUpdate(float_t _elapsedTime) override;
+	const EngineCoreExt* engineExt;
 };
 
 #endif

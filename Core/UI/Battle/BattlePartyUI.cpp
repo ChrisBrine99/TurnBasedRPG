@@ -9,6 +9,7 @@ BattlePartyUI::BattlePartyUI() :
 	uiElements()
 { // Reserve enough memory to contain three elements since that is the max number of party members that can participate in a battle at once.
 	uiElements.reserve(BATTLE_MAX_PARTY_SIZE);
+	OnUserCreate();
 }
 
 bool BattlePartyUI::OnUserCreate() {

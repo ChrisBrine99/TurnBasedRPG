@@ -7,9 +7,8 @@
 #include <unordered_map>
 
 class PartyManager {
-	// Singleton Initialization/Constructor Declaration
+	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
 	INIT_SINGLETON_HPP(PartyManager)
-	PartyManager();
 public: // Main Engine Function Declarations
 	bool OnUserDestroy();
 

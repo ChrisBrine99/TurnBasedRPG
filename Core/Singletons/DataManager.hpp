@@ -15,9 +15,8 @@ struct EnemyCharacter;
 struct Skill;
 
 class DataManager {
-	// Singleton Initialization/Constructor Declaration
+	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
 	INIT_SINGLETON_HPP(DataManager)
-	DataManager();
 public: // Main Engine Function Declarations
 	bool OnUserCreate();
 	bool OnUserDestroy();
@@ -36,7 +35,7 @@ private: // Hidden Utility Function Declarations
 	template<class T>
 	inline void RemoveDataFromStorage(std::unordered_map<uint16_t, T>& _storage);
 
-public: // Getters and Setters for data held by this singleton
+public: // Getter Function Declarations
 	inline BaseCharacter* GetCharacter(uint16_t _id) const {
 		if (characters.find(_id) == characters.end())
 			return nullptr;
@@ -49,7 +48,7 @@ public: // Getters and Setters for data held by this singleton
 		return skills.at(_id);
 	}
 
-	inline json& GetEncounterData(uint16_t _id) {
+	inline json& GetEncounter(uint16_t _id) {
 		return encounterData[std::to_string(_id)];
 	}
 private: // Hidden Member Variable Declarations

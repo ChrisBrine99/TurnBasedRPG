@@ -9,51 +9,70 @@ MenuManager::MenuManager() :
 	activeMenus.reserve(5ui64);
 }
 
-void MenuManager::OnUserDestroy() {
+bool MenuManager::OnUserDestroy() {
 	for (Menu* _menu : activeMenus) {
 		_menu->OnUserDestroy();
 		delete _menu, _menu = nullptr;
 	}
 	activeMenus.clear();
 	activeMenus.shrink_to_fit();
+	return true;
 }
 
-void MenuManager::OnUserUpdate(float_t _deltaTime) {
+bool MenuManager::OnUserUpdate(float_t _deltaTime) {
 	for (Menu* _menu : activeMenus) {
 		if (!(_menu->GetFlags() & FLAG_MENU_ACTIVE_STATE))
 			continue;
-		_menu->OnUserUpdate(_deltaTime);
+
+		if (!_menu->OnUserUpdate(_deltaTime))
+			return false;
 	}
+	return true;
 }
 
-void MenuManager::OnUserRender(float_t _deltaTime) {
+bool MenuManager::OnUserRender(float_t _deltaTime) {
 	for (Menu* _menu : activeMenus) {
 		if (!(_menu->GetFlags() & FLAG_MENU_VISIBLE))
 			continue;
-		_menu->OnUserRender(_deltaTime);
+
+		if (!_menu->OnUserRender(_deltaTime))
+			return false;
 	}
+	return true;
 }
 
-void MenuManager::OnBeforeUserUpdate(float_t _deltaTime) {
+bool MenuManager::OnBeforeUserUpdate(float_t _deltaTime) {
 	for (Menu* _menu : activeMenus) {
 		if (!(_menu->GetFlags() & FLAG_MENU_ACTIVE_STATE))
 			continue;
-		_menu->OnBeforeUserUpdate(_deltaTime);
+
+		if (!_menu->OnBeforeUserUpdate(_deltaTime))
+			return false;
 	}
+	return true;
 }
 
-void MenuManager::OnAfterUserUpdate(float_t _deltaTime) {
+bool MenuManager::OnAfterUserUpdate(float_t _deltaTime) {
 	for (Menu* _menu : activeMenus) {
 		if (!(_menu->GetFlags() & FLAG_MENU_ACTIVE_STATE))
 			continue;
-		_menu->OnAfterUserUpdate(_deltaTime);
+		
+		if (!_menu->OnAfterUserUpdate(_deltaTime))
+			return false;
 	}
+	return true;
 }
 
 Menu* MenuManager::CreateMenu(Menu* _menu) {
 	// Make sure the same menu instance isn't already a part of the vector of instances.
 	if (std::find(activeMenus.begin(), activeMenus.end(), _menu) != activeMenus.end())
 		return nullptr;
+
+	if (!_menu->OnUserCreate()) {
+		_menu->OnUserDestroy();
+		delete _menu, _menu = nullptr;
+		return nullptr;
+	}
 
 	activeMenus.push_back(_menu);
 	return _menu; // Returned itself; the menu was successfully added to the manager.

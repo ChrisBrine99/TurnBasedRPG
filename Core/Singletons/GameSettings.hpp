@@ -1,12 +1,19 @@
 #ifndef GAME_SETTINGS_HPP
 #define GAME_SETTINGS_HPP
 
-#include "EngineCore.hpp"
+#include "../Utils/GeneralMacros.hpp"
+
+#include <string>
+#include <unordered_map>
+
+namespace olc {
+	struct HWButton;
+	enum Key;
+}
 
 class GameSettings {
-	// Singleton Initialization/Constructor Declaration
+	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
 	INIT_SINGLETON_HPP(GameSettings)
-	GameSettings();
 public: // Main Engine Function Declarations
 	bool OnBeforeUserCreate();
 	bool OnUserDestroy();

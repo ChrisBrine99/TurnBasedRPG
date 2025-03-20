@@ -1,6 +1,8 @@
 #include "GameSettings.hpp"
 INIT_SINGLETON_CPP(GameSettings)
 
+#include "../Singletons/EngineCore.hpp"
+
 #include <fstream>
 
 GameSettings::GameSettings() :

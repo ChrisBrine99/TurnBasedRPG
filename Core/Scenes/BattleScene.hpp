@@ -15,7 +15,7 @@ public: // Main Engine/Engine Extension Function Declarations
 	bool OnUserRender(float_t _deltaTime) override;
 
 	bool OnBeforeUserUpdate(float_t _deltaTime) override;
-	void OnAfterUserUpdate(float_t _deltaTime) override;
+	bool OnAfterUserUpdate(float_t _deltaTime) override;
 };
 
 #endif

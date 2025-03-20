@@ -972,6 +972,8 @@ namespace olc
 		virtual bool OnUserCreate();
 		// Called every frame, and provides you with a time per frame value
 		virtual bool OnUserUpdate(float fElapsedTime);
+		// Called every frame after all pre-, standard, and post- updates have been called
+		virtual bool OnUserRender(float fElapsedTime);
 		// Called once on application termination, so you can be one clean coder
 		virtual bool OnUserDestroy();
 
@@ -1330,10 +1332,10 @@ namespace olc
 		PGEX(bool bHook = false);
 
 	protected:
-		virtual void OnBeforeUserCreate();
-		virtual void OnAfterUserCreate();
-		virtual bool OnBeforeUserUpdate(float &fElapsedTime);
-		virtual void OnAfterUserUpdate(float fElapsedTime);
+		virtual bool OnBeforeUserCreate();
+		virtual bool OnAfterUserCreate();
+		virtual bool OnBeforeUserUpdate(float fElapsedTime);
+		virtual bool OnAfterUserUpdate(float fElapsedTime);
 
 	protected:
 		static PixelGameEngine* pge;
@@ -3675,6 +3677,9 @@ namespace olc
 	bool PixelGameEngine::OnUserUpdate(float fElapsedTime)
 	{ UNUSED(fElapsedTime);  return false; }
 
+	bool PixelGameEngine::OnUserRender(float fElapsedTime)
+	{ UNUSED(fElapsedTime); return false; }
+
 	bool PixelGameEngine::OnUserDestroy()
 	{ return true; }
 
@@ -3778,9 +3783,22 @@ namespace olc
 		olc_PrepareEngine();
 
 		// Create user resources as part of this thread
-		for (auto& ext : vExtensions) ext->OnBeforeUserCreate();
-		if (!OnUserCreate()) bAtomActive = false;
-		for (auto& ext : vExtensions) ext->OnAfterUserCreate();
+		for (auto& ext : vExtensions) {
+			if (!ext->OnBeforeUserCreate()) {
+				bAtomActive = false;
+				break;
+			}
+		}
+
+		if (bAtomActive && !OnUserCreate())
+			bAtomActive = false;
+
+		for (auto& ext : vExtensions) {
+			if (!ext->OnAfterUserCreate()) {
+				bAtomActive = false;
+				break;
+			}
+		}
 
 		while (bAtomActive)
 		{
@@ -3876,14 +3894,25 @@ namespace olc
 		}
 
 		// Handle Frame Update
-		bool bExtensionBlockFrame = false;		
-		for (auto& ext : vExtensions) bExtensionBlockFrame |= ext->OnBeforeUserUpdate(fElapsedTime);
-		if (!bExtensionBlockFrame)
-		{
-			if (!OnUserUpdate(fElapsedTime)) bAtomActive = false;
-			
+		for (auto& ext : vExtensions) {
+			if (!ext->OnBeforeUserUpdate(fElapsedTime)) {
+				bAtomActive = false;
+				break;
+			}
 		}
-		for (auto& ext : vExtensions) ext->OnAfterUserUpdate(fElapsedTime);
+
+		if (!OnUserUpdate(fElapsedTime))
+			bAtomActive = false;
+
+		for (auto& ext : vExtensions) {
+			if (!ext->OnAfterUserUpdate(fElapsedTime)) {
+				bAtomActive = false;
+				break;
+			}
+		}
+
+		if (!OnUserRender(fElapsedTime))
+			bAtomActive = false;
 
 		if (bConsoleShow)
 		{
@@ -4036,10 +4065,10 @@ namespace olc
 
 
 	PGEX::PGEX(bool bHook) { if(bHook) pge->pgex_Register(this); }
-	void PGEX::OnBeforeUserCreate() {}
-	void PGEX::OnAfterUserCreate()	{}
-	bool PGEX::OnBeforeUserUpdate(float& fElapsedTime) { return false; }
-	void PGEX::OnAfterUserUpdate(float fElapsedTime) {}
+	bool PGEX::OnBeforeUserCreate() { return false; }
+	bool PGEX::OnAfterUserCreate() { return false; }
+	bool PGEX::OnBeforeUserUpdate(float fElapsedTime) { return false; }
+	bool PGEX::OnAfterUserUpdate(float fElapsedTime) { return false; }
 
 	// Need a couple of statics as these are singleton instances
 	// read from multiple locations

@@ -3,6 +3,13 @@
 
 #include "../../Singletons/EngineCore.hpp"
 #include "../../Utils/MenuMacros.hpp"
+#include "../../Utils/GeneralMacros.hpp"
+#include "../../Utils/UtilityFunctions.hpp"
+
+#include <math.h>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 struct MenuOption;
 
@@ -18,7 +25,7 @@ public: // Main Engine Function Declarations
 	virtual bool OnUserRender(float_t _deltaTime);
 
 	bool OnBeforeUserUpdate(float_t _deltaTime);
-	void OnAfterUserUpdate(float_t _deltaTime);
+	bool OnAfterUserUpdate(float_t _deltaTime);
 
 public: // Publicly Accessible Utility Function Declarations
 	void AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description = "", uint8_t _alpha = 0xFFui8,
@@ -136,23 +143,10 @@ struct MenuTitle {
 struct MenuOption {
 	int32_t		xPos;
 	int32_t		yPos;
-
 	std::string	text;
 	std::string	description;
-
 	uint32_t	flags;
 	uint8_t		alpha;
-
-	// Renders the menu to the screen at the relevant coordinates. The engine pointer is required to avoid having to use 
-	// GET_SINGLETON for each individual menu option that is visible. That value is cached before the rendering loop and
-	// simply passed along to each option during its rendering.
-	inline void DrawSelf(EngineCore* _engine, int32_t _x, int32_t _y, olc::Pixel _color = olc::WHITE, uint8_t _alpha = 0xFFui8) const {
-		if (_alpha == 0ui8 || alpha == 0ui8)
-			return;
-
-		_color.a = uint16_t(_alpha + alpha) / 2ui8;
-		_engine->DrawString(_x + xPos, _y + yPos, text, _color);
-	}
 };
 
 #endif

@@ -11,6 +11,7 @@ INIT_SINGLETON_CPP(BattleManager)
 #include "../UI/Menus/Battle/BattleMainMenu.hpp"
 #include "../UI/Battle/BattlePartyUI.hpp"
 #include "../UI/Battle/BattleEnemyUI.hpp"
+#include "../Utils/UtilityFunctions.hpp"
 
 BattleManager::BattleManager() :
 	actionMenu(nullptr),
@@ -98,9 +99,10 @@ bool BattleManager::OnBeforeUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-void BattleManager::OnAfterUserUpdate(float_t _deltaTime) {
+bool BattleManager::OnAfterUserUpdate(float_t _deltaTime) {
 	(void)(_deltaTime);
 	UPDATE_STATE(nextState);
+	return true;
 }
 
 bool BattleManager::StateInitializeBattle() {
@@ -108,18 +110,13 @@ bool BattleManager::StateInitializeBattle() {
 		return true; // Prevents a battle from being initialized when one is already active.
 	flags |= FLAG_BATTLE_ACTIVE;
 
-	actionMenu = new BattleMainMenu();
-	actionMenu->OnUserCreate();
-
+	actionMenu = CREATE_NEW_MENU(BattleMainMenu)
 	partyUI = new BattlePartyUI();
-	partyUI->OnUserCreate();
-
 	enemyUI = new BattleEnemyUI();
-	enemyUI->OnUserCreate();
 
 	// Attempt to fetch the relevant encounter data from within the data that was loaded on startup. The attempt to initialize
 	// the battle will fail if the data returned is null.
-	json& _encounterData = GET_SINGLETON(DataManager)->GetEncounterData(encounterID);
+	json& _encounterData = GET_SINGLETON(DataManager)->GetEncounter(encounterID);
 	if (_encounterData.is_null())
 		return false;
 

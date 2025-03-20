@@ -9,6 +9,7 @@ BattleEnemyUI::BattleEnemyUI() :
 	totalActiveElements(0u)
 { // Reserve enough memory to contain eight elements since that is the max number of enemies that can participate in a battle at once.
 	uiElements.reserve(BATTLE_MAX_ENEMY_SIZE);
+	OnUserCreate();
 }
 
 bool BattleEnemyUI::OnUserCreate() {

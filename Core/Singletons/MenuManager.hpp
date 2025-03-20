@@ -9,15 +9,15 @@
 class Menu;
 
 class MenuManager {
+	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
 	INIT_SINGLETON_HPP(MenuManager)
-	MenuManager();
 public: // Main Engine Function Declarations
-	void OnUserDestroy();
-	void OnUserUpdate(float_t _deltaTime);
-	void OnUserRender(float_t _deltaTime);
+	bool OnUserDestroy();
+	bool OnUserUpdate(float_t _deltaTime);
+	bool OnUserRender(float_t _deltaTime);
 	
-	void OnBeforeUserUpdate(float_t _deltaTime);
-	void OnAfterUserUpdate(float_t _deltaTime);
+	bool OnBeforeUserUpdate(float_t _deltaTime);
+	bool OnAfterUserUpdate(float_t _deltaTime);
 
 public: // Publicly Accessible Utility Funciton Declarations
 	Menu* CreateMenu(Menu* _menu);

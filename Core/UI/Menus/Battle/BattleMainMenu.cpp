@@ -1,6 +1,7 @@
 #include "BattleMainMenu.hpp"
 
 #include "../../../Structs/Battle/Combatant.hpp"
+#include "../../../Singletons/MenuManager.hpp"
 #include "../General/ConfirmWindow.hpp"
 #include "BattleSkillMenu.hpp"
 
@@ -21,8 +22,7 @@ bool BattleMainMenu::OnUserCreate() {
 	AddOption(0, 0, "Switch",	"Switch the current party member out for another within the party roster.");
 	AddOption(0, 0, "Escape",	"Attempt to run away from the current battle.");
 
-	skillMenu = new BattleSkillMenu();
-	skillMenu->OnUserCreate();
+	skillMenu = CREATE_NEW_MENU(BattleSkillMenu)
 
 	return true;
 }

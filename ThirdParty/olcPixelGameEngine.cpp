@@ -1,7 +1,4 @@
 #define OLC_PGE_APPLICATION
-#include "olcPixelGameEngine.hpp"
-
-#include "../Core/Utils/GeneralMacros.hpp"
 #include "../Core/Singletons/EngineCore.hpp"
 
 #include <ctime>

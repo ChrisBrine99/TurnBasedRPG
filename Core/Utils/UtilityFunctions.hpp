@@ -7,6 +7,8 @@
 inline void SetNextState(uint8_t _state, uint8_t& _nextState) {
 	_nextState = _state;
 }
+// Create a define that will allow this function to be called without having to place "lastState" into the parameter.
+#define SET_NEXT_STATE(_state)			SetNextState(_state, nextState)
 
 // Takes in the value for the new state to swap over to, as well as references to the location of the class's current
 // state and last state variables so the data held within said variables can be altered through this generic function.
@@ -17,6 +19,8 @@ inline void UpdateCurrentState(uint8_t _state, uint8_t& _curState, uint8_t& _las
 	_lastState = _curState;
 	_curState = _state;
 }
+// Create a define that will allow this function to be called without having to place "curState" and "lastState" into the parameters.
+#define UPDATE_STATE(_state)			UpdateCurrentState(_state, curState, lastState)
 
 // A simple function that will ensure a value will not be allowed to go below the supplied limit. If it does, the value in
 // question will be replaced by the limit. Otherwise, the funtion does nothing to the value.

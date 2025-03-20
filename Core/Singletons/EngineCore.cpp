@@ -1,6 +1,7 @@
 #include "EngineCore.hpp"
 INIT_SINGLETON_CPP(EngineCore)
 
+#include "../Extensions/EngineCoreExt.hpp"
 #include "BattleManager.hpp"
 #include "DataManager.hpp"
 #include "GameSettings.hpp"
@@ -8,74 +9,39 @@ INIT_SINGLETON_CPP(EngineCore)
 #include "SceneManager.hpp"
 #include "MenuManager.hpp"
 
-EngineCore::EngineCore() {
-	sAppName = "TurnBasedRPG";
-	engineExt = new EngineCoreExt(true);
+EngineCore::EngineCore() :
+	engineExt(new EngineCoreExt(true))
+{ // Sets the name for the application.
+	sAppName = "Turn Based RPG";
 }
 
 bool EngineCore::OnUserCreate() {
-	if (!GET_SINGLETON(DataManager)->OnUserCreate())
-		return false;
-
-	return GET_SINGLETON(SceneManager)->OnUserCreate();
+	CALL_SINGLETON_CREATE(DataManager,	OnUserCreate)
+	CALL_SINGLETON_CREATE(SceneManager, OnUserCreate)
+	return true;
 }
 
 bool EngineCore::OnUserDestroy() {
 	delete engineExt, engineExt = nullptr;
 
-	GET_SINGLETON(BattleManager)->OnUserDestroy();
-	GET_SINGLETON(DataManager)->OnUserDestroy();
-	GET_SINGLETON(GameSettings)->OnUserDestroy();
-	GET_SINGLETON(MenuManager)->OnUserDestroy();
-	GET_SINGLETON(PartyManager)->OnUserDestroy();
-	GET_SINGLETON(SceneManager)->OnUserDestroy();
-
+	CALL_SINGLETON_DESTROY(BattleManager)
+	CALL_SINGLETON_DESTROY(DataManager)
+	CALL_SINGLETON_DESTROY(GameSettings)
+	CALL_SINGLETON_DESTROY(MenuManager)
+	CALL_SINGLETON_DESTROY(PartyManager)
+	CALL_SINGLETON_DESTROY(SceneManager)
 	return true;
 }
 
 bool EngineCore::OnUserUpdate(float_t _deltaTime) {
-	if (!GET_SINGLETON(SceneManager)->OnUserUpdate(_deltaTime))
-		return false;
-
-	GET_SINGLETON(MenuManager)->OnUserUpdate(_deltaTime);
-	return OnUserRender(_deltaTime);
+	CALL_SINGLETON_UPDATE(SceneManager, OnUserUpdate)
+	CALL_SINGLETON_UPDATE(MenuManager, OnUserUpdate)
+	return true;
 }
 
 bool EngineCore::OnUserRender(float_t _deltaTime) {
 	Clear(olc::BLACK);
-	if (GET_SINGLETON(SceneManager)->OnUserRender(_deltaTime)) {
-		GET_SINGLETON(MenuManager)->OnUserRender(_deltaTime);
-		return true;
-	}
-	return false;
-}
-
-void EngineCoreExt::OnBeforeUserCreate() {
-	if (!GET_SINGLETON(DataManager)->OnBeforeUserCreate()) {
-		pge->olc_Terminate();
-		return;
-	}
-	GET_SINGLETON(GameSettings)->OnBeforeUserCreate();
-}
-
-void EngineCoreExt::OnAfterUserCreate() {
-	// Unused currently, but required.
-}
-
-bool EngineCoreExt::OnBeforeUserUpdate(float_t& _deltaTime) {
-	if (GET_SINGLETON(SceneManager)->OnBeforeUserUpdate(_deltaTime)) {
-		GET_SINGLETON(MenuManager)->OnBeforeUserUpdate(_deltaTime);
-		return false;
-	}
-
-	pge->olc_Terminate();
+	CALL_SINGLETON_RENDER(SceneManager)
+	CALL_SINGLETON_RENDER(MenuManager)
 	return true;
-}
-
-void EngineCoreExt::OnAfterUserUpdate(float_t _deltaTime) {
-	if (!GET_SINGLETON(SceneManager)->OnAfterUserUpdate(_deltaTime)) {
-		pge->olc_Terminate();
-		return;
-	}
-	GET_SINGLETON(MenuManager)->OnAfterUserUpdate(_deltaTime);
 }

@@ -7,9 +7,8 @@
 #include <unordered_map>
 
 class SceneManager {
-	// Singleton Initialization/Constructor Declaration
+	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
 	INIT_SINGLETON_HPP(SceneManager)
-	SceneManager();
 public: // Main Engine/Engine Extension Function Declarations
 	bool OnUserCreate();
 	bool OnUserDestroy();

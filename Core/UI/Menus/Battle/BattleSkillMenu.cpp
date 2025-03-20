@@ -1,6 +1,7 @@
 #include "BattleSkillMenu.hpp"
 
 #include "../../../Singletons/DataManager.hpp"
+#include "../../../Singletons/MenuManager.hpp"
 #include "../../../Structs/Battle/Skill.hpp"
 #include "BattleMainMenu.hpp"
 #include "BattleTargetMenu.hpp"
@@ -19,8 +20,7 @@ bool BattleSkillMenu::OnUserCreate() {
 	InitializeParams(STATE_INVALID, 1ui8, 8ui8, 1ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
 	InitializeOptionParams(80, 200, 0, 10);
 
-	subMenu = new BattleTargetMenu();
-	subMenu->OnUserCreate();
+	subMenu = CREATE_NEW_MENU(BattleTargetMenu)
 	
 	return true;
 }

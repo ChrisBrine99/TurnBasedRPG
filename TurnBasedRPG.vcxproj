@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Extensions\EngineCoreExt.cpp" />
     <ClCompile Include="Core\UI\Battle\BattleEnemyUI.cpp" />
     <ClCompile Include="Core\UI\Menus\Battle\BattleTargetMenu.cpp" />
     <ClCompile Include="Core\UI\Menus\Battle\BattleSkillMenu.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="Core\Singletons\ObjectManager.cpp" />
     <ClCompile Include="Core\Objects\Object.cpp" />
     <ClCompile Include="ThirdParty\olcPixelGameEngine.cpp" />
+    <ClInclude Include="Core\Extensions\EngineCoreExt.hpp" />
     <ClInclude Include="Core\UI\Battle\BattleEnemyUI.hpp" />
     <ClInclude Include="Core\UI\Menus\Battle\BattleTargetMenu.hpp" />
     <ClInclude Include="Core\UI\Menus\Battle\BattleSkillMenu.hpp" />

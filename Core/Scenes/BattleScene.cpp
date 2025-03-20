@@ -3,20 +3,20 @@
 #include "../Singletons/BattleManager.hpp"
 #include "../Singletons/PartyManager.hpp"
 
-#include "../Singletons/EngineCore.hpp"
-
 BattleScene::BattleScene(uint32_t _index) :
 	Scene(_index)
 {}
 
 bool BattleScene::OnUserCreate() {
+	CALL_SINGLETON_CREATE(BattleManager, OnUserCreate)
+
 	GET_SINGLETON(PartyManager)->AddPartyMember(ID_TEST_PLAYER);
 	GET_SINGLETON(PartyManager)->AddToPartyRoster(ID_TEST_PLAYER);
 	GET_SINGLETON(PartyManager)->AddToActiveRoster(0ui64, 0ui64);
 
 	GET_SINGLETON(BattleManager)->SetEncounterID(0ui16);
 
-	return GET_SINGLETON(BattleManager)->OnUserCreate();
+	return true;
 }
 
 bool BattleScene::OnUserDestroy() {
@@ -24,17 +24,21 @@ bool BattleScene::OnUserDestroy() {
 }
 
 bool BattleScene::OnUserUpdate(float_t _deltaTime) {
-	return GET_SINGLETON(BattleManager)->OnUserUpdate(_deltaTime);
+	CALL_SINGLETON_UPDATE(BattleManager, OnUserUpdate)
+	return true;
 }
 
 bool BattleScene::OnUserRender(float_t _deltaTime) {
-	return GET_SINGLETON(BattleManager)->OnUserRender(_deltaTime);
+	CALL_SINGLETON_RENDER(BattleManager)
+	return true;
 }
 
 bool BattleScene::OnBeforeUserUpdate(float_t _deltaTime) {
-	return GET_SINGLETON(BattleManager)->OnBeforeUserUpdate(_deltaTime);
+	CALL_SINGLETON_UPDATE(BattleManager, OnBeforeUserUpdate)
+	return true;
 }
 
-void BattleScene::OnAfterUserUpdate(float_t _deltaTime) {
-	GET_SINGLETON(BattleManager)->OnAfterUserUpdate(_deltaTime);
+bool BattleScene::OnAfterUserUpdate(float_t _deltaTime) {
+	CALL_SINGLETON_UPDATE(BattleManager, OnAfterUserUpdate)
+	return true;
 }

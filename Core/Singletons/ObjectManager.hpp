@@ -10,10 +10,8 @@
 class Object;
 
 class ObjectManager {
-	// Singleton Initialization/Constructor Declaration
+	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
 	INIT_SINGLETON_HPP(ObjectManager)
-	ObjectManager();
-
 public: // Main Engine/Engine Extension Function Declarations
 	bool OnUserCreate();
 	bool OnUserDestroy();

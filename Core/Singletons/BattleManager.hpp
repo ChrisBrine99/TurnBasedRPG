@@ -15,9 +15,8 @@ struct Combatant;
 struct Skill;
 
 class BattleManager {
-	// Singleton Initialization/Constructor Declaration
+	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
 	INIT_SINGLETON_HPP(BattleManager)
-	BattleManager();
 public: // Main Engine Function Declarations
 	bool OnUserCreate();
 	bool OnUserDestroy();
@@ -25,7 +24,7 @@ public: // Main Engine Function Declarations
 	bool OnUserRender(float_t _deltaTime);
 
 	bool OnBeforeUserUpdate(float_t _deltaTime);
-	void OnAfterUserUpdate(float_t _deltaTime);
+	bool OnAfterUserUpdate(float_t _deltaTime);
 
 private: // State Function Declarations
 	bool StateInitializeBattle();

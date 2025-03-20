@@ -42,7 +42,6 @@ Menu::Menu() :
 	optionInactiveColor(COLOR_WHITE)
 { // Reserve a small portion of memory to store the pointers for the menu options that can exist within a given menu.
 	menuOptions.reserve(10ui64);
-	GET_SINGLETON(MenuManager)->CreateMenu(this);
 }
 
 bool Menu::OnUserDestroy() {
@@ -91,8 +90,10 @@ bool Menu::OnBeforeUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-void Menu::OnAfterUserUpdate(float_t _deltaTime) {
+bool Menu::OnAfterUserUpdate(float_t _deltaTime) {
+	(void)(_deltaTime);
 	UPDATE_STATE(nextState);
+	return true;
 }
 
 void Menu::AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description, uint8_t _alpha, uint32_t _flags) {
@@ -361,7 +362,11 @@ void Menu::RenderVisibleOptions(float_t _deltaTime) {
 				else							{ _color = optionColor; }
 			}
 
-			menuOptions[_index].DrawSelf(_engine, optionAnchorX + (optionSpacingX * xx), optionAnchorY + (optionSpacingY * yy), _color, alpha);
+			// Only bother attempting to render the menu option if it is possibly visible to the player (alpha 0 == completely transparent).
+			if (menuOptions[_index].alpha > 0ui8) {
+				_color.a = uint16_t(alpha + menuOptions[_index].alpha) / 2ui8; // Blend the alpha level of the current option and menu itself.
+				_engine->DrawString(optionAnchorX + (optionSpacingX * xx) + menuOptions[_index].xPos, optionAnchorY + (optionSpacingY * yy), menuOptions[_index].text, _color);
+			}
 			_xxOffset++;
 		}
 		_xxOffset = curVisibleColumnOffset;
