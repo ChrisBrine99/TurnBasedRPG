@@ -6,6 +6,7 @@
 
 #include <array>
 #include <vector>
+#include <unordered_map>
 
 class BattleMainMenu;
 class BattlePartyUI;
@@ -47,6 +48,9 @@ public: // Publicly Accessible Utility Function Declarations
 	void SetEncounterID(uint16_t _encounterID);
 	uint16_t GetCombatantSpeed(Combatant* _combatant) const;
 
+private:
+	void AddToPlayerRewards(Combatant* _combatant);
+
 public: // Combatant Management Function Declarations
 	void AddPlayerCombatant(size_t _partyIndex);
 	void AddEnemyCombatant(uint16_t _enemyID);
@@ -59,7 +63,7 @@ public: // Accessible Member Variable Declarations
 
 	Combatant* curCombatant;
 
-	std::vector<std::pair<uint16_t, uint8_t>> curItemRewards;
+	std::unordered_map<uint16_t, uint8_t> curItemRewards;
 	uint32_t curMoneyReward;
 	uint32_t curExpReward;
 

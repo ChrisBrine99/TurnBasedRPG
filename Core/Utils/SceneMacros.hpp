@@ -6,8 +6,8 @@
 //	active or loaded at once; as well as default value indicating a state that is invalid to prevent undefined behavior.				//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define BATTLE_SCENE_INDEX				0ui32
-#define INVALID_SCENE_INDEX				4294967295ui32
+#define BATTLE_SCENE_INDEX				0x00000010ui32
+#define INVALID_SCENE_INDEX				0xFFFFFFFFui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Makes sense of the numbers that represent the SceneManager's various states.														//

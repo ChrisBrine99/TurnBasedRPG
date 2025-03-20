@@ -54,7 +54,6 @@ bool BattleManager::OnUserDestroy() {
 	turnOrder.shrink_to_fit();
 
 	curItemRewards.clear();
-	curItemRewards.shrink_to_fit();
 
 	return true;
 }
@@ -234,6 +233,8 @@ bool BattleManager::StateExecuteSkill() {
 void BattleManager::UpdateHitpoints(Combatant* _combatant, uint16_t _value) {
 	if (_value > _combatant->curHitpoints) { 
 		_combatant->curHitpoints = 0ui16;
+		if (!COMBATANT_IS_PLAYER(_combatant))
+			AddToPlayerRewards(_combatant);
 		RemoveCombatant(_combatant);
 		return;
 	}
@@ -348,6 +349,26 @@ uint16_t BattleManager::GetCombatantSpeed(Combatant* _combatant) const {
 	else if (_speedMod < 0i16)	{ return uint16_t(_combatant->baseSpeed * 4ui16 / (4ui16 - _speedMod)); }
 
 	return _combatant->baseSpeed;
+}
+
+void BattleManager::AddToPlayerRewards(Combatant* _combatant) {
+	EnemyCharacter* _enemy = (EnemyCharacter*)_combatant->character;
+	if (typeid(*_enemy).hash_code() != typeid(EnemyCharacter).hash_code())
+		return;
+
+	curExpReward += _enemy->expReward;
+	curMoneyReward += _enemy->moneyReward;
+
+	for (auto& _data : _enemy->itemRewards) {
+		if (_data.second < std::rand() % 0xFFui8)
+			continue;
+
+		if (curItemRewards.find(_data.first) != curItemRewards.end()) {
+			curItemRewards[_data.first]++;
+			continue;
+		}
+		curItemRewards[_data.first] = 1ui8;
+	}
 }
 
 void BattleManager::AddPlayerCombatant(size_t _partyIndex) {

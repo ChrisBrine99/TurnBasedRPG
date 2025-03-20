@@ -3,14 +3,15 @@
 
 #include "BaseCharacter.hpp"
 
+#include <unordered_map>
+
 struct EnemyCharacter : public BaseCharacter {
 	uint16_t									basicAttack;
 
 	uint16_t									moneyReward;
 	uint16_t									expReward;
 
-	uint16_t									itemRewardWeight;
-	std::vector<std::pair<uint16_t, uint8_t>>	itemRewards;
+	std::unordered_map<uint16_t, uint8_t>		itemRewards;
 
 	void										(EnemyCharacter::*battleAI)(float_t _deltaTime);
 
@@ -22,7 +23,6 @@ struct EnemyCharacter : public BaseCharacter {
 		basicAttack(ID_INVALID),
 		moneyReward(0ui16),
 		expReward(0ui16),
-		itemRewardWeight(0ui8),
 		itemRewards(),
 		battleAI(nullptr) 
 	{ // Reserve some memory to make room for the potential item rewards that an enemy can have access to upon its defeat. 
@@ -33,7 +33,6 @@ struct EnemyCharacter : public BaseCharacter {
 	// pointers to memory occupied by its member variables as required.
 	~EnemyCharacter() {
 		itemRewards.clear();
-		itemRewards.shrink_to_fit();
 		battleAI = nullptr;
 	}
 

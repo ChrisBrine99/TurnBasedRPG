@@ -337,6 +337,10 @@ void Menu::RenderVisibleOptions(float_t _deltaTime) {
 	size_t _menuSize	= menuOptions.size();
 	olc::Pixel _color	= optionColor;
 
+	// Render the highlighted option's description if the menu has been set to render option descriptions.
+	if (MENU_CAN_SHOW_DESCRIPTION)
+		_engine->DrawString(optionDescriptionX, optionDescriptionY, menuOptions[curOption].description);
+
 	// Loop through the region of currently visible menu options; rendering them all using their "DrawSelf" function. Out of
 	// bounds elements are automatically ignored on the last row if the number of menu options doesn't match the amount needed
 	// to completely populate said final row of options.

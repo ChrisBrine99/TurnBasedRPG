@@ -13,7 +13,7 @@ BattleMainMenu::BattleMainMenu() :
 bool BattleMainMenu::OnUserCreate() {
 	InitializeParams(STATE_INVALID, 1ui8, 7ui8, 1ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
 	InitializeOptionParams(15, 200, 0, 10);
-	//InitializeDescriptionParams(VIEWPORT_WIDTH >> 1, VIEWPORT_HEIGHT - 15);
+	InitializeDescriptionParams(VIEWPORT_WIDTH >> 1, VIEWPORT_HEIGHT - 15);
 
 	AddOption(0, 0, "Skills",	"Opens the menu that lists all active skills for the current party member.");
 	AddOption(0, 0, "Items",	"Choose an item to use on the enemy or your allies.");

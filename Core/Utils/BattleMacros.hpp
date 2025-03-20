@@ -32,12 +32,14 @@
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define FLAG_BATTLE_ACTIVE				0x00000001u
+#define FLAG_BATTLE_WAIT_ANIMATION		0x00000002u
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines that simplify the formatting required to check for each of the battle manager's state-independent flags.					//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
 #define BATTLE_IS_ACTIVE				(flags & FLAG_BATTLE_ACTIVE)
+#define BATTLE_PAUSED_FOR_ANIMATION		(flags & FLAG_BATTLE_WAIT_ANIMATION)
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Values for the bits that represent a certain characteristic within a given Combatant struct. Allows 32 boolean values to be stored	//

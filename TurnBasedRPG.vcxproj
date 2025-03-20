@@ -151,6 +151,8 @@
     <ClCompile Include="Core\Singletons\PartyManager.cpp" />
     <ClCompile Include="Core\Singletons\MenuManager.cpp" />
     <ClCompile Include="Core\UI\Menus\General\ConfirmWindow.cpp" />
+    <ClCompile Include="Core\Singletons\ObjectManager.cpp" />
+    <ClCompile Include="Core\Objects\Object.cpp" />
     <ClCompile Include="ThirdParty\olcPixelGameEngine.cpp" />
     <ClInclude Include="Core\UI\Battle\BattleEnemyUI.hpp" />
     <ClInclude Include="Core\UI\Menus\Battle\BattleTargetMenu.hpp" />
@@ -175,6 +177,7 @@
     <ClInclude Include="Core\Utils\DataMacros.hpp" />
     <ClInclude Include="Core\Utils\GeneralMacros.hpp" />
     <ClInclude Include="Core\Utils\MenuMacros.hpp" />
+    <ClInclude Include="Core\Utils\ObjectMacros.hpp" />
     <ClInclude Include="Core\Utils\SceneMacros.hpp" />
     <ClInclude Include="Core\Utils\UtilityFunctions.hpp" />
     <ClInclude Include="Core\Scenes\BattleScene.hpp" />
@@ -183,6 +186,8 @@
     <ClInclude Include="Core\Singletons\PartyManager.hpp" />
     <ClInclude Include="Core\Singletons\MenuManager.hpp" />
     <ClInclude Include="Core\UI\Menus\General\ConfirmWindow.hpp" />
+    <ClInclude Include="Core\Singletons\ObjectManager.hpp" />
+    <ClInclude Include="Core\Objects\Object.hpp" />
     <ClInclude Include="ThirdParty\json.hpp" />
     <ClInclude Include="ThirdParty\olcPixelGameEngine.hpp" />
   </ItemGroup>

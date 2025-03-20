@@ -21,14 +21,12 @@ bool BattleEnemyUI::OnUserUpdate(float_t _deltaTime) {
 	uint16_t _curHitpoints		= 0ui16;
 	uint16_t _trueCurHitpoints	= 0ui16;
 	for (EnemyUI& _element : uiElements) {
-		if (!ENINFO_IS_OCCUPIED(_element))
+		if (!ENINFO_IS_OCCUPIED(_element) || !ENINFO_IS_VISIBLE(_element))
 			continue;
 
 		// 
 		_curHitpoints		= _element.curHitpoints;
 		_trueCurHitpoints	= _element.combatant->curHitpoints;
-		if (_curHitpoints == _trueCurHitpoints && _element.visibilityTimer == 0.0f)
-			continue;
 
 		// 
 		_element.visibilityTimer -= _deltaTime;
@@ -48,7 +46,7 @@ bool BattleEnemyUI::OnUserUpdate(float_t _deltaTime) {
 
 		// 
 		_element.updateTimer -= _deltaTime;
-		if (_element.updateTimer > 0.0f)
+		if (_element.updateTimer > 0.0f || _curHitpoints == _trueCurHitpoints)
 			continue;
 		_element.updateTimer = GAME_UPDATE_INTERVAL;
 
@@ -96,7 +94,7 @@ void BattleEnemyUI::ActivateElement(Combatant* _combatant) {
 		totalActiveElements++;
 
 		// Populate the UI element's data with what is relevant within the combatant.
-		_element.curHitpoints	= 0ui16;
+		_element.curHitpoints	= _combatant->maxHitpoints;
 		_element.combatant		= _combatant;
 		_element.flags			= FLAG_ENINFO_OCCUPIED;
 		return;
