@@ -12,6 +12,7 @@ bool Object::OnBeforeUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-void Object::OnAfterUserUpdate(float_t _deltaTime) {
+bool Object::OnAfterUserUpdate(float_t _deltaTime) {
 	(void)(_deltaTime);
+	return true;
 }

@@ -154,6 +154,8 @@
     <ClCompile Include="Core\UI\Menus\General\ConfirmWindow.cpp" />
     <ClCompile Include="Core\Singletons\ObjectManager.cpp" />
     <ClCompile Include="Core\Objects\Object.cpp" />
+    <ClCompile Include="Core\Objects\Dynamic\ObjPlayer.cpp" />
+    <ClCompile Include="Core\Objects\Dynamic\DynamicObject.cpp" />
     <ClCompile Include="ThirdParty\olcPixelGameEngine.cpp" />
     <ClInclude Include="Core\Extensions\EngineCoreExt.hpp" />
     <ClInclude Include="Core\UI\Battle\BattleEnemyUI.hpp" />
@@ -190,6 +192,8 @@
     <ClInclude Include="Core\UI\Menus\General\ConfirmWindow.hpp" />
     <ClInclude Include="Core\Singletons\ObjectManager.hpp" />
     <ClInclude Include="Core\Objects\Object.hpp" />
+    <ClInclude Include="Core\Objects\Dynamic\ObjPlayer.hpp" />
+    <ClInclude Include="Core\Objects\Dynamic\DynamicObject.hpp" />
     <ClInclude Include="ThirdParty\json.hpp" />
     <ClInclude Include="ThirdParty\olcPixelGameEngine.hpp" />
   </ItemGroup>
