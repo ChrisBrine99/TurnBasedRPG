@@ -23,6 +23,15 @@ bool BattleTargetMenu::OnUserCreate() {
 	return true;
 }
 
+bool BattleTargetMenu::OnUserDestroy() {
+	Menu::OnUserDestroy();
+
+	validTargets.clear();
+	validTargets.shrink_to_fit();
+
+	return true;
+}
+
 void BattleTargetMenu::PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, Skill* _skill) {
 	Menu::PrepareForActivation(_state);
 	upperMenu = _skillMenu;
@@ -95,7 +104,7 @@ bool BattleTargetMenu::StateDefault(float_t _deltaTime) {
 			GET_SINGLETON(MenuManager)->DeactivateAllMenus();
 
 			BattleManager* _manager = GET_SINGLETON(BattleManager);
-			std::copy(validTargets.begin(), validTargets.end(), _manager->targets.begin());
+			_manager->targets.insert(_manager->targets.begin(), validTargets.begin(), validTargets.end());
 			_manager->ExecuteSkill(skillToUse);
 		}
 		return true;

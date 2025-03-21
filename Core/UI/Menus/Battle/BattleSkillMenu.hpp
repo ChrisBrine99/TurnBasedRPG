@@ -28,6 +28,7 @@ public: // Constructor/Destructor Declaration
 
 public: // Inherited Function Declarations
 	bool OnUserCreate() override;
+	bool OnUserDestroy() override;
 	bool OnUserUpdate(float_t _deltaTime) override;
 	bool OnUserRender(float_t _deltaTime) override;
 

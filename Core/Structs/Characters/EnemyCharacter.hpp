@@ -13,7 +13,7 @@ struct EnemyCharacter : public BaseCharacter {
 
 	std::unordered_map<uint16_t, uint8_t>		itemRewards;
 
-	void										(EnemyCharacter::*battleAI)(float_t _deltaTime);
+	void										(EnemyCharacter::*battleAI)();
 
 	// An enemy character's default constructor. It simply populates all variables unique to an enemy (Money/exp rewards, item 
 	// rewards, etc.) with their default values. On top of that, it calls the parent constructor to initialize all inherited
@@ -38,14 +38,14 @@ struct EnemyCharacter : public BaseCharacter {
 
 	// The function that is responsible for executing the Enemy's ai function. If the value in "battleAI" is nullptr, this 
 	// function will do nothing and the enemy's turn is completely skipped as a result.
-	inline void ExecuteAI(float_t _deltaTime) {
+	inline void ExecuteAI() {
 		if (battleAI == nullptr)
 			return;
-		((*this).*(this->battleAI))(_deltaTime);
+		((*this).*(this->battleAI))();
 	}
 
 public: // Enemy AI Function Declarations
-	void EnemySimpleAI(float_t _deltaTime);
+	void EnemySimpleAI();
 };
 
 #endif

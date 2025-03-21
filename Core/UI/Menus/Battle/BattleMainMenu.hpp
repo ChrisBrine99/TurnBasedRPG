@@ -33,6 +33,7 @@ public: // Constructor/Destructor Declaration
 
 public: // Inherited Function Declarations
 	bool OnUserCreate() override;
+	bool OnUserDestroy() override;
 	bool OnUserUpdate(float_t _deltaTime) override;
 
 public: // Publicly Accessibly Utility Function Declarations
@@ -45,7 +46,7 @@ private: // State Function Declarations
 
 private: // Hidden Member Variable Declarations
 	BattleSkillMenu*	skillMenu;
-	ConfirmWindow*		confirmWindow;
+	ConfirmWindow*		confirmMenu;
 };
 
 #endif

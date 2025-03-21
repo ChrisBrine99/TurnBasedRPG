@@ -45,6 +45,8 @@ bool BattleManager::OnUserCreate() {
 }
 
 bool BattleManager::OnUserDestroy() {
+	DESTROY_MENU(actionMenu, BattleMainMenu);
+
 	if (partyUI) { delete partyUI, partyUI = nullptr; }
 	if (enemyUI) { delete enemyUI, enemyUI = nullptr; }
 
@@ -200,7 +202,7 @@ bool BattleManager::StateEnemyTurn(float_t _deltaTime) {
 	EnemyCharacter* _enemy = (EnemyCharacter*)curCombatant->character;
 	if (typeid(*_enemy).hash_code() == typeid(EnemyCharacter).hash_code()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
-		_enemy->ExecuteAI(_deltaTime);
+		_enemy->ExecuteAI();
 		return true;
 	}
 
@@ -213,15 +215,16 @@ bool BattleManager::StateExecuteSkill() {
 
 	Combatant* _target = combatants[targets[curSkillTarget]];
 	skillToUse->ExecuteUseFunction(_target);
-	turnDelay = 0.5f;
+	turnDelay = 0.05f;
 
 	if (!COMBATANT_IS_PLAYER(_target))
-		enemyUI->ShowElement(_target, 1.0f);
+		enemyUI->ShowElement(_target, 1.25f - curSkillTarget * turnDelay);
 
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
 		skillToUse = nullptr;
+		turnDelay = 0.5f;
 		targets.clear();
 	}
 	return true;

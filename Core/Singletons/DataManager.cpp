@@ -31,9 +31,11 @@ bool DataManager::OnBeforeUserCreate() {
 	encounterData	= json::parse(std::ifstream("Resources/encounters.json"));
 
 	LoadSkillData(ID_IGNIA);
+	LoadSkillData(ID_POLIGNIA);
 
 	LoadCharacterData(ID_TEST_PLAYER);
-	LoadCharacterData(ID_TEST_ENEMY);
+	LoadCharacterData(ID_GREEN_SLIME);
+	LoadCharacterData(ID_RED_SLIME);
 
 	return true;
 }
@@ -106,6 +108,19 @@ void DataManager::LoadCharacterData(uint16_t _id) {
 
 	// Another element unique to an enemy is a dedicated basic attack, which is set in the same way the above elements were.
 	_newEnemyChar->basicAttack			= uint16_t(_data[KEY_BASIC_ATTACK]);
+
+	// 
+	_newEnemyChar->expReward			= uint16_t(_data[KEY_EXP_REWARD]);
+	_newEnemyChar->moneyReward			= uint16_t(_data[KEY_MONEY_REWARD]);
+
+	// 
+	json& _itemRewards = _data[KEY_ITEM_REWARDS];
+	json& _itemChances = _data[KEY_ITEM_CHANCES];
+	if (_itemRewards.is_null() || _itemChances.is_null())
+		return;
+
+	for (size_t i = 0ui64; i < _itemRewards.size(); i++) // Add all potential item rewards and their chances out of 255.
+		_newEnemyChar->itemRewards.insert(std::pair(uint16_t(_itemRewards[i]), uint8_t(_itemChances[i])));
 
 	// Finally, assign the proper AI function to the enemy that it will utilize in battle.
 	SetEnemyAIFunction(_newEnemyChar, _data[KEY_ENEMY_AI]);

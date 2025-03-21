@@ -79,15 +79,17 @@ Menu* MenuManager::CreateMenu(Menu* _menu) {
 }
 
 void MenuManager::DestroyMenu(Menu* _menu) {
-	// Make sure the menu actuall exists before the code attempts to remove it from memory.
+	if (_menu == nullptr) // The menu passed in was nullptr; don't do anything.
+		return;
+
+	// Make sure the menu is cleaned up before it's deallocated.
+	_menu->OnUserDestroy();
+	delete _menu; // Don't set _menu to nullptr so it can still be found within the management list.
+
+	// Make sure the menu actually exists before the code attempts to remove it from memory.
 	auto _iter = std::find(activeMenus.begin(), activeMenus.end(), _menu);
 	if (_iter == activeMenus.end())
-		return; // Menu doesn't exist; exit now.
-
-	_menu->OnUserDestroy(); // Make sure the menu is cleaned up before its deallocated.
-	delete _menu, _menu = nullptr;
-
-	// Finally, remove the element formally storing the now-deleted menu from the list.
+		return; // Menu instance wasn't in the manager; don't attempt to clear from vector
 	activeMenus.erase(_iter);
 }
 

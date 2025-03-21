@@ -18,6 +18,10 @@
 #define KEY_ACTIVE_SKILLS				"aSkills"
 // --- Keys that are unique to enemy characters ---- //
 #define KEY_ENEMIES						"enemies"
+#define KEY_EXP_REWARD					"exp"
+#define KEY_MONEY_REWARD				"money"
+#define KEY_ITEM_REWARDS				"items"
+#define KEY_ITEM_CHANCES				"chances"
 #define KEY_MAXIMUM_HP					"hp"
 #define KEY_MAXIMUM_MP					"mp"
 #define KEY_BASIC_ATTACK				"bAtk"
@@ -58,7 +62,8 @@
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 // --- Master list of enemy character IDs --- //
-#define ID_TEST_ENEMY					0x0000ui16
+#define ID_GREEN_SLIME					0x0000ui16
+#define ID_RED_SLIME					0x0001ui16
 // --- The boundary value between what is considered a enemy character or a player character --- //
 #define ID_BOUNDARY						0xF000ui16
 // --- Master list of playable character IDs --- //
@@ -69,6 +74,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define ID_IGNIA						0x0000ui16
+#define ID_POLIGNIA						0x0010ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	A simple default value that represents an invalid ID within the various data structures in the game. As a result, they must all be	//

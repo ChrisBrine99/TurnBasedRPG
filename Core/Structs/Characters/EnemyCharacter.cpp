@@ -2,6 +2,6 @@
 
 #include <iostream>
 
-void EnemyCharacter::EnemySimpleAI(float_t _deltaTime) {
+void EnemyCharacter::EnemySimpleAI() {
 	std::cout << "ENEMY AI FUNCTION CALLED" << std::endl;
 }

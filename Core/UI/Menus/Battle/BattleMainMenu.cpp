@@ -8,7 +8,7 @@
 BattleMainMenu::BattleMainMenu() :
 	Menu(),
 	skillMenu(nullptr),
-	confirmWindow(nullptr)
+	confirmMenu(nullptr)
 {}
 
 bool BattleMainMenu::OnUserCreate() {
@@ -23,6 +23,14 @@ bool BattleMainMenu::OnUserCreate() {
 	AddOption(0, 0, "Escape",	"Attempt to run away from the current battle.");
 
 	skillMenu = CREATE_NEW_MENU(BattleSkillMenu)
+
+	return true;
+}
+
+bool BattleMainMenu::OnUserDestroy() {
+	Menu::OnUserDestroy();
+	DESTROY_MENU(skillMenu, BattleSkillMenu)
+	DESTROY_MENU(confirmMenu, ConfirmWindow)
 
 	return true;
 }

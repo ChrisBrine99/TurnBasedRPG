@@ -77,7 +77,7 @@ public: // Publicly Accessible Utility Function Declarations
 	void PrepareForDeactivation();
 
 protected: // Hidden (Accessible to Children Only) State Function Declarations
-	bool StateDefault(float_t _deltaTime);
+	virtual bool StateDefault(float_t _deltaTime);
 	virtual bool StateProcessSelection() = 0;
 
 protected: // Hidden (Accessible to Children Only) Member Variable Declarations

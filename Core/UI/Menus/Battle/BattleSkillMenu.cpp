@@ -25,6 +25,19 @@ bool BattleSkillMenu::OnUserCreate() {
 	return true;
 }
 
+bool BattleSkillMenu::OnUserDestroy() {
+	Menu::OnUserDestroy();
+	DESTROY_MENU(subMenu, BattleTargetMenu)
+
+	sSkillCost.clear();
+	sSkillCost.shrink_to_fit();
+
+	skillIDs.clear();
+	skillIDs.shrink_to_fit();
+
+	return true;
+}
+
 bool BattleSkillMenu::OnUserUpdate(float_t _deltaTime) {
 	switch (curState) {
 	case STATE_MENU_DEFAULT:			return StateDefault(_deltaTime);
