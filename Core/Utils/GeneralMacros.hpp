@@ -100,11 +100,11 @@
 
 #define CALL_SINGLETON_CREATE(_x, _func)						\
 			if (!GET_SINGLETON(_x)->_func())					\
-				return false;
+				return false
 
 #define CALL_SINGLETON_UPDATE(_x, _func)						\
 			if (!GET_SINGLETON(_x)->_func(_deltaTime))			\
-				return false;
+				return false
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines that work like the "CALL_SINGLETON_CREATE" and "CALL_SINGLETON_UPDATE" defines detailed above. However, they don't take in	//
@@ -113,11 +113,11 @@
 
 #define CALL_SINGLETON_DESTROY(_x)								\
 			if (!GET_SINGLETON(_x)->OnUserDestroy())			\
-				return false;
+				return false
 
 #define CALL_SINGLETON_RENDER(_x)								\
 			if (!GET_SINGLETON(_x)->OnUserRender(_deltaTime))	\
-				return false;
+				return false
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	A simple define that condenses the typing required to reference a singleton class within the code.									//

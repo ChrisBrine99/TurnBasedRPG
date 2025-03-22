@@ -146,7 +146,7 @@
     <ClCompile Include="Core\Singletons\BattleManager.cpp" />
     <ClCompile Include="Core\Singletons\DataManager.cpp" />
     <ClCompile Include="Core\Singletons\SceneManager.cpp" />
-    <ClCompile Include="Core\Scenes\BattleScene.cpp" />
+    <ClCompile Include="Core\Scenes\Battle\BattleScene.cpp" />
     <ClCompile Include="Core\UI\Menus\Menu.cpp" />
     <ClCompile Include="Core\Singletons\GameSettings.cpp" />
     <ClCompile Include="Core\Singletons\PartyManager.cpp" />
@@ -184,7 +184,7 @@
     <ClInclude Include="Core\Utils\ObjectMacros.hpp" />
     <ClInclude Include="Core\Utils\SceneMacros.hpp" />
     <ClInclude Include="Core\Utils\UtilityFunctions.hpp" />
-    <ClInclude Include="Core\Scenes\BattleScene.hpp" />
+    <ClInclude Include="Core\Scenes\Battle\BattleScene.hpp" />
     <ClInclude Include="Core\UI\Menus\Menu.hpp" />
     <ClInclude Include="Core\Singletons\GameSettings.hpp" />
     <ClInclude Include="Core\Singletons\PartyManager.hpp" />

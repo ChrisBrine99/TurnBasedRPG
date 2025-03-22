@@ -27,7 +27,7 @@
     <ClCompile Include="Core\Singletons\SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Scenes\BattleScene.cpp">
+    <ClCompile Include="Core\Scenes\Battle\BattleScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Singletons\DataManager.cpp">
@@ -125,7 +125,7 @@
     <ClInclude Include="Core\Utils\SceneMacros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Scenes\BattleScene.hpp">
+    <ClInclude Include="Core\Scenes\Battle\BattleScene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Structs\Characters\EnemyCharacter.hpp">

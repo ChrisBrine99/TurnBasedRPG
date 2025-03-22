@@ -5,10 +5,10 @@
 
 class ObjPlayer : public DynamicObject {
 public: // Constructor/Destructor Declarations
-	ObjPlayer(int32_t _x, int32_t _y, size_t _id);
+	ObjPlayer(int32_t _x, int32_t _y, uint16_t _index, size_t _id);
 	~ObjPlayer() = default;
 
-public: // Main Engine Function Declarations
+public: // Main Engine Function Overrides
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
 	bool OnUserUpdate(float_t _deltaTime) override;

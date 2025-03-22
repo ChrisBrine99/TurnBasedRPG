@@ -25,10 +25,11 @@ public: // Publicly Accessible Object Management Function Declarations
 	void RemoveObject(size_t _id);
 
 private: // Hidden Object Management Function Declarations
-	Object* CreateObjectFromIndex(uint16_t _index, int32_t _x, int32_t _y);
+	Object* CreateObjectFromIndex(uint16_t _index, size_t _id, int32_t _x, int32_t _y);
 
 private: // Hidden Member Variable Declarations
 	std::unordered_map<size_t, Object*> instances;
+	std::vector<Object*> objsToDelete;
 	size_t nextInstanceID;
 };
 

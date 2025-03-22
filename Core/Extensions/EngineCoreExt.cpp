@@ -11,8 +11,8 @@ EngineCoreExt::EngineCoreExt(bool _hook) :
 {}
 
 bool EngineCoreExt::OnBeforeUserCreate() {
-	CALL_SINGLETON_CREATE(DataManager, OnBeforeUserCreate)
-	CALL_SINGLETON_CREATE(GameSettings, OnBeforeUserCreate)
+	CALL_SINGLETON_CREATE(DataManager, OnBeforeUserCreate);
+	CALL_SINGLETON_CREATE(GameSettings, OnBeforeUserCreate);
 	return true;
 }
 
@@ -21,13 +21,13 @@ bool EngineCoreExt::OnAfterUserCreate() {
 }
 
 bool EngineCoreExt::OnBeforeUserUpdate(float_t _deltaTime) {
-	CALL_SINGLETON_UPDATE(SceneManager, OnBeforeUserUpdate)
-	CALL_SINGLETON_UPDATE(MenuManager, OnBeforeUserUpdate)
+	CALL_SINGLETON_UPDATE(SceneManager, OnBeforeUserUpdate);
+	CALL_SINGLETON_UPDATE(MenuManager, OnBeforeUserUpdate);
 	return true;
 }
 
 bool EngineCoreExt::OnAfterUserUpdate(float_t _deltaTime) {
-	CALL_SINGLETON_UPDATE(SceneManager, OnAfterUserUpdate)
-	CALL_SINGLETON_UPDATE(MenuManager, OnAfterUserUpdate)
+	CALL_SINGLETON_UPDATE(SceneManager, OnAfterUserUpdate);
+	CALL_SINGLETON_UPDATE(MenuManager, OnAfterUserUpdate);
 	return true;
 }

@@ -1,7 +1,7 @@
 #ifndef BATTLE_SCENE_HPP
 #define BATTLE_SCENE_HPP
 
-#include "Scene.hpp"
+#include "../Scene.hpp"
 
 class BattleScene : public Scene {
 public: // Constructor/Destructor Declarations

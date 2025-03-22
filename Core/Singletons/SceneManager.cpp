@@ -2,7 +2,7 @@
 INIT_SINGLETON_CPP(SceneManager)
 
 #include "../Utils/SceneMacros.hpp"
-#include "../Scenes/BattleScene.hpp"
+#include "../Scenes/Battle/BattleScene.hpp"
 
 #include <iostream>
 

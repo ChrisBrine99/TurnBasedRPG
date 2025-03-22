@@ -1,7 +1,7 @@
 #include "ObjPlayer.hpp"
 
-ObjPlayer::ObjPlayer(int32_t _x, int32_t _y, size_t _id) : 
-	DynamicObject(_x, _y, _id)
+ObjPlayer::ObjPlayer(int32_t _x, int32_t _y, uint16_t _index, size_t _id) : 
+	DynamicObject(_x, _y, _index, _id)
 {}
 
 bool ObjPlayer::OnUserCreate() {

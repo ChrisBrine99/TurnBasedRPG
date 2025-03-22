@@ -1,4 +1,5 @@
 #include "ObjectManager.hpp"
+INIT_SINGLETON_CPP(ObjectManager)
 
 #include "../Objects/Object.hpp"
 #include "../Objects/Dynamic/ObjPlayer.hpp"
@@ -6,9 +7,11 @@
 
 ObjectManager::ObjectManager() :
 	instances(),
+	objsToDelete(),
 	nextInstanceID(0ui64)
 { // Reserve some memory for the first couple of objects. This amount in increased/decreased as required.
 	instances.reserve(OBJMNGR_RESERVE_SIZE);
+	objsToDelete.reserve(OBJMNGR_RESERVE_SIZE);
 }
 
 bool ObjectManager::OnUserDestroy() {
@@ -17,6 +20,9 @@ bool ObjectManager::OnUserDestroy() {
 		delete _data.second, _data.second = nullptr;
 	}
 	instances.clear();
+
+	objsToDelete.clear();
+	objsToDelete.shrink_to_fit();
 
 	return true;
 }
@@ -62,18 +68,28 @@ bool ObjectManager::OnAfterUserUpdate(float_t _deltaTime) {
 			_object->OnAfterUserUpdate(_deltaTime);
 	}
 
+	// Only remove object instances from memory in chunks of 16 each (or more) to avoid constant allocation/deallocation 
+	// throughout gameplay as objects are created/destroyed as required.
+	size_t _objsToDestroy = objsToDelete.size();
+	if (_objsToDestroy >= OBJMNGR_RESERVE_SIZE) {
+		for (Object* _object : objsToDelete)
+			delete _object, _object = nullptr;
+		objsToDelete.clear();
+	}
+
 	return true;
 }
 
 size_t ObjectManager::AddObject(uint16_t _index, int32_t _x, int32_t _y) {
-	Object* _newObject = CreateObjectFromIndex(_index, _x, _y);
+	size_t _objectID = nextInstanceID;
+	Object* _newObject = CreateObjectFromIndex(_index, _objectID, _x, _y);
 	if (_newObject == nullptr) {
 		std::cout << "Object with provided index does not exist. No object will be created." << std::endl;
 		return OBJMNGR_INVALID_INSTANCE_ID;
 	}
 
-	size_t _objectID = nextInstanceID;
 	instances[_objectID] = _newObject;
+	std::cout << "bucket_count: " << instances.bucket_count() << std::endl;
 	nextInstanceID++;
 
 	_newObject->OnUserCreate();
@@ -84,14 +100,14 @@ void ObjectManager::RemoveObject(size_t _id) {
 	if (instances.find(_id) == instances.end())
 		return;
 
+	objsToDelete.push_back(instances[_id]);
 	instances[_id]->OnUserDestroy();
-	delete instances[_id], instances[_id] = nullptr;
 	instances.erase(_id);
 }
 
-Object* ObjectManager::CreateObjectFromIndex(uint16_t _index, int32_t _x, int32_t _y) {
+Object* ObjectManager::CreateObjectFromIndex(uint16_t _index, size_t _id, int32_t _x, int32_t _y) {
 	switch (_index) {
-	case ID_OBJECT_PLAYER:			return new ObjPlayer(_index, _x, _y);
+	case ID_OBJECT_PLAYER:			return new ObjPlayer(_x, _y, _index, _id);
 	}
 
 	return nullptr;

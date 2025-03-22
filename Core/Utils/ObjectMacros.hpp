@@ -16,6 +16,13 @@
 #define OBJMNGR_INVALID_INSTANCE_ID		0xFFFFFFFFFFFFFFFFui64
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
+//	
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define CREATE_OBJECT(_index, _x, _y)	GET_SINGLETON(ObjectManager)->AddObject(_index, _x, _y)
+#define DESTROY_OBJECT(_id)				GET_SINGLETON(ObjectManager)->RemoveObject(_id)
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for the flags required by all standard objects. The bits not referenced here can be utilized for whatever purpose within	//
 //	each child object.																													//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
