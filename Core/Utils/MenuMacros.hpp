@@ -6,8 +6,8 @@
 //	second is for destroying that menu without having to type out "GET_SINGLETON" all the time.											//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define CREATE_NEW_MENU(_x)				(_x*)GET_SINGLETON(MenuManager)->CreateMenu(new _x());
-#define DESTROY_MENU(_x, _type)			GET_SINGLETON(MenuManager)->DestroyMenu((_type*)_x);
+#define CREATE_NEW_MENU(_x)				(_x*)GET_SINGLETON(MenuManager)->CreateMenu(new _x())
+#define DESTROY_MENU(_x, _type)			GET_SINGLETON(MenuManager)->DestroyMenu((_type*)_x)
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	A simple macro that denotes the error value for indexes within the MenuManager's vector of existing menu instances.					//

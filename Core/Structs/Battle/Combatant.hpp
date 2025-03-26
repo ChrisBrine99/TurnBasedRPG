@@ -25,6 +25,7 @@ struct Combatant {
 	uint16_t						baseSpeed;
 	uint16_t						statModifiers;
 	uint32_t						flags;
+	uint32_t						uiElementIndex;
 
 	BaseCharacter*					character;
 
@@ -46,7 +47,8 @@ struct Combatant {
 		curSpecialAilment(AILMENT_SPECIAL_NONE),
 		baseSpeed(0ui16),
 		statModifiers(0ui16),
-		flags(0u),
+		flags(0ui32),
+		uiElementIndex(0ui32),
 		character(nullptr)
 	{
 		stats.fill(1ui8); // Populate the array with default values of 1 for each stat.

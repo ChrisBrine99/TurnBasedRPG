@@ -20,14 +20,14 @@ bool BattleSkillMenu::OnUserCreate() {
 	InitializeParams(STATE_INVALID, 1ui8, 8ui8, 1ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
 	InitializeOptionParams(80, 200, 0, 10);
 
-	subMenu = CREATE_NEW_MENU(BattleTargetMenu)
+	subMenu = CREATE_NEW_MENU(BattleTargetMenu);
 	
 	return true;
 }
 
 bool BattleSkillMenu::OnUserDestroy() {
 	Menu::OnUserDestroy();
-	DESTROY_MENU(subMenu, BattleTargetMenu)
+	DESTROY_MENU(subMenu, BattleTargetMenu);
 
 	sSkillCost.clear();
 	sSkillCost.shrink_to_fit();

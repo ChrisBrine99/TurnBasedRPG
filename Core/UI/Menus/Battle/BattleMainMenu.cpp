@@ -22,15 +22,15 @@ bool BattleMainMenu::OnUserCreate() {
 	AddOption(0, 0, "Switch",	"Switch the current party member out for another within the party roster.");
 	AddOption(0, 0, "Escape",	"Attempt to run away from the current battle.");
 
-	skillMenu = CREATE_NEW_MENU(BattleSkillMenu)
+	skillMenu = CREATE_NEW_MENU(BattleSkillMenu);
 
 	return true;
 }
 
 bool BattleMainMenu::OnUserDestroy() {
 	Menu::OnUserDestroy();
-	DESTROY_MENU(skillMenu, BattleSkillMenu)
-	DESTROY_MENU(confirmMenu, ConfirmWindow)
+	DESTROY_MENU(skillMenu, BattleSkillMenu);
+	DESTROY_MENU(confirmMenu, ConfirmWindow);
 
 	return true;
 }

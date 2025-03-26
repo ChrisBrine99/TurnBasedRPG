@@ -136,12 +136,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\Extensions\EngineCoreExt.cpp" />
-    <ClCompile Include="Core\UI\Battle\BattleEnemyUI.cpp" />
+    <ClCompile Include="Core\UI\Battle\BattleUI.cpp" />
+    <ClInclude Include="Core\UI\Battle\BattleUIElement.hpp" />
+    <ClCompile Include="Core\UI\Battle\BattleUIElement.cpp" />
+    <ClCompile Include="Core\UI\Battle\PartyUIElement.cpp" />
     <ClCompile Include="Core\UI\Menus\Battle\BattleTargetMenu.cpp" />
     <ClCompile Include="Core\UI\Menus\Battle\BattleSkillMenu.cpp" />
     <ClCompile Include="Core\Structs\Battle\Skill.cpp" />
     <ClCompile Include="Core\Structs\Characters\EnemyCharacter.cpp" />
-    <ClCompile Include="Core\UI\Battle\BattlePartyUI.cpp" />
     <ClCompile Include="Core\UI\Menus\Battle\BattleMainMenu.cpp" />
     <ClCompile Include="Core\Singletons\BattleManager.cpp" />
     <ClCompile Include="Core\Singletons\DataManager.cpp" />
@@ -158,10 +160,10 @@
     <ClCompile Include="Core\Objects\Dynamic\DynamicObject.cpp" />
     <ClCompile Include="ThirdParty\olcPixelGameEngine.cpp" />
     <ClInclude Include="Core\Extensions\EngineCoreExt.hpp" />
-    <ClInclude Include="Core\UI\Battle\BattleEnemyUI.hpp" />
+    <ClInclude Include="Core\UI\Battle\BattleUI.hpp" />
+    <ClInclude Include="Core\UI\Battle\PartyUIElement.hpp" />
     <ClInclude Include="Core\UI\Menus\Battle\BattleTargetMenu.hpp" />
     <ClInclude Include="Core\UI\Menus\Battle\BattleSkillMenu.hpp" />
-    <ClInclude Include="Core\UI\Battle\BattlePartyUI.hpp" />
     <ClInclude Include="Core\UI\Menus\Battle\BattleMainMenu.hpp" />
     <ClInclude Include="Core\Scenes\Scene.hpp" />
     <ClInclude Include="Core\Singletons\BattleManager.hpp" />

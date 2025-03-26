@@ -9,8 +9,7 @@
 #include <unordered_map>
 
 class BattleMainMenu;
-class BattlePartyUI;
-class BattleEnemyUI;
+class BattleUI;
 struct Combatant;
 struct Skill;
 
@@ -56,11 +55,11 @@ public: // Combatant Management Function Declarations
 	void RemoveCombatant(Combatant* _combatant);
 
 public: // Accessible Member Variable Declarations
-	BattleMainMenu* actionMenu;
-	BattlePartyUI* partyUI;
-	BattleEnemyUI* enemyUI;
+	static std::array<std::pair<int32_t, int32_t>, BATTLE_MAX_ENEMY_SIZE> enemyPositions;
 
-	Combatant* curCombatant;
+	BattleMainMenu* actionMenu;
+	BattleUI*		battleUI;
+	Combatant*		curCombatant;
 
 	std::unordered_map<uint16_t, uint8_t> curItemRewards;
 	uint32_t curMoneyReward;
@@ -77,14 +76,14 @@ public: // Accessible Member Variable Declarations
 	uint8_t lastState;
 
 private: // Hidden Member Variable Declarations 
-	uint8_t curTurn;
-	uint16_t encounterID;
-	uint8_t curRound;
-	uint8_t curSkillTarget;
+	uint8_t		curTurn;
+	uint16_t	encounterID;
+	uint8_t		curRound;
+	uint8_t		curSkillTarget;
 
-	uint32_t flags;
+	uint32_t	flags;
 
-	Skill* skillToUse;
+	Skill*		skillToUse;
 };
 
 #endif

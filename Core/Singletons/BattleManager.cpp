@@ -9,14 +9,23 @@ INIT_SINGLETON_CPP(BattleManager)
 #include "../Structs/Battle/Skill.hpp"
 #include "../Structs/Characters/EnemyCharacter.hpp"
 #include "../UI/Menus/Battle/BattleMainMenu.hpp"
-#include "../UI/Battle/BattlePartyUI.hpp"
-#include "../UI/Battle/BattleEnemyUI.hpp"
+#include "../UI/Battle/BattleUI.hpp"
 #include "../Utils/UtilityFunctions.hpp"
+
+std::array<std::pair<int32_t, int32_t>, BATTLE_MAX_ENEMY_SIZE> BattleManager::enemyPositions = {
+	std::make_pair(256i32, 64i32),		// First enemy combatant's position.
+	std::make_pair(320i32, 64i32),		// Second enemy combatant's position.
+	std::make_pair(256i32, 128i32),		// Third enemy combatant's position.
+	std::make_pair(320i32, 128i32),		// Fourth enemy combatant's position.
+	std::make_pair(384i32, 64i32),		// Fifth enemy combatant's position.
+	std::make_pair(192i32, 64i32),		// Sixth enemy combatant's position.
+	std::make_pair(384i32, 192i32),		// Seventh enemy combatant's position.
+	std::make_pair(192i32, 192i32)		// Eighth enemy combatant's position.
+};
 
 BattleManager::BattleManager() :
 	actionMenu(nullptr),
-	partyUI(nullptr),
-	enemyUI(nullptr),
+	battleUI(nullptr),
 	curCombatant(nullptr),
 	curItemRewards(),
 	curMoneyReward(0ui32),
@@ -46,9 +55,7 @@ bool BattleManager::OnUserCreate() {
 
 bool BattleManager::OnUserDestroy() {
 	DESTROY_MENU(actionMenu, BattleMainMenu);
-
-	if (partyUI) { delete partyUI, partyUI = nullptr; }
-	if (enemyUI) { delete enemyUI, enemyUI = nullptr; }
+	if (battleUI) { delete battleUI, battleUI = nullptr; }
 
 	for (Combatant* _c : combatants)
 		delete _c, _c = nullptr;
@@ -62,8 +69,7 @@ bool BattleManager::OnUserDestroy() {
 }
 
 bool BattleManager::OnUserUpdate(float_t _deltaTime) {
-	if (enemyUI) { enemyUI->OnUserUpdate(_deltaTime); }
-	if (partyUI) { partyUI->OnUserUpdate(_deltaTime); }
+	if (battleUI) { battleUI->OnUserUpdate(_deltaTime); }
 
 	if (turnDelay > 0.0f) {
 		turnDelay -= _deltaTime;
@@ -91,8 +97,7 @@ bool BattleManager::OnUserUpdate(float_t _deltaTime) {
 }
 
 bool BattleManager::OnUserRender(float_t _deltaTime) {
-	if (enemyUI) { enemyUI->OnUserRender(_deltaTime); }
-	if (partyUI) { partyUI->OnUserRender(_deltaTime); }
+	if (battleUI) { battleUI->OnUserRender(_deltaTime); }
 	return true;
 }
 
@@ -112,9 +117,11 @@ bool BattleManager::StateInitializeBattle() {
 		return true; // Prevents a battle from being initialized when one is already active.
 	flags |= FLAG_BATTLE_ACTIVE;
 
-	actionMenu = CREATE_NEW_MENU(BattleMainMenu)
-	partyUI = new BattlePartyUI();
-	enemyUI = new BattleEnemyUI();
+	actionMenu = CREATE_NEW_MENU(BattleMainMenu);
+	battleUI = new BattleUI();
+	battleUI->OnUserCreate();
+	//partyUI = new BattlePartyUI();
+	//enemyUI = new BattleEnemyUI();
 
 	// Attempt to fetch the relevant encounter data from within the data that was loaded on startup. The attempt to initialize
 	// the battle will fail if the data returned is null.
@@ -139,7 +146,6 @@ bool BattleManager::StateInitializeBattle() {
 			if (_spawnChance != 0xFFui8 && _spawnChance < uint8_t(std::rand() % 0xFFui8))
 				continue;
 			AddEnemyCombatant(_enemyID);
-			std::cout << "Added enemy with ID " << uint32_t(_enemyID) << " to the battle." << std::endl;
 		}
 	}
 
@@ -168,10 +174,6 @@ bool BattleManager::StateDetermineTurnOrder() {
 			}
 		}
 	}
-	std::cout << "Turn Order: { ";
-	for (size_t i : turnOrder)
-		std::cout << i << " ";
-	std::cout << "}" << std::endl;
 
 	SET_NEXT_STATE(STATE_BATTLE_CHECK_TURN_TYPE);
 	return true;
@@ -182,11 +184,13 @@ bool BattleManager::StateIsPlayerOrEnemyTurn() {
 
 	if (COMBATANT_IS_PLAYER(curCombatant)) {
 		SET_NEXT_STATE(STATE_BATTLE_PLAYER_TURN);
+		flags |= FLAG_BATTLE_PLAYER_COMBATANT;
 		actionMenu->PrepareForActivation(STATE_MENU_DEFAULT, curCombatant);
 		return true;
 	}
 
 	SET_NEXT_STATE(STATE_BATTLE_ENEMY_TURN);
+	flags &= ~FLAG_BATTLE_PLAYER_COMBATANT;
 	return true;
 }
 
@@ -218,7 +222,7 @@ bool BattleManager::StateExecuteSkill() {
 	turnDelay = 0.05f;
 
 	if (!COMBATANT_IS_PLAYER(_target))
-		enemyUI->ShowElement(_target, 1.25f - curSkillTarget * turnDelay);
+		battleUI->ShowElement(_target->uiElementIndex, 1.5f);
 
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
@@ -304,8 +308,7 @@ bool BattleManager::StateBattleEscape() {
 
 bool BattleManager::StatePostBattle() {
 	GET_SINGLETON(MenuManager)->DestroyMenu(actionMenu);
-	delete partyUI, partyUI = nullptr;
-	delete enemyUI, enemyUI = nullptr;
+	delete battleUI, battleUI = nullptr;
 
 	curRound = 0ui8;
 	curTurn = 0ui8;
@@ -318,6 +321,7 @@ bool BattleManager::StatePostBattle() {
 	curItemRewards.clear();
 	curMoneyReward = 0ui32;
 	curExpReward = 0ui32;
+	flags = 0ui32;
 
 	SET_NEXT_STATE(STATE_INVALID);
 	return true;
@@ -379,12 +383,14 @@ void BattleManager::AddPlayerCombatant(size_t _partyIndex) {
 	if (_player == nullptr)
 		return;
 
+	Combatant* _combatant = nullptr;
 	for (size_t i = 0ui64; i < combatants.size(); i++) {
-		if (COMBATANT_IS_ACTIVE(combatants[i]))
+		_combatant = combatants[i];
+		if (COMBATANT_IS_ACTIVE(_combatant))
 			continue;
 
-		combatants[i]->ActivateCombatant(_player, FLAG_COMBATANT_PLAYER);
-		partyUI->ActivateElement(combatants[i], 320, 180 + int32_t(i * 15));
+		_combatant->ActivateCombatant(_player, FLAG_COMBATANT_PLAYER);
+		_combatant->uiElementIndex = battleUI->ActivateElement(_combatant);
 		turnOrder.push_back(i);
 		return;
 	}
@@ -398,11 +404,13 @@ void BattleManager::AddEnemyCombatant(uint16_t _enemyID) {
 	if (typeid(*_enemy).hash_code() != typeid(EnemyCharacter).hash_code())
 		return;
 
+	Combatant* _combatant = nullptr;
 	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++) {
-		if (COMBATANT_IS_ACTIVE(combatants[i]))
+		_combatant = combatants[i];
+		if (COMBATANT_IS_ACTIVE(_combatant))
 			continue;
-		combatants[i]->ActivateCombatant(_enemy, 0u);
-		enemyUI->ActivateElement(combatants[i]);
+		_combatant->ActivateCombatant(_enemy, 0u);
+		_combatant->uiElementIndex = battleUI->ActivateElement(_combatant);
 		turnOrder.push_back(i);
 		return;
 	}
