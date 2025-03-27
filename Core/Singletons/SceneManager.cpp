@@ -2,6 +2,7 @@
 INIT_SINGLETON_CPP(SceneManager)
 
 #include "../Utils/SceneMacros.hpp"
+#include "../Singletons/EngineCore.hpp"
 #include "../Scenes/Battle/BattleScene.hpp"
 
 #include <iostream>
@@ -31,8 +32,8 @@ bool SceneManager::OnUserUpdate(float_t _deltaTime) {
 	return currentScene->OnUserUpdate(_deltaTime);
 }
 
-bool SceneManager::OnUserRender(float_t _deltaTime) {
-	return currentScene->OnUserRender(_deltaTime);
+bool SceneManager::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+	return currentScene->OnUserRender(_engine, _deltaTime);
 }
 
 bool SceneManager::OnBeforeUserUpdate(float_t _deltaTime) {

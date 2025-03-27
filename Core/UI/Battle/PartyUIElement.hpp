@@ -32,7 +32,7 @@ public: // Inherited Main Engine Function Overrides
 	void OnUserRender(EngineCore* _engine) override;
 
 public:  // Inherited Publicly Accessible Utility Function Overrides
-	void ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, Combatant* _combatant, int32_t _mpBarX, int32_t _mpBarY) override;
+	void ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, int32_t _mpBarX, int32_t _mpBarY, Combatant* _combatant, uint32_t _flags) override;
 };
 
 #endif

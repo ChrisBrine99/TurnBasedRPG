@@ -6,6 +6,7 @@
 #include <math.h>
 #include <vector>
 
+class EngineCore;
 class Menu;
 
 class MenuManager {
@@ -14,7 +15,7 @@ class MenuManager {
 public: // Main Engine Function Declarations
 	bool OnUserDestroy();
 	bool OnUserUpdate(float_t _deltaTime);
-	bool OnUserRender(float_t _deltaTime);
+	bool OnUserRender(EngineCore* _engine, float_t _deltaTime);
 	
 	bool OnBeforeUserUpdate(float_t _deltaTime);
 	bool OnAfterUserUpdate(float_t _deltaTime);

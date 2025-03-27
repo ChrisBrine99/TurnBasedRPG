@@ -67,28 +67,28 @@
 //	Condenses the code required for initializing a singleton (Within the .hpp file of said singleton class) into a single-line define.	//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define INIT_SINGLETON_HPP(_x)									\
-			private:											\
-				_x();											\
-				~_x() = default;								\
-			public:												\
-				_x(const _x&) = delete;							\
-				void operator=(const _x&) = delete;				\
-			protected:											\
-				static _x* s_instance;							\
-			public:												\
-				static _x* GetInstance();						\
+#define INIT_SINGLETON_HPP(_x)						\
+			private:								\
+				_x();								\
+				~_x() = default;					\
+			public:									\
+				_x(const _x&) = delete;				\
+				void operator=(const _x&) = delete;	\
+			protected:								\
+				static _x* s_instance;				\
+			public:									\
+				static _x* GetInstance();			\
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Condenses the code required for initializing a singleton (Within the .cpp file of said singleton class) into a single-line define.	//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define INIT_SINGLETON_CPP(_x)									\
-			_x* _x::s_instance = nullptr;						\
-			_x* _x::GetInstance(){								\
-				if (s_instance == nullptr)						\
-					s_instance = new _x();						\
-				return s_instance;								\
+#define INIT_SINGLETON_CPP(_x)				\
+			_x* _x::s_instance = nullptr;	\
+			_x* _x::GetInstance(){			\
+				if (s_instance == nullptr)	\
+					s_instance = new _x();	\
+				return s_instance;			\
 			}
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
@@ -98,12 +98,12 @@
 //  funciton, respectively.																												//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define CALL_SINGLETON_CREATE(_x, _func)						\
-			if (!GET_SINGLETON(_x)->_func())					\
+#define CALL_SINGLETON_CREATE(_x, _func)				\
+			if (!GET_SINGLETON(_x)->_func())			\
 				return false
 
-#define CALL_SINGLETON_UPDATE(_x, _func)						\
-			if (!GET_SINGLETON(_x)->_func(_deltaTime))			\
+#define CALL_SINGLETON_UPDATE(_x, _func)				\
+			if (!GET_SINGLETON(_x)->_func(_deltaTime))	\
 				return false
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
@@ -111,12 +111,12 @@
 //	a function as the second parameter since there is only ever one destroy and one render function in the engine.						//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define CALL_SINGLETON_DESTROY(_x)								\
-			if (!GET_SINGLETON(_x)->OnUserDestroy())			\
+#define CALL_SINGLETON_DESTROY(_x)										\
+			if (!GET_SINGLETON(_x)->OnUserDestroy())					\
 				return false
 
-#define CALL_SINGLETON_RENDER(_x)								\
-			if (!GET_SINGLETON(_x)->OnUserRender(_deltaTime))	\
+#define CALL_SINGLETON_RENDER(_x)										\
+			if (!GET_SINGLETON(_x)->OnUserRender(_engine, _deltaTime))	\
 				return false
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //

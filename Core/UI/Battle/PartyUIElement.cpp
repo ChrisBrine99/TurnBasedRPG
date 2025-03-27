@@ -43,8 +43,8 @@ void PartyUIElement::OnUserRender(EngineCore* _engine) {
 	_engine->DrawStringDecal(_textPosition, sCurMagicpoints, COLOR_LIGHT_PURPLE);
 }
 
-void PartyUIElement::ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, Combatant* _combatant, int32_t _mpBarX, int32_t _mpBarY) {
-	BattleUIElement::ActivateElement(_x, _y, _hpBarX, _hpBarY, _combatant, _mpBarX, _mpBarY);
+void PartyUIElement::ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, int32_t _mpBarX, int32_t _mpBarY, Combatant* _combatant, uint32_t _flags) {
+	BattleUIElement::ActivateElement(_x, _y, _hpBarX, _hpBarY, _mpBarX, _mpBarY, _combatant, _flags);
 	sName					= _combatant->character->name;
 	sLevel					= std::to_string(_combatant->level);
 	sCurHitpoints			= std::to_string(_combatant->curHitpoints);

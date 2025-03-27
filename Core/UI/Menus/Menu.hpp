@@ -22,7 +22,7 @@ public: // Main Engine Function Declarations
 	virtual bool OnUserCreate() = 0;
 	virtual bool OnUserDestroy();
 	virtual bool OnUserUpdate(float_t _deltaTime);
-	virtual bool OnUserRender(float_t _deltaTime);
+	virtual bool OnUserRender(EngineCore* _engine, float_t _deltaTime);
 
 	bool OnBeforeUserUpdate(float_t _deltaTime);
 	bool OnAfterUserUpdate(float_t _deltaTime);
@@ -70,7 +70,7 @@ protected: // Hidden (Accessible to Children Only) Utility Function Declarations
 	void InitializeDescriptionParams(int32_t _x, int32_t _y);
 
 	void UpdateCursor(float_t _deltaTime);
-	void RenderVisibleOptions(float_t _deltaTime);
+	void RenderVisibleOptions(EngineCore* _engine, float_t _deltaTime);
 
 public: // Publicly Accessible Utility Function Declarations
 	void PrepareForActivation(uint8_t _state);

@@ -49,11 +49,10 @@ bool BattleSkillMenu::OnUserUpdate(float_t _deltaTime) {
 	return false;
 }
 
-bool BattleSkillMenu::OnUserRender(float_t _deltaTime) {
-	RenderVisibleOptions(_deltaTime);
+bool BattleSkillMenu::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+	RenderVisibleOptions(_engine, _deltaTime);
 
 	// Loop through the six menu options that have costs associated with them and render their costs to the right.
-	EngineCore* _core	= GET_SINGLETON(EngineCore);
 	int32_t		_length	= int32_t(sSkillCost.size());
 	int8_t		_index	= 0;
 	olc::Pixel	_color	= optionColor;
@@ -70,7 +69,7 @@ bool BattleSkillMenu::OnUserRender(float_t _deltaTime) {
 			else							{ _color = optionColor; }
 		}
 
-		_core->DrawString(optionAnchorX + 100, optionAnchorY + (optionSpacingY * _index), sSkillCost[i], _color);
+		_engine->DrawString(optionAnchorX + 100, optionAnchorY + (optionSpacingY * _index), sSkillCost[i], _color);
 	}
 
 	return true;

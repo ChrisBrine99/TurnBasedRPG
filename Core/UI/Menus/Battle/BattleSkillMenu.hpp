@@ -30,7 +30,7 @@ public: // Inherited Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
 	bool OnUserUpdate(float_t _deltaTime) override;
-	bool OnUserRender(float_t _deltaTime) override;
+	bool OnUserRender(EngineCore* _engine, float_t _deltaTime) override;
 
 public: // Publicly Accessibly Utility Function Declarations
 	void GenerateMenuOptions(Combatant* _curCombatant);

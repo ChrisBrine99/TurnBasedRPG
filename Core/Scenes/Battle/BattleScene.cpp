@@ -17,7 +17,7 @@ bool BattleScene::OnUserCreate() {
 
 	GET_SINGLETON(BattleManager)->SetEncounterID(0ui16);
 
-	CREATE_OBJECT(ID_OBJECT_PLAYER, 100, 100);
+	//CREATE_OBJECT(ID_OBJECT_PLAYER, 100, 100);
 	
 	return true;
 }
@@ -31,7 +31,7 @@ bool BattleScene::OnUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-bool BattleScene::OnUserRender(float_t _deltaTime) {
+bool BattleScene::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
 	CALL_SINGLETON_RENDER(BattleManager);
 	return true;
 }

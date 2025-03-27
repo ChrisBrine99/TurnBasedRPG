@@ -41,6 +41,8 @@ bool EngineCore::OnUserUpdate(float_t _deltaTime) {
 
 bool EngineCore::OnUserRender(float_t _deltaTime) {
 	Clear(olc::BLACK);
+
+	EngineCore* _engine = this; // Required for singletons to work with having to add an additional argument.
 	CALL_SINGLETON_RENDER(SceneManager);
 	CALL_SINGLETON_RENDER(MenuManager);
 	return true;

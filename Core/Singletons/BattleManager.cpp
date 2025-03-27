@@ -10,6 +10,7 @@ INIT_SINGLETON_CPP(BattleManager)
 #include "../Structs/Characters/EnemyCharacter.hpp"
 #include "../UI/Menus/Battle/BattleMainMenu.hpp"
 #include "../UI/Battle/BattleUI.hpp"
+#include "../UI/Battle/BattleUIElement.hpp"
 #include "../Utils/UtilityFunctions.hpp"
 
 std::array<std::pair<int32_t, int32_t>, BATTLE_MAX_ENEMY_SIZE> BattleManager::enemyPositions = {
@@ -96,8 +97,8 @@ bool BattleManager::OnUserUpdate(float_t _deltaTime) {
 	return false;
 }
 
-bool BattleManager::OnUserRender(float_t _deltaTime) {
-	if (battleUI) { battleUI->OnUserRender(_deltaTime); }
+bool BattleManager::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+	if (battleUI) { battleUI->OnUserRender(_engine, _deltaTime); }
 	return true;
 }
 
@@ -120,8 +121,6 @@ bool BattleManager::StateInitializeBattle() {
 	actionMenu = CREATE_NEW_MENU(BattleMainMenu);
 	battleUI = new BattleUI();
 	battleUI->OnUserCreate();
-	//partyUI = new BattlePartyUI();
-	//enemyUI = new BattleEnemyUI();
 
 	// Attempt to fetch the relevant encounter data from within the data that was loaded on startup. The attempt to initialize
 	// the battle will fail if the data returned is null.
@@ -180,17 +179,16 @@ bool BattleManager::StateDetermineTurnOrder() {
 }
 
 bool BattleManager::StateIsPlayerOrEnemyTurn() {
-	curCombatant = combatants[turnOrder[curTurn]];
+	size_t _index = turnOrder[curTurn];
+	curCombatant = combatants[_index];
 
-	if (COMBATANT_IS_PLAYER(curCombatant)) {
+	if (_index < BATTLE_MAX_PARTY_SIZE) {
 		SET_NEXT_STATE(STATE_BATTLE_PLAYER_TURN);
-		flags |= FLAG_BATTLE_PLAYER_COMBATANT;
 		actionMenu->PrepareForActivation(STATE_MENU_DEFAULT, curCombatant);
 		return true;
 	}
 
 	SET_NEXT_STATE(STATE_BATTLE_ENEMY_TURN);
-	flags &= ~FLAG_BATTLE_PLAYER_COMBATANT;
 	return true;
 }
 
@@ -217,12 +215,13 @@ bool BattleManager::StateExecuteSkill() {
 	if (skillToUse == nullptr || curSkillTarget >= targets.size())
 		return false;
 
-	Combatant* _target = combatants[targets[curSkillTarget]];
+	size_t _index		= targets[curSkillTarget];
+	Combatant* _target	= combatants[_index];
 	skillToUse->ExecuteUseFunction(_target);
 	turnDelay = 0.05f;
 
-	if (!COMBATANT_IS_PLAYER(_target))
-		battleUI->ShowElement(_target->uiElementIndex, 1.5f);
+	if (_index >= PARTY_ACTIVE_MAX_SIZE)
+		battleUI->uiElements[_index]->ShowElement(1.25f);
 
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
@@ -237,8 +236,6 @@ bool BattleManager::StateExecuteSkill() {
 void BattleManager::UpdateHitpoints(Combatant* _combatant, uint16_t _value) {
 	if (_value > _combatant->curHitpoints) { 
 		_combatant->curHitpoints = 0ui16;
-		if (!COMBATANT_IS_PLAYER(_combatant))
-			AddToPlayerRewards(_combatant);
 		RemoveCombatant(_combatant);
 		return;
 	}
@@ -255,10 +252,11 @@ void BattleManager::UpdateMagicpoints(Combatant* _combatant, uint16_t _value) {
 
 bool BattleManager::StateIsRoundFinished() {
 	// Perform a check to see how many party members and enemies are left in the battle.
-	size_t _playersRemaining = 0ui64;
-	size_t _enemiesRemaining = 0ui64;
-	for (size_t i = 0ui64; i < turnOrder.size(); i++) {
-		if (COMBATANT_IS_PLAYER(combatants[turnOrder[i]])) {
+	size_t _playersRemaining	= 0ui64;
+	size_t _enemiesRemaining	= 0ui64;
+	size_t _numCombatants		= turnOrder.size();
+	for (size_t i = 0ui64; i < _numCombatants; i++) {
+		if (turnOrder[i] < BATTLE_MAX_PARTY_SIZE) {
 			_playersRemaining++;
 			continue;
 		}
@@ -282,7 +280,7 @@ bool BattleManager::StateIsRoundFinished() {
 	// If the battle should continue, increment the turn counter and then check if the value exceeds the current number 
 	// of active combatants. If so, the round counter will increment and start the turn loop once again.
 	curTurn++;
-	if (curTurn >= turnOrder.size()) {
+	if (curTurn >= _numCombatants) {
 		SET_NEXT_STATE(STATE_BATTLE_SET_TURN_ORDER);
 		curTurn = 0ui8;
 		curRound++;
@@ -314,7 +312,7 @@ bool BattleManager::StatePostBattle() {
 	curTurn = 0ui8;
 
 	for (Combatant* _c : combatants)
-		_c->flags = 0u;
+		_c->isActive = false;
 	turnOrder.clear();
 	curCombatant = nullptr;
 
@@ -376,24 +374,17 @@ void BattleManager::AddToPlayerRewards(Combatant* _combatant) {
 }
 
 void BattleManager::AddPlayerCombatant(size_t _partyIndex) {
-	if (turnOrder.size() >= BATTLE_TOTAL_COMBATANTS)
-		return;
-
 	PlayerCharacter* _player = GET_SINGLETON(PartyManager)->GetActiveRosterMember(_partyIndex);
 	if (_player == nullptr)
 		return;
 
-	Combatant* _combatant = nullptr;
-	for (size_t i = 0ui64; i < combatants.size(); i++) {
-		_combatant = combatants[i];
-		if (COMBATANT_IS_ACTIVE(_combatant))
-			continue;
+	Combatant* _combatant = combatants[_partyIndex];
+	if (_combatant->isActive)
+		return; // Active member is already within the battle; don't bother activating them again
 
-		_combatant->ActivateCombatant(_player, FLAG_COMBATANT_PLAYER);
-		_combatant->uiElementIndex = battleUI->ActivateElement(_combatant);
-		turnOrder.push_back(i);
-		return;
-	}
+	_combatant->ActivateCombatant(_player);
+	battleUI->ActivateElement(_combatant, _partyIndex);
+	turnOrder.push_back(_partyIndex);
 }
 
 void BattleManager::AddEnemyCombatant(uint16_t _enemyID) {
@@ -405,25 +396,29 @@ void BattleManager::AddEnemyCombatant(uint16_t _enemyID) {
 		return;
 
 	Combatant* _combatant = nullptr;
-	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++) {
+	for (size_t i = BATTLE_MAX_PARTY_SIZE; i < BATTLE_TOTAL_COMBATANTS; i++) {
 		_combatant = combatants[i];
-		if (COMBATANT_IS_ACTIVE(_combatant))
+		if (_combatant->isActive)
 			continue;
-		_combatant->ActivateCombatant(_enemy, 0u);
-		_combatant->uiElementIndex = battleUI->ActivateElement(_combatant);
+
+		_combatant->ActivateCombatant(_enemy);
+		 battleUI->ActivateElement(_combatant, i);
 		turnOrder.push_back(i);
 		return;
 	}
 }
 
-void BattleManager::RemoveCombatant(Combatant* _combatant) {
-	for (size_t i = 0ui64; i < turnOrder.size(); i++){
+void BattleManager::RemoveCombatant(Combatant* _combatant, bool _defeatedByPlayer) {
+	size_t _length = turnOrder.size();
+	for (size_t i = 0ui64; i < _length; i++){
 		if (combatants[turnOrder[i]] != _combatant)
 			continue;
 
+		if (turnOrder[i] >= BATTLE_MAX_PARTY_SIZE)
+			AddToPlayerRewards(_combatant);
+
 		turnOrder.erase(turnOrder.begin() + i);
-		_combatant->flags = 0u;
-		i--; // Offset to compensate for the removed value.
+		_combatant->isActive = false;
 		return;
 	}
 }

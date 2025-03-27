@@ -22,10 +22,10 @@ struct Combatant {
 	uint8_t							curMindAilment;
 	uint8_t							curSpecialAilment;
 
+	bool							isActive;
+
 	uint16_t						baseSpeed;
 	uint16_t						statModifiers;
-	uint32_t						flags;
-	uint32_t						uiElementIndex;
 
 	BaseCharacter*					character;
 
@@ -41,14 +41,13 @@ struct Combatant {
 		curMagicpoints(0ui16),
 		maxMagicpoints(0ui16),
 		maxMagicpointMultiplier(1.0f),
-		activeSkills(std::vector<uint16_t>()),
+		activeSkills(),
 		curNerveAilment(AILMENT_NERVE_NONE),
 		curMindAilment(AILMENT_MIND_NONE),
 		curSpecialAilment(AILMENT_SPECIAL_NONE),
+		isActive(false),
 		baseSpeed(0ui16),
 		statModifiers(0ui16),
-		flags(0ui32),
-		uiElementIndex(0ui32),
 		character(nullptr)
 	{
 		stats.fill(1ui8); // Populate the array with default values of 1 for each stat.
@@ -57,7 +56,7 @@ struct Combatant {
 
 	// Copy over the required data from the desired character instance. Then, apply any additional flags on top of the flag 
 	// that signals to the BattleManager that the combatant is now active in the battle so it can be added to the turn order.
-	inline void ActivateCombatant(BaseCharacter* _character, uint32_t _flags) {
+	inline void ActivateCombatant(BaseCharacter* _character) {
 		level = _character->level; // Make sure the level is copied over.
 
 		for (size_t i = 0ui64; i < STAT_COUNT; i++) // Copy over the seven main stat values.
@@ -83,9 +82,9 @@ struct Combatant {
 		// considered 0 by the BattleManager since it offsets the values by -3 during calculations.
 		statModifiers = 0x36DBui16;
 
-		// Finally, set the flags for the combatant and assign its character to the stored pointer so it can be referenced 
-		// whenever required during the course of a battle. The active flag is always set upon calling this function.
-		flags = _flags | FLAG_COMBATANT_ACTIVE;
+		// Finally, flip the toggle that lets the battle manager know that the Combatant has been activated witin the
+		// battle, and store a pointer to the character they represent in case their data is required.
+		isActive = true;
 		character = _character;
 	}
 

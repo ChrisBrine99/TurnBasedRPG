@@ -60,8 +60,8 @@ bool Menu::OnUserUpdate(float_t _deltaTime) {
 	return false;
 }
 
-bool Menu::OnUserRender(float_t _deltaTime) {
-	RenderVisibleOptions(_deltaTime);
+bool Menu::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+	RenderVisibleOptions(_engine, _deltaTime);
 	return true;
 }
 
@@ -327,11 +327,10 @@ vertical_cursor_movement_logic:
 	curOption += menuWidth * _vMovement;
 }
 
-void Menu::RenderVisibleOptions(float_t _deltaTime) {
+void Menu::RenderVisibleOptions(EngineCore* _engine, float_t _deltaTime) {
 	if (!MENU_IS_INITIALIZED || !MENU_ARE_OPTIONS_ALLOWED)
 		return;
 
-	EngineCore* _engine	= GET_SINGLETON(EngineCore);
 	size_t _yyOffset	= curVisibleRowOffset;
 	size_t _xxOffset	= curVisibleColumnOffset;
 	size_t _index		= 0ui64;

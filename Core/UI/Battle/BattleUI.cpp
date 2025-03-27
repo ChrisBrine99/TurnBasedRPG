@@ -15,6 +15,15 @@
 #define PARTY_UI_MP_BAR_Y				10i32
 #define PARTY_UI_SPACING_Y				16i32
 
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines for the position of a given enemy's UI within a battle and the offsets for its various elements.							//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define ENEMY_UI_HP_BAR_X				8i32
+#define ENEMY_UI_HP_BAR_Y				32i32
+#define ENEMY_UI_MP_BAR_X				8i32
+#define ENEMY_UI_MP_BAR_Y				38i32
+
 BattleUI::BattleUI() :
 	uiElements(),
 	totalPartyMembers(0ui8),
@@ -46,60 +55,39 @@ void BattleUI::OnUserUpdate(float_t _deltaTime) {
 		_element->OnUserUpdate();
 }
 
-void BattleUI::OnUserRender(float_t _deltaTime) {
-	EngineCore* _engine = GET_SINGLETON(EngineCore);
+void BattleUI::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
 	for (BattleUIElement* _element : uiElements)
 		_element->OnUserRender(_engine);
 }
 
-uint32_t BattleUI::ActivateElement(Combatant* _combatant) {
-	if (COMBATANT_IS_PLAYER(_combatant)) {
-		for (size_t i = 0ui64; i < BATTLE_MAX_PARTY_SIZE; i++) {
-			if (!(uiElements[i]->flags & FLAG_BATUI_ELEMENT_IN_USE)) {
-				uiElements[i]->ActivateElement(
-					PARTY_UI_X, 
-					PARTY_UI_Y + (PARTY_UI_SPACING_Y * totalPartyMembers),
-					PARTY_UI_HP_BAR_X, 
-					PARTY_UI_HP_BAR_Y, 
-					_combatant, 
-					PARTY_UI_MP_BAR_X, 
-					PARTY_UI_MP_BAR_Y
-				);
-				uiElements[i]->flags |= FLAG_BATUI_ELEMENT_IN_USE | FLAG_BATUI_ELEMENT_MP_SHOWN | FLAG_BATUI_ELEMENT_VISIBLE;
-				totalPartyMembers++;
-				return uint32_t(i);
-			}
-		}
+void BattleUI::ActivateElement(Combatant* _combatant, size_t _index) {
+	if (_index >= BATTLE_TOTAL_COMBATANTS || (uiElements[_index]->flags & FLAG_BATUI_ELEMENT_IN_USE))
+		return;
 
-		return uint32_t(BATTLE_MAX_PARTY_SIZE);
+	if (_index < BATTLE_MAX_PARTY_SIZE) {
+		uiElements[_index]->ActivateElement(
+			PARTY_UI_X, 
+			PARTY_UI_Y + (PARTY_UI_SPACING_Y * totalPartyMembers),
+			PARTY_UI_HP_BAR_X, 
+			PARTY_UI_HP_BAR_Y, 
+			PARTY_UI_MP_BAR_X,
+			PARTY_UI_MP_BAR_Y,
+			_combatant, 
+			FLAG_BATUI_ELEMENT_VISIBLE | FLAG_BATUI_ELEMENT_IN_USE | FLAG_BATUI_ELEMENT_HP_SHOWN | FLAG_BATUI_ELEMENT_MP_SHOWN
+		);
+		totalPartyMembers++;
+		return;
 	}
 
-	for (size_t i = BATTLE_MAX_PARTY_SIZE; i < BATTLE_TOTAL_COMBATANTS; i++) {
-		if (!(uiElements[i]->flags & FLAG_BATUI_ELEMENT_IN_USE)) {
-			auto& _coordinates = BattleManager::enemyPositions[i - BATTLE_MAX_PARTY_SIZE];
-			uiElements[i]->ActivateElement(
-				_coordinates.first,
-				_coordinates.second,
-				8i32,
-				32i32,
-				_combatant
-			);
-			uiElements[i]->flags |= FLAG_BATUI_ELEMENT_IN_USE | FLAG_BATUI_ELEMENT_USE_TIMER;
-			return uint32_t(i);
-		}
-	}
-
-	return uint32_t(BATTLE_MAX_PARTY_SIZE);
-}
-
-void BattleUI::DeactivateElement(uint32_t _element) {
-	if (_element >= uint32_t(BATTLE_TOTAL_COMBATANTS))
-		return;
-	uiElements[_element]->flags = 0i32;
-}
-
-void BattleUI::ShowElement(uint32_t _element, float_t _time) {
-	if (_element >= uint32_t(BATTLE_TOTAL_COMBATANTS))
-		return;
-	uiElements[_element]->ShowElement(_time);
+	auto& _coords = BattleManager::enemyPositions[_index - BATTLE_MAX_PARTY_SIZE];
+	uiElements[_index]->ActivateElement(
+		_coords.first,
+		_coords.second,
+		ENEMY_UI_HP_BAR_X,
+		ENEMY_UI_HP_BAR_Y,
+		ENEMY_UI_MP_BAR_X,
+		ENEMY_UI_MP_BAR_Y,
+		_combatant,
+		FLAG_BATUI_ELEMENT_IN_USE | FLAG_BATUI_ELEMENT_USE_TIMER | FLAG_BATUI_ELEMENT_HP_SHOWN
+	);
 }

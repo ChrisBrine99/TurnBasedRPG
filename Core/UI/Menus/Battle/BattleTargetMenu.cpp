@@ -54,7 +54,10 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 
 	BattleManager* _manager		= GET_SINGLETON(BattleManager);
 	Combatant* _curCombatant	= _manager->curCombatant;
+	auto& _turnOrder			= _manager->turnOrder;
+	size_t _size				= _turnOrder.size();
 	bool _shouldSkipCaster		= (_targeting == TARGET_SINGLE_ALLY || _targeting == TARGET_ALL_ALLY);
+
 	switch (_targeting) {
 	case TARGET_ALL_ENEMY:			// Grab all enemy targets for the user to select from.
 	case TARGET_ALL_ENEMY_SELF:
@@ -63,10 +66,9 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		[[fallthrough]];
 	case TARGET_SINGLE_ENEMY:
 	case TARGET_SINGLE_ENEMY_SELF:
-		for (size_t i : _manager->turnOrder) {
-			if (COMBATANT_IS_PLAYER(_manager->combatants[i]))
-				continue; // Skip over all player party combatants
-			validTargets.push_back(i);
+		for (size_t i = 0ui64; i < _size; i++) {
+			if (_turnOrder[i] >= BATTLE_MAX_PARTY_SIZE)
+				validTargets.push_back(_turnOrder[i]);
 		}
 		break;
 	case TARGET_ALL_ALLY:			// Grab all allied targets for the user to select from.
@@ -76,20 +78,14 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		[[fallthrough]];
 	case TARGET_SINGLE_ALLY:
 	case TARGET_SINGLE_ALLY_SELF:
-		for (size_t i : _manager->turnOrder) {
-			if (!COMBATANT_IS_PLAYER(_manager->combatants[i]) || (_curCombatant == _manager->combatants[i] && _shouldSkipCaster))
-				continue; // Skip over all enemy combatants OR the caster if they can't be targeted by the skill.
-			validTargets.push_back(i);
+		for (size_t i = 0ui64; i < BATTLE_MAX_PARTY_SIZE; i++) {
+			if (_manager->combatants[i]->isActive || (_manager->combatants[i] == _curCombatant && !_shouldSkipCaster))
+				validTargets.push_back(i);
 		}
 		break;
 	case TARGET_EVERYONE:			// Skill hits everyone; copy over the entire contents of the turn order.
 	case TARGET_EVERYONE_SELF:
-		for (size_t i : _manager->turnOrder) {
-			if (_curCombatant == _manager->combatants[i] && _targeting == TARGET_EVERYONE)
-				continue; // Skips over the caster if required by the skill.
-			validTargets.push_back(i);
-		}
-		// There is no need to pick a target out of the valid targets since all will be affected by the current skill.
+		std::copy(_turnOrder.begin(), _turnOrder.end(), validTargets.begin());
 		flags |= FLAG_TGTMENU_ONLY_CONFIRM;
 		break;
 	}

@@ -33,7 +33,6 @@
 
 #define FLAG_BATTLE_ACTIVE				0x00000001ui32
 #define FLAG_BATTLE_WAIT_ANIMATION		0x00000002ui32
-#define FLAG_BATTLE_PLAYER_COMBATANT	0x00000004ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines that simplify the formatting required to check for each of the battle manager's state-independent flags.					//
@@ -41,22 +40,6 @@
 
 #define BATTLE_IS_ACTIVE				(flags & FLAG_BATTLE_ACTIVE)
 #define BATTLE_PAUSED_FOR_ANIMATION		(flags & FLAG_BATTLE_WAIT_ANIMATION)
-#define BATTLE_IS_COMBATANT_PLAYER		(flags & FLAG_BATTLE_PLAYER_COMBATANT)
-
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Values for the bits that represent a certain characteristic within a given Combatant struct. Allows 32 boolean values to be stored	//
-//	in 4 bytes of space instead of 32 bytes.																							//
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-
-#define FLAG_COMBATANT_PLAYER			0x00000001u
-#define FLAG_COMBATANT_ACTIVE			0x00000002u
-
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Defines that allow a specific Combatant's flags to be checked for the state of each flag found within its "flags" variable.			//
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-
-#define COMBATANT_IS_PLAYER(_x)			(_x->flags & FLAG_COMBATANT_PLAYER)
-#define COMBATANT_IS_ACTIVE(_x)			(_x->flags & FLAG_COMBATANT_ACTIVE)
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for each of the game's affinities. These are utilized by skills to determine how they will function and how they will		//

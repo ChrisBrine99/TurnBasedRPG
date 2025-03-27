@@ -10,6 +10,7 @@
 
 class BattleMainMenu;
 class BattleUI;
+class EngineCore;
 struct Combatant;
 struct Skill;
 
@@ -20,7 +21,7 @@ public: // Main Engine Function Declarations
 	bool OnUserCreate();
 	bool OnUserDestroy();
 	bool OnUserUpdate(float_t _deltaTime);
-	bool OnUserRender(float_t _deltaTime);
+	bool OnUserRender(EngineCore* _engine, float_t _deltaTime);
 
 	bool OnBeforeUserUpdate(float_t _deltaTime);
 	bool OnAfterUserUpdate(float_t _deltaTime);
@@ -52,7 +53,7 @@ private:
 public: // Combatant Management Function Declarations
 	void AddPlayerCombatant(size_t _partyIndex);
 	void AddEnemyCombatant(uint16_t _enemyID);
-	void RemoveCombatant(Combatant* _combatant);
+	void RemoveCombatant(Combatant* _combatant, bool _defeatedByPlayer = false);
 
 public: // Accessible Member Variable Declarations
 	static std::array<std::pair<int32_t, int32_t>, BATTLE_MAX_ENEMY_SIZE> enemyPositions;

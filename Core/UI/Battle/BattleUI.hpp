@@ -10,6 +10,7 @@
 
 #define BATUI_UPDATE_INTERVAL			0.01f
 
+class EngineCore;
 struct BattleUIElement;
 
 class BattleUI {
@@ -22,12 +23,10 @@ public: // Main Engine Function Declarations
 	void OnUserCreate();
 	void OnUserDestroy();
 	void OnUserUpdate(float_t _deltaTime);
-	void OnUserRender(float_t _deltaTime);
+	void OnUserRender(EngineCore* _engine, float_t _deltaTime);
 
 public: // Publicly Accessible Utility Function Declarations
-	uint32_t ActivateElement(Combatant* _combatant);
-	void DeactivateElement(uint32_t _element);
-	void ShowElement(uint32_t _element, float_t _time);
+	void ActivateElement(Combatant* _combatant, size_t _index);
 
 public: // Publicly Accessible Member Variable Declarations
 	std::array<BattleUIElement*, BATTLE_TOTAL_COMBATANTS> uiElements;

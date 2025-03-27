@@ -30,12 +30,12 @@ bool MenuManager::OnUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-bool MenuManager::OnUserRender(float_t _deltaTime) {
+bool MenuManager::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
 	for (Menu* _menu : activeMenus) {
 		if (!(_menu->GetFlags() & FLAG_MENU_VISIBLE))
 			continue;
 
-		if (!_menu->OnUserRender(_deltaTime))
+		if (!_menu->OnUserRender(_engine, _deltaTime))
 			return false;
 	}
 	return true;
