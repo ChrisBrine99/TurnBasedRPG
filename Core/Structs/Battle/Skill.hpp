@@ -9,6 +9,7 @@
 #include <string>
 #include <array>
 
+class BattleScene;
 struct Combatant;
 
 struct Skill {
@@ -28,7 +29,7 @@ struct Skill {
 								effectChance;	// Stores another group of four 8-bit integers that simply determine the chance of inflicting each added effect.
 
 	// The function that will be called upon the skill's use in battle.
-	void (Skill::*useFunction)(Combatant*);
+	void (Skill::*useFunction)(BattleScene*, Combatant*);
 
 	// A skill's default constructor; initializes every one of its variables with default values.
 	Skill() :
@@ -52,18 +53,18 @@ struct Skill {
 
 	// The function that is responsible for executing the Skill's "use" function. If the value in "useFunction" is nullptr, 
 	// this function will do nothing and the skill will do nothing within the battle.
-	inline void ExecuteUseFunction(Combatant* _target) {
+	inline void ExecuteUseFunction(BattleScene* _scene, Combatant* _target) {
 		if (useFunction == nullptr)
 			return;
-		((*this).*(this->useFunction))(_target);
+		((*this).*(this->useFunction))(_scene, _target);
 	}
 
 public: // Skill Use Function Declarations (Defined within Skill.cpp)
-	void UsePhysicalSkillGeneric(Combatant* _target);
-	void UseMagicSkillGeneric(Combatant* _target);
-	void UseVoidSkillGeneric(Combatant* _target);
+	void UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target);
+	void UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target);
+	void UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target);
 
-	void UseMagicSkillPlusEffect(Combatant* _target);
+	void UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target);
 
 private: // Skill Utility Function Declarations (Defined within Skill.cpp)
 	bool AccuracyCheck(Combatant* _caster, Combatant* _target) const;

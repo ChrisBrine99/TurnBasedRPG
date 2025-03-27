@@ -1,7 +1,8 @@
 #include "BattleUI.hpp"
+
 #include "PartyUIElement.hpp"
+#include "../../Scenes/BattleScene.hpp"
 #include "../../Singletons/EngineCore.hpp"
-#include "../../Singletons/BattleManager.hpp"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for the position of the party UI within a battle and the offsets for its various elements.									//
@@ -79,7 +80,7 @@ void BattleUI::ActivateElement(Combatant* _combatant, size_t _index) {
 		return;
 	}
 
-	auto& _coords = BattleManager::enemyPositions[_index - BATTLE_MAX_PARTY_SIZE];
+	auto& _coords = BattleScene::positions[_index];
 	uiElements[_index]->ActivateElement(
 		_coords.first,
 		_coords.second,

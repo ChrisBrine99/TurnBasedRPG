@@ -1,8 +1,11 @@
 #ifndef BATTLE_UI_HPP
 #define BATTLE_UI_HPP
 
-#include "../../Structs/Battle/Combatant.hpp"
 #include "../../Utils/BattleMacros.hpp"
+
+#include <array>
+#include <cinttypes>
+#include <math.h>
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Determines how fast the ui elements can update their visual representations per second (1.0f = one full second).					//
@@ -12,6 +15,7 @@
 
 class EngineCore;
 struct BattleUIElement;
+struct Combatant;
 
 class BattleUI {
 public: // Constructor/Destructor Declarations

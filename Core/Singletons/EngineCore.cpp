@@ -2,7 +2,6 @@
 INIT_SINGLETON_CPP(EngineCore)
 
 #include "../Extensions/EngineCoreExt.hpp"
-#include "BattleManager.hpp"
 #include "DataManager.hpp"
 #include "GameSettings.hpp"
 #include "PartyManager.hpp"
@@ -24,13 +23,12 @@ bool EngineCore::OnUserCreate() {
 bool EngineCore::OnUserDestroy() {
 	delete engineExt, engineExt = nullptr;
 
-	CALL_SINGLETON_DESTROY(BattleManager);
+	CALL_SINGLETON_DESTROY(SceneManager);
+	CALL_SINGLETON_DESTROY(PartyManager);
+	CALL_SINGLETON_DESTROY(MenuManager);
 	CALL_SINGLETON_DESTROY(DataManager);
 	CALL_SINGLETON_DESTROY(GameSettings);
-	CALL_SINGLETON_DESTROY(MenuManager);
-	CALL_SINGLETON_DESTROY(PartyManager);
-	CALL_SINGLETON_DESTROY(SceneManager);
-	return true;;
+	return true;
 }
 
 bool EngineCore::OnUserUpdate(float_t _deltaTime) {

@@ -1,6 +1,8 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
+#include "../Utils/SceneMacros.hpp"
+
 #include <math.h>
 #include <cinttypes>
 

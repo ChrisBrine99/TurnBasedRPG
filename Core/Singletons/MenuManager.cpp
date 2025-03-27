@@ -10,9 +10,12 @@ MenuManager::MenuManager() :
 }
 
 bool MenuManager::OnUserDestroy() {
-	for (Menu* _menu : activeMenus) {
-		_menu->OnUserDestroy();
-		delete _menu, _menu = nullptr;
+	size_t _length = activeMenus.size();
+	for (size_t i = 0ui64; i < _length; i++) {
+		if (activeMenus[i]) { // Only clear out any menus that weren't properly managed by the scenes/instances that utilized them.
+			activeMenus[i]->OnUserDestroy();
+			delete activeMenus[i], activeMenus[i] = nullptr;
+		}
 	}
 	activeMenus.clear();
 	activeMenus.shrink_to_fit();
@@ -79,17 +82,17 @@ Menu* MenuManager::CreateMenu(Menu* _menu) {
 }
 
 void MenuManager::DestroyMenu(Menu* _menu) {
-	if (_menu == nullptr) // The menu passed in was nullptr; don't do anything.
-		return;
+	if (_menu == nullptr)
+		return; // Don't bother doing anything if the pointer is nullptr.
 
-	// Make sure the menu is cleaned up before it's deallocated.
-	_menu->OnUserDestroy();
-	delete _menu; // Don't set _menu to nullptr so it can still be found within the management list.
-
-	// Make sure the menu actually exists before the code attempts to remove it from memory.
+	// Make sure the menu wasn't already deleted by another menu's OnUserDestroy function or by this manager class itself before
+	// actually attempting to delete the non-existent instance here. If the menu is still active, it will be within the vector of
+	// active menus and should be deleted.
 	auto _iter = std::find(activeMenus.begin(), activeMenus.end(), _menu);
 	if (_iter == activeMenus.end())
-		return; // Menu instance wasn't in the manager; don't attempt to clear from vector
+		return;
+	_menu->OnUserDestroy();
+	delete _menu, _menu = nullptr;
 	activeMenus.erase(_iter);
 }
 

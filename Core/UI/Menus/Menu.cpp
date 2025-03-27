@@ -364,7 +364,12 @@ void Menu::RenderVisibleOptions(EngineCore* _engine, float_t _deltaTime) {
 			// Only bother attempting to render the menu option if it is possibly visible to the player (alpha 0 == completely transparent).
 			if (menuOptions[_index].alpha > 0ui8) {
 				_color.a = uint16_t(alpha + menuOptions[_index].alpha) / 2ui8; // Blend the alpha level of the current option and menu itself.
-				_engine->DrawString(optionAnchorX + (optionSpacingX * xx) + menuOptions[_index].xPos, optionAnchorY + (optionSpacingY * yy), menuOptions[_index].text, _color);
+				_engine->DrawStringDecal(
+					{	float_t(optionAnchorX + (optionSpacingX * xx) + menuOptions[_index].xPos),
+						float_t(optionAnchorY + (optionSpacingY * yy) + menuOptions[_index].yPos) },
+					menuOptions[_index].text, 
+					_color
+				);
 			}
 			_xxOffset++;
 		}

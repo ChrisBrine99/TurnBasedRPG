@@ -1,5 +1,7 @@
 #include "BattleUIElement.hpp"
+
 #include "BattleUI.hpp"
+#include "../../Structs/Battle/Combatant.hpp"
 
 void BattleUIElement::OnUserUpdate() {
 	if (!BATUI_ELEMENT_IS_IN_USE || !BATUI_ELEMENT_IS_VISIBLE)

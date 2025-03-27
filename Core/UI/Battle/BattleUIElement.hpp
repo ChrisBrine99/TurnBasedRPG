@@ -4,8 +4,8 @@
 #include "../../Structs/Battle/Combatant.hpp"
 #include "../../Singletons/EngineCore.hpp"
 
-#include <math.h>
 #include <cstdint>
+#include <math.h>
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the bits within the battle ui element's flags variable. These bits will allow or diable certain functions	//

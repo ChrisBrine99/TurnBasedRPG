@@ -53,9 +53,9 @@
 //	the program's window when multiplied by the WINDOW_SCALE macro that is below said width and height values.							//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define VIEWPORT_WIDTH					640
-#define VIEWPORT_HEIGHT					360
-#define WINDOW_SCALE					2
+#define VIEWPORT_WIDTH					640i32
+#define VIEWPORT_HEIGHT					360i32
+#define WINDOW_SCALE					2i32
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	A value that is equivalent to roughly 1/60th of a second. Allows fixed updating for code that requires it.							//

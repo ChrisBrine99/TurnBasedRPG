@@ -18,16 +18,13 @@
     <ClCompile Include="Core\Singletons\EngineCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Singletons\BattleManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ThirdParty\olcPixelGameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Singletons\SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Scenes\Battle\BattleScene.cpp">
+    <ClCompile Include="Core\Scenes\BattleScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Singletons\DataManager.cpp">
@@ -113,9 +110,6 @@
     <ClInclude Include="Core\Utils\UtilityFunctions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Singletons\BattleManager.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Structs\Characters\PlayerCharacter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -128,7 +122,7 @@
     <ClInclude Include="Core\Utils\SceneMacros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Scenes\Battle\BattleScene.hpp">
+    <ClInclude Include="Core\Scenes\BattleScene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Structs\Characters\EnemyCharacter.hpp">

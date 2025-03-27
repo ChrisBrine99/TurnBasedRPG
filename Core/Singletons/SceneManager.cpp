@@ -3,7 +3,7 @@ INIT_SINGLETON_CPP(SceneManager)
 
 #include "../Utils/SceneMacros.hpp"
 #include "../Singletons/EngineCore.hpp"
-#include "../Scenes/Battle/BattleScene.hpp"
+#include "../Scenes/BattleScene.hpp"
 
 #include <iostream>
 
@@ -15,7 +15,7 @@ SceneManager::SceneManager() :
 {}
 
 bool SceneManager::OnUserCreate() {
-	LoadScene(new BattleScene(BATTLE_SCENE_INDEX), BATTLE_SCENE_INDEX, true);
+	LoadScene(new BattleScene(), BATTLE_SCENE_INDEX, true);
 	return !(currentScene == nullptr);
 }
 

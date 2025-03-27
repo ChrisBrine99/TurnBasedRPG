@@ -3,6 +3,7 @@ INIT_SINGLETON_CPP(ObjectManager)
 
 #include "../Objects/Object.hpp"
 #include "../Objects/Dynamic/ObjPlayer.hpp"
+
 #include <iostream>
 
 ObjectManager::ObjectManager() :

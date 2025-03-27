@@ -24,8 +24,8 @@ public: // Main Engine Function Declarations
 	bool OnBeforeUserCreate();
 
 public: // Accessible Utility Function Declarations
-	void LoadCharacterData(uint16_t _id);
-	void LoadSkillData(uint16_t _id);
+	BaseCharacter* LoadCharacterData(uint16_t _id);
+	Skill* LoadSkillData(uint16_t _id);
 
 private: // Hidden Utility Function Declarations
 	inline void LoadSharedCharacterData(uint16_t _id, json& _data);

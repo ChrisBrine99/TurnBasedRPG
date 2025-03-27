@@ -3,7 +3,6 @@ INIT_SINGLETON_CPP(DataManager)
 
 #include "../Utils/BattleMacros.hpp"
 #include "../Utils/CharacterMacros.hpp"
-
 #include "../Structs/Characters/PlayerCharacter.hpp"
 #include "../Structs/Characters/EnemyCharacter.hpp"
 #include "../Structs/Battle/Skill.hpp"
@@ -40,10 +39,10 @@ bool DataManager::OnBeforeUserCreate() {
 	return true;
 }
 
-void DataManager::LoadCharacterData(uint16_t _id) {
+BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 	// Don't attempt to load in a character that already exists.
 	if (characters.find(_id) != characters.end())
-		return;
+		return nullptr;
 	std::string _idString = std::to_string(_id);
 
 	// The supplied ID is above the boundary between player and enemy characters, so the data will be interpreted as if the
@@ -52,7 +51,7 @@ void DataManager::LoadCharacterData(uint16_t _id) {
 		// Try to find the container for the character's data. Exit and return nullptr if the required container doesn't exist.
 		json& _data = characterData[KEY_FRIENDLIES][_idString];
 		if (_data.is_null())
-			return;
+			return nullptr;
 		PlayerCharacter* _newPlayerChar = new PlayerCharacter();
 
 		// Set the proper ID value to be occupied by this new player character instance and then begin loading in the data
@@ -86,13 +85,13 @@ void DataManager::LoadCharacterData(uint16_t _id) {
 		_newPlayerChar->curMagicpoints		= _newPlayerChar->GetMaxMagicpointsTotal();
 
 		// TODO -- Load in equipment item IDs here.
-		return;
+		return _newPlayerChar;
 	}
 
 	// Try to find the container for the character's data. Exit and return nullptr if the required container doesn't exist.
 	json& _data = characterData[KEY_ENEMIES][_idString];
 	if (_data.is_null())
-		return;
+		return nullptr;
 	
 	// Do the same as above, but for an enemy character that is being added instead of a player one.
 	EnemyCharacter* _newEnemyChar = new EnemyCharacter();
@@ -117,24 +116,25 @@ void DataManager::LoadCharacterData(uint16_t _id) {
 	json& _itemRewards = _data[KEY_ITEM_REWARDS];
 	json& _itemChances = _data[KEY_ITEM_CHANCES];
 	if (_itemRewards.is_null() || _itemChances.is_null())
-		return;
+		return nullptr;
 
 	for (size_t i = 0ui64; i < _itemRewards.size(); i++) // Add all potential item rewards and their chances out of 255.
 		_newEnemyChar->itemRewards.insert(std::pair(uint16_t(_itemRewards[i]), uint8_t(_itemChances[i])));
 
 	// Finally, assign the proper AI function to the enemy that it will utilize in battle.
 	SetEnemyAIFunction(_newEnemyChar, _data[KEY_ENEMY_AI]);
+	return _newEnemyChar;
 }
 
-void DataManager::LoadSkillData(uint16_t _id) {
+Skill* DataManager::LoadSkillData(uint16_t _id) {
 	// Don't attempt to load in a skill that already exists.
 	if (skills.find(_id) != skills.end())
-		return;
+		return nullptr;
 
 	// Don't try loading in a skill if the relevant data couldn't be retrieved at the specified ID.
 	json& _data = skillData[std::to_string(_id)];
 	if (_data.is_null())
-		return;
+		return nullptr;
 
 	Skill* _newSkill		= new Skill();
 	skills[_id]				= _newSkill;
@@ -151,6 +151,8 @@ void DataManager::LoadSkillData(uint16_t _id) {
 	_newSkill->addedEffects = _data[KEY_SKILL_EFFECTS];
 	_newSkill->effectChance = _data[KEY_SKILL_EFFECT_CHANCE];
 	SetSkillUseFunction(_newSkill, _data[KEY_SKILL_USE_FUNCTION]);
+
+	return _newSkill;
 }
 
 inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
