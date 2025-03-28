@@ -1,6 +1,7 @@
 #ifndef DATA_MANAGER_HPP
 #define DATA_MANAGER_HPP
 
+#include "../../ThirdParty/olcPixelGameEngine.hpp"
 #include "../../ThirdParty/json.hpp"
 #include "../Utils/GeneralMacros.hpp"
 #include "../Utils/DataMacros.hpp"
@@ -27,6 +28,9 @@ public: // Accessible Utility Function Declarations
 	BaseCharacter* LoadCharacterData(uint16_t _id);
 	Skill* LoadSkillData(uint16_t _id);
 
+	olc::Sprite* LoadSprite(uint16_t _id, const std::string& _filepath);
+	void UnloadSprite(uint16_t _id);
+
 private: // Hidden Utility Function Declarations
 	inline void LoadSharedCharacterData(uint16_t _id, json& _data);
 	inline void SetEnemyAIFunction(EnemyCharacter* _enemy, uint16_t _id);
@@ -48,12 +52,19 @@ public: // Getter Function Declarations
 		return skills.at(_id);
 	}
 
+	inline olc::Sprite* GetSprite(uint16_t _id) {
+		if (sprites.find(_id) == sprites.end())
+			return nullptr;
+		return sprites.at(_id).Sprite();
+	}
+
 	inline json& GetEncounter(uint16_t _id) {
 		return encounterData[std::to_string(_id)];
 	}
 private: // Hidden Member Variable Declarations
 	std::unordered_map<uint16_t, BaseCharacter*>	characters;
 	std::unordered_map<uint16_t, Skill*>			skills;
+	std::unordered_map<uint16_t, olc::Renderable>	sprites;
 
 	json characterData;
 	json skillData;

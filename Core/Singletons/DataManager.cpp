@@ -20,7 +20,7 @@ bool DataManager::OnUserCreate() {
 bool DataManager::OnUserDestroy() {
 	RemoveDataFromStorage(characters);
 	RemoveDataFromStorage(skills);
-
+	sprites.clear();
 	return true;
 }
 
@@ -153,6 +153,18 @@ Skill* DataManager::LoadSkillData(uint16_t _id) {
 	SetSkillUseFunction(_newSkill, _data[KEY_SKILL_USE_FUNCTION]);
 
 	return _newSkill;
+}
+
+olc::Sprite* DataManager::LoadSprite(uint16_t _id, const std::string& _filepath) {
+	if (sprites.find(_id) != sprites.end() || sprites[_id].Load(_filepath) == olc::OK)
+		return nullptr;
+	return sprites[_id].Sprite();
+}
+
+void DataManager::UnloadSprite(uint16_t _id) {
+	if (sprites.find(_id) == sprites.end())
+		return;
+	sprites.erase(_id);
 }
 
 inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {

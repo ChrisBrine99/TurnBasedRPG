@@ -98,7 +98,7 @@ size_t ObjectManager::AddObject(uint16_t _index, int32_t _x, int32_t _y) {
 }
 
 void ObjectManager::RemoveObject(size_t _id) {
-	if (instances.find(_id) == instances.end())
+	if (instances.find(_id) == instances.end() || instances[_id]->flags & FLAG_OBJ_PERSISTENT)
 		return;
 
 	objsToDelete.push_back(instances[_id]);
