@@ -9,61 +9,23 @@ struct PlayerCharacter : public BaseCharacter {
 
 	std::vector<uint16_t>			knownSkills;
 
-	// Default contstructor that calls the BaseCharacter constructor to initialize every variable inherited by it, and then 
-	// the variables and data structures unique to this child class will also be initialized after that.
+public: // Constructor/Destructor Definitions
 	PlayerCharacter() : 
 		BaseCharacter(),
 		curExperience(0ui32),
 		nextLevelExperience(0Ui32),
 		knownSkills()
 	{}
+	PlayerCharacter(const PlayerCharacter& _other) = delete;
+	~PlayerCharacter() = default;
 
-	// The player character's copy constructor, which is utilized in order to create an instance of the player character from
-	// what is stored witin the currently loaded character data so that original data isn't overwritten by the party manager.
-	PlayerCharacter(PlayerCharacter& _other) {
-		name					= _other.name;
-		level					= _other.level;
-
-		curHitpoints			= _other.curHitpoints;
-		curMagicpoints			= _other.curMagicpoints;
-
-		maxHitpointBase			= _other.maxHitpointBase;
-		maxHitpointBonus		= _other.maxHitpointBonus;
-		maxHitpointMultiplier	= _other.maxHitpointMultiplier;
-
-		maxMagicpointBase		= _other.maxMagicpointBase;
-		maxMagicpointBonus		= _other.maxMagicpointBonus;
-		maxMagicpointMultiplier = _other.maxMagicpointMultiplier;
-
-		curExperience			= _other.curExperience;
-		nextLevelExperience		= _other.nextLevelExperience;
-
-		for (size_t a = 0ui64; a < STAT_COUNT; a++) {
-			statBase[a]			= _other.statBase[a];
-			statBonus[a]		= _other.statBonus[a];
-			statMultiplier[a]	= _other.statMultiplier[a];
-		}
-
-		size_t _length = std::min(PLAYER_SKILL_LIMIT, _other.activeSkills.size());
-		for (size_t b = 0ui64; b < _length; b++)
-			activeSkills.push_back(_other.activeSkills[b]);
-
-		for (size_t c = 0ui64; c < _other.knownSkills.size(); c++)
-			knownSkills.push_back(_other.knownSkills[c]);
-	}
-
-	// The player character's destructor which will simply clear all the data structures managed by it and also de-allocate
-	// pointers to memory occupied by its member variables as required.
-	~PlayerCharacter() {
-		knownSkills.clear();
-		knownSkills.shrink_to_fit();
-	}
+public: // Publicly Accessible Utilty Function Definitions
 
 	// Adds the given amount to the player character's current experience value. Then it checks to see if that value exceeds
 	// the current requirement to reach the next level. If so, a loop will begin that increases their level until the 
 	// calculated requirement exceeds the current experience value OR their level reaches 100. The character's max HP and MP 
 	// values are updated to match the new level value after the loop has completed execution.
-	void RewardExperience(uint32_t _amount) {
+	inline void RewardExperience(uint32_t _amount) {
 		curExperience += _amount;
 		if (level >= MAXIMUM_LEVEL || curExperience < nextLevelExperience)
 			return;

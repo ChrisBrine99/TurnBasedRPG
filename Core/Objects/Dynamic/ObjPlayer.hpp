@@ -10,9 +10,7 @@ public: // Constructor/Destructor Declarations
 
 public: // Main Engine Function Overrides
 	bool OnUserCreate() override;
-	bool OnUserDestroy() override;
 	bool OnUserUpdate(float_t _deltaTime) override;
-	bool OnUserRender(float_t _deltaTime) override;
 };
 
 #endif

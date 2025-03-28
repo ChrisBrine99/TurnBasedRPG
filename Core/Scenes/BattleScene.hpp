@@ -16,8 +16,6 @@ struct Combatant;
 struct Skill;
 
 class BattleScene : public Scene {
-	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
-	//INIT_SINGLETON_HPP(BattleManager)
 public: // Constructor/Destructor Declarations
 	BattleScene();
 	BattleScene(const BattleScene& _other) = delete;

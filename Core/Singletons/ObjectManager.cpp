@@ -39,12 +39,12 @@ bool ObjectManager::OnUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-bool ObjectManager::OnUserRender(float_t _deltaTime) {
+bool ObjectManager::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
 	Object* _object = nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
 		if (_object->flags & FLAG_OBJ_ACTIVE && _object->flags & FLAG_OBJ_VISIBLE)
-			_object->OnUserRender(_deltaTime);
+			_object->OnUserRender(_engine, _deltaTime);
 	}
 
 	return true;
@@ -90,7 +90,6 @@ size_t ObjectManager::AddObject(uint16_t _index, int32_t _x, int32_t _y) {
 	}
 
 	instances[_objectID] = _newObject;
-	std::cout << "bucket_count: " << instances.bucket_count() << std::endl;
 	nextInstanceID++;
 
 	_newObject->OnUserCreate();

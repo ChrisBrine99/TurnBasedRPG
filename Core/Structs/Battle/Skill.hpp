@@ -31,40 +31,25 @@ struct Skill {
 	// The function that will be called upon the skill's use in battle.
 	void (Skill::*useFunction)(BattleScene*, Combatant*);
 
-	// A skill's default constructor; initializes every one of its variables with default values.
-	Skill() :
-		name("Unknown"),
-		description("N/A"),
-		id(ID_INVALID),
-		basePower(0ui16),
-		affinity(AFFINITY_INVALID),
-		accuracy(0ui8),
-		hpCost(0ui8),
-		mpCost(0ui8),
-		hitCount(0ui8),
-		targeting(TARGET_INVALID),
-		addedEffects(),
-		effectChance(),
-		useFunction(nullptr)
-	{ // Simply populates both arrays with default values of 255 and 0, respectively.
-		addedEffects.fill(AILMENT_INVALID);
-		effectChance.fill(0ui8);
-	}
+public: // Constructor/Destructor Declarations
+	Skill();
+	Skill(const Skill& _other) = delete;
+	~Skill() = default;
 
-	// The function that is responsible for executing the Skill's "use" function. If the value in "useFunction" is nullptr, 
-	// this function will do nothing and the skill will do nothing within the battle.
-	inline void ExecuteUseFunction(BattleScene* _scene, Combatant* _target) {
-		if (useFunction == nullptr)
-			return;
-		((*this).*(this->useFunction))(_scene, _target);
-	}
-
-public: // Skill Use Function Declarations (Defined within Skill.cpp)
+public: // Skill Use Function Declarations
 	void UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target);
 	void UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target);
 	void UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target);
 
 	void UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target);
+
+	// A simple function that is responsible for calling the skill's use function through the pointer stored to the function 
+	// it requires. Does nothing if "useFunction" isn't set to a proper funciton pointer.
+	inline void ExecuteUseFunction(BattleScene* _scene, Combatant* _target) {
+		if (useFunction == nullptr)
+			return;
+		((*this).*(this->useFunction))(_scene, _target);
+	}
 
 private: // Skill Utility Function Declarations (Defined within Skill.cpp)
 	bool AccuracyCheck(Combatant* _caster, Combatant* _target) const;

@@ -33,12 +33,26 @@ bool BattleTargetMenu::OnUserDestroy() {
 	return true;
 }
 
+bool BattleTargetMenu::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+	std::pair<int32_t, int32_t> _data;
+	olc::Pixel _color	= COLOR_WHITE;
+	size_t _length		= menuOptions.size();
+	for (size_t i = 0ui64; i < _length; i++){
+		if (i == curOption)	{ _color = COLOR_LIGHT_YELLOW; }
+		else				{ _color = COLOR_WHITE; }
+
+		_data = BattleScene::positions[validTargets[i]];
+		_engine->DrawRectDecal({ float_t(_data.first), float_t(_data.second) }, { 32.0f, 32.0f }, _color);
+	}
+
+	return true;
+}
+
 void BattleTargetMenu::PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, Skill* _skill) {
 	Menu::PrepareForActivation(_state);
-	upperMenu = _skillMenu;
-
 	DetermineValidTargets(_skill->targeting);
-	skillToUse = _skill;
+	upperMenu	= _skillMenu;
+	skillToUse	= _skill;
 }
 
 void BattleTargetMenu::PrepareForDeactivation() {
@@ -94,7 +108,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 
 	auto& _positions = BattleScene::positions;
 	for (size_t i : validTargets) // Create options for all valid targets so their names can be listed for selection.
-		AddOption(_positions[i].first, _positions[i].second, _scene->combatants[i]->character->name);
+		AddOption(_positions[i].first + 16i32, _positions[i].second + 16i32, "");
 }
 
 bool BattleTargetMenu::StateDefault(float_t _deltaTime) {

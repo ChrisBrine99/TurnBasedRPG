@@ -3,9 +3,11 @@
 #include "../Singletons/EngineCore.hpp"
 #include "../Singletons/DataManager.hpp"
 #include "../Singletons/MenuManager.hpp"
+#include "../Singletons/ObjectManager.hpp"
 #include "../Singletons/PartyManager.hpp"
 #include "../Structs/Battle/Combatant.hpp"
 #include "../Structs/Battle/Skill.hpp"
+#include "../Structs/Characters/PlayerCharacter.hpp"
 #include "../Structs/Characters/EnemyCharacter.hpp"
 #include "../UI/Menus/Battle/BattleMainMenu.hpp"
 #include "../UI/Battle/BattleUI.hpp"
@@ -62,6 +64,8 @@ bool BattleScene::OnUserCreate() {
 	GET_SINGLETON(PartyManager)->AddPartyMember(ID_TEST_PLAYER);
 	GET_SINGLETON(PartyManager)->AddToPartyRoster(ID_TEST_PLAYER);
 	GET_SINGLETON(PartyManager)->AddToActiveRoster(0ui64, 0ui64);
+
+	CREATE_OBJECT(ID_OBJECT_PLAYER, 10, 50);
 
 	SetEncounterID(0ui16);
 

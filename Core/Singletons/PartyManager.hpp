@@ -2,9 +2,13 @@
 #define PARTY_MANAGER_HPP
 
 #include "../Utils/GeneralMacros.hpp"
-#include "../Structs/Characters/PlayerCharacter.hpp"
 
+#include <array>
+#include <cstdint>
 #include <unordered_map>
+#include <vector>
+
+struct PlayerCharacter;
 
 class PartyManager {
 	// Singleton Initialization (Creates Constructor/Destrcutor Declarations)
@@ -25,7 +29,7 @@ public: // Publicly Accessible Utility Function Declarations
 	PlayerCharacter* GetActiveRosterMember(size_t _activeSlot);
 
 private: // Hidden Member Variable Declarations
-	std::unordered_map<uint16_t, PlayerCharacter>	partyMembers;		// Stores and manages ALL party members (Even if they aren't in the party at the moment).
+	std::unordered_map<uint16_t, PlayerCharacter*>	partyMembers;		// Stores and manages ALL party members (Even if they aren't in the party at the moment).
 	std::vector<uint16_t>							curPartyRoster;		// Index values that point to currently existing members out of the entire group.
 	std::array<uint16_t, PARTY_ACTIVE_MAX_SIZE>		curActiveRoster;	// Similar to the vector above, but only stores the currently active party member indexes.
 };

@@ -29,9 +29,7 @@ struct Combatant {
 
 	BaseCharacter*					character;
 
-	// Default constructor; initializes all variables to their default values. Upon activation, these values will all be 
-	// replaced by the equivalent values found within the data copied over from the character this Combatant will represent
-	// within the battle.
+public: // Constructor/Destructor Definitions
 	Combatant() :
 		level(1ui8),
 		stats(std::array<uint8_t, STAT_COUNT>()),
@@ -53,6 +51,8 @@ struct Combatant {
 		stats.fill(1ui8); // Populate the array with default values of 1 for each stat.
 		activeSkills.reserve(PLAYER_SKILL_LIMIT); // Reserve at least enough memory to store the maximum number of skills a player character can use in battle.
 	}
+	Combatant(const Combatant& _other) = delete;
+	~Combatant() = default;
 
 	// Copy over the required data from the desired character instance. Then, apply any additional flags on top of the flag 
 	// that signals to the BattleManager that the combatant is now active in the battle so it can be added to the turn order.

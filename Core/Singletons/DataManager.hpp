@@ -28,7 +28,7 @@ public: // Accessible Utility Function Declarations
 	BaseCharacter* LoadCharacterData(uint16_t _id);
 	Skill* LoadSkillData(uint16_t _id);
 
-	olc::Sprite* LoadSprite(uint16_t _id, const std::string& _filepath);
+	olc::Decal* LoadSprite(uint16_t _id, const std::string& _filepath);
 	void UnloadSprite(uint16_t _id);
 
 private: // Hidden Utility Function Declarations

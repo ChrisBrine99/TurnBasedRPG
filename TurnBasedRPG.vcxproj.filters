@@ -201,4 +201,9 @@
     <None Include="Resources\encounters.json" />
     <None Include="Resources\skills.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\test_spritesheet.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

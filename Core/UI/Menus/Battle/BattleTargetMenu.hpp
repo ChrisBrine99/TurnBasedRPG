@@ -14,6 +14,7 @@ public: // Constructor/Destructor Declaration
 public: // Inherited Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
+	bool OnUserRender(EngineCore* _engine, float_t _deltaTime) override;
 
 public: // Publicly Accessibly Utility Function Declarations
 	void PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, Skill* _skill);

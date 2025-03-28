@@ -20,8 +20,10 @@ bool SceneManager::OnUserCreate() {
 }
 
 bool SceneManager::OnUserDestroy() {
-	for (auto& _scene : scenes)
+	for (auto& _scene : scenes) {
+		_scene.second->OnUserDestroy();
 		delete _scene.second, _scene.second = nullptr;
+	}
 	scenes.clear();
 
 	currentScene = nullptr;

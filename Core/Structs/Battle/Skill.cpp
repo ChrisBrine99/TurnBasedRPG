@@ -6,6 +6,25 @@
 #include <cmath>
 #include <iostream>
 
+Skill::Skill() :
+	name("Unknown"),
+	description("N/A"),
+	id(ID_INVALID),
+	basePower(0ui16),
+	affinity(AFFINITY_INVALID),
+	accuracy(0ui8),
+	hpCost(0ui8),
+	mpCost(0ui8),
+	hitCount(0ui8),
+	targeting(TARGET_INVALID),
+	addedEffects(),
+	effectChance(),
+	useFunction(nullptr) 
+{ // Simply populates both arrays with default values of 255 and 0, respectively.
+	addedEffects.fill(AILMENT_INVALID);
+	effectChance.fill(0ui8);
+}
+
 void Skill::UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target) {
 	if (!AccuracyCheck(_scene->curCombatant, _target))
 		return;

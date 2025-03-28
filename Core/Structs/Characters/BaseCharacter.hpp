@@ -30,10 +30,7 @@ struct BaseCharacter {
 	
 	std::vector<uint16_t>			activeSkills;
 
-	// Default constructor that will initialize all variables/data structures with their default values. On top of that, it 
-	// will reserve enough memory to store 6 elements within the vector; due to that being the amount that will always be
-	// utilized on average since it's the limit to the amount a player character can take into battle, but enemies are immune
-	// to this limit.
+public: // Constructor/Destructor Definitions
 	BaseCharacter() :
 		level(0ui8),
 		statBase({ 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8 }),
@@ -51,16 +48,10 @@ struct BaseCharacter {
 	{ // Reserve a small chunk of memory for the character's pool of usable skills.
 		activeSkills.reserve(PLAYER_SKILL_LIMIT);
 	}
-
-	// Ensures that using the copy constructor isn't possible anywhere within the code, as characters should only ever be 
-	// referenced and never copied.
 	BaseCharacter(BaseCharacter& _other) = delete;
+	~BaseCharacter() = default;
 
-	// Default destructor that will simply clear out the vector and reduce its capacity back down to 0.
-	~BaseCharacter() {
-		activeSkills.clear();
-		activeSkills.shrink_to_fit();
-	}
+public: // Publicly Accessible Utility Function Definitions
 
 	// Returns the character's current total for a given stat. It will clamp the value to be between 1 and 100 should the
 	// calculation output a value outside of that range.

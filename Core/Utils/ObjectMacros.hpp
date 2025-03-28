@@ -16,7 +16,14 @@
 #define OBJMNGR_INVALID_INSTANCE_ID		0xFFFFFFFFFFFFFFFFui64
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
-//	
+//	A simple define that can be used to let an object know it doesn't have an animation currently set. In that event, it will simply	//
+//	stop the object from being rendered regardless of if the flags for being visible or active are toggled on or off.					//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define OBJ_INVALID_ANIMATION_INDEX		0xFFFFFFFFFFFFFFFFui64
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Defines that simplify the code required to add and remove objects from the current scene.											//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
 #define CREATE_OBJECT(_index, _x, _y)	GET_SINGLETON(ObjectManager)->AddObject(_index, _x, _y)
@@ -32,6 +39,7 @@
 #define FLAG_OBJ_DESTROYED				0x00000004ui32
 #define FLAG_OBJ_ACTIVE					0x00000008ui32
 #define FLAG_OBJ_VISIBLE				0x00000010ui32
+#define FLAG_OBJ_ANIMATION_END			0x00000020ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for simplifying the typing required to check for an object's flag (within that object itself) bit to see if it is set to 0	//
@@ -43,6 +51,7 @@
 #define OBJ_IS_DESTROYED				(flags & FLAG_OBJ_DESTROYED) && !OBJ_IS_INVINCIBLE
 #define OBJ_IS_ACTIVE					(flags & FLAG_OBJ_ACTIVE)
 #define OBJ_IS_VISIBLE					(flags & FLAG_OBJ_VISIBLE) && OBJ_IS_ACTIVE
+#define OBJ_DID_ANIMATION_END			(flags & FLAG_OBJ_ANIMATION_END)
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for the number that is used to reference an object during creation, so the object manager knows which one to initialize.	//

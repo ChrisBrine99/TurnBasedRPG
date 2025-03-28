@@ -13,6 +13,7 @@ public: // Constructor/Destructor Declarations and Definitions
 	Scene(uint32_t _index) :
 		sceneIndex(_index)
 	{}
+	Scene(const Scene& _other) = delete;
 	~Scene() = default;
 
 public: // Main Engine/Engine Extension Function Declarations

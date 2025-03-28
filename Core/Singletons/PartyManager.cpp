@@ -2,6 +2,7 @@
 INIT_SINGLETON_CPP(PartyManager)
 
 #include "DataManager.hpp"
+#include "../Structs/Characters/PlayerCharacter.hpp"
 
 PartyManager::PartyManager() :
 	partyMembers(),
@@ -15,7 +16,6 @@ bool PartyManager::OnUserDestroy() {
 	partyMembers.clear();
 	curPartyRoster.clear();
 	curPartyRoster.shrink_to_fit();
-
 	return true;
 }
 
@@ -24,11 +24,9 @@ void PartyManager::AddPartyMember(uint16_t _characterID) {
 		return;
 
 	PlayerCharacter* _character = (PlayerCharacter*)GET_SINGLETON(DataManager)->GetCharacter(_characterID);
-	if (_character == nullptr)
+	if (typeid(*_character).hash_code() != typeid(PlayerCharacter).hash_code())
 		return;
-
-	PlayerCharacter _pCharacter(*_character);
-	partyMembers[_characterID] = _pCharacter;
+	partyMembers[_characterID] = _character;
 }
 
 void PartyManager::RemovePartyMember(uint16_t _characterID) {
@@ -84,5 +82,5 @@ bool PartyManager::RemoveFromActiveRoster(uint16_t _characterID) {
 PlayerCharacter* PartyManager::GetActiveRosterMember(size_t _activeSlot){
 	if (_activeSlot >= curActiveRoster.size() || curActiveRoster[_activeSlot] == ID_INVALID)
 		return nullptr;
-	return &partyMembers[curActiveRoster[_activeSlot]];
+	return partyMembers[curActiveRoster[_activeSlot]];
 }
