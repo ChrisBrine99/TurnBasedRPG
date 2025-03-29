@@ -118,6 +118,7 @@ bool BattleScene::OnUserUpdate(float_t _deltaTime) {
 }
 
 bool BattleScene::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+	_engine->SetDrawTarget(EngineCore::s_HudLayer);
 	if (battleUI) { battleUI->OnUserRender(_engine, _deltaTime); }
 	return true;
 }
@@ -226,8 +227,8 @@ bool BattleScene::StateExecuteSkill() {
 
 	size_t _index		= targets[curSkillTarget];
 	uint16_t _value		= skillToUse->ExecuteUseFunction(this, combatants[_index]);
-	if (_value != 0ui16)
-		battleUI->CreateDamageText(_value, _index);
+	if (_value != 0ui16)	{ battleUI->CreateDamageText(_value, _index); }
+	else					{ battleUI->CreateText("MISS", _index); }
 
 	if (_index >= PARTY_ACTIVE_MAX_SIZE)
 		battleUI->uiElements[_index]->ShowElement(1.25f);

@@ -1,53 +1,42 @@
 #ifndef BASE_CHARACTER_HPP
 #define BASE_CHARACTER_HPP
 
+#include "../../utility/BattleMacros.hpp"
 #include "../../utility/CharacterMacros.hpp"
 #include "../../utility/DataMacros.hpp"
 #include "../../utility/UtilityFunctions.hpp"
 
-#include <string>
 #include <array>
+#include <string>
 #include <vector>
 
+typedef std::pair<uint8_t, uint8_t> Affinity;
 struct BaseCharacter {
-	std::string						name;
-	uint8_t							level;
+	std::string	name;
+	uint8_t		level;
 
 	std::array<uint8_t, STAT_COUNT> statBase;
 	std::array<int8_t,  STAT_COUNT>	statBonus;
 	std::array<float_t, STAT_COUNT> statMultiplier;
 
-	uint16_t						curHitpoints;
-	uint16_t						curMagicpoints;
+	uint16_t curHitpoints;
+	uint16_t curMagicpoints;
 
-	uint16_t						maxHitpointBase;
-	int16_t							maxHitpointBonus;
-	float_t							maxHitpointMultiplier;
+	uint16_t maxHitpointBase;
+	int16_t	 maxHitpointBonus;
+	float_t	 maxHitpointMultiplier;
 
-	uint16_t						maxMagicpointBase;
-	int16_t							maxMagicpointBonus;
-	float_t							maxMagicpointMultiplier;
+	uint16_t maxMagicpointBase;
+	int16_t	 maxMagicpointBonus;
+	float_t	 maxMagicpointMultiplier;
 	
-	std::vector<uint16_t>			activeSkills;
+	std::vector<uint16_t> activeSkills;
 
-public: // Constructor/Destructor Definitions
-	BaseCharacter() :
-		level(0ui8),
-		statBase({ 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8 }),
-		statBonus({ 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8 }),
-		statMultiplier({ 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }),
-		curHitpoints(0ui16),
-		curMagicpoints(0ui16),
-		maxHitpointBase(0ui16),
-		maxHitpointBonus(0i16),
-		maxHitpointMultiplier(1.0f),
-		maxMagicpointBase(0ui16),
-		maxMagicpointBonus(0i16),
-		maxMagicpointMultiplier(1.0f),
-		activeSkills()
-	{ // Reserve a small chunk of memory for the character's pool of usable skills.
-		activeSkills.reserve(PLAYER_SKILL_LIMIT);
-	}
+	std::array<Affinity, MAIN_AFFINITY_COUNT> resistances;
+	static std::array<uint8_t, MAIN_AFFINITY_COUNT> resistIndex;
+
+public: // Constructor/Destructor Declarations
+	BaseCharacter();
 	BaseCharacter(BaseCharacter& _other) = delete;
 	~BaseCharacter() = default;
 

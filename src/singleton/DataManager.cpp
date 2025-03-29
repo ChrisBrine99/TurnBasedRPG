@@ -174,53 +174,57 @@ void DataManager::UnloadSprite(uint16_t _id) {
 inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 	// It's assumed that the supplied ID is valid since this function is only ever called by the Data Manager when it
 	// is reading its data from the JSON format into the actual Class that can be referenced/manipulated in the code.
-	BaseCharacter* _character = characters[_id];
+	BaseCharacter* _character	= characters[_id];
 
 	// Loads in the character's given name (This can be changed for playable characters) as well as their level.
-	_character->name							= _data[KEY_NAME];
-	_character->level							= uint8_t(_data[KEY_LEVEL]);
+	_character->name			= _data[KEY_NAME];
+	_character->level			= uint8_t(_data[KEY_LEVEL]);
 
 	// Load in each of the character's seven major stats from where they're stored in the JSON data.
-	_character->statBase[STAT_STRENGTH]			= uint8_t(_data[KEY_STRENGTH]);
-	_character->statBase[STAT_MAGIC]			= uint8_t(_data[KEY_MAGIC]);
-	_character->statBase[STAT_ENDURANCE]		= uint8_t(_data[KEY_ENDURANCE]);
-	_character->statBase[STAT_INTELLIGENCE]		= uint8_t(_data[KEY_INTELLIGENCE]);
-	_character->statBase[STAT_AGILITY]			= uint8_t(_data[KEY_AGILITY]);
-	_character->statBase[STAT_CONCENTRATION]	= uint8_t(_data[KEY_CONCENTRATION]);
-	_character->statBase[STAT_LUCK]				= uint8_t(_data[KEY_LUCK]);
+	auto& _stats				= _character->statBase;
+	_stats[STAT_STRENGTH]		= uint8_t(_data[KEY_STRENGTH]);
+	_stats[STAT_MAGIC]			= uint8_t(_data[KEY_MAGIC]);
+	_stats[STAT_ENDURANCE]		= uint8_t(_data[KEY_ENDURANCE]);
+	_stats[STAT_INTELLIGENCE]	= uint8_t(_data[KEY_INTELLIGENCE]);
+	_stats[STAT_AGILITY]		= uint8_t(_data[KEY_AGILITY]);
+	_stats[STAT_CONCENTRATION]	= uint8_t(_data[KEY_CONCENTRATION]);
+	_stats[STAT_LUCK]			= uint8_t(_data[KEY_LUCK]);
 
-	// Finally, load in the character's active skills. This is automatically limited to 6 skills for playable characters.
-	json& _skillData	= _data[KEY_ACTIVE_SKILLS];
-	size_t _length		= (_id > ID_BOUNDARY) ? std::min(_skillData.size(), PLAYER_SKILL_LIMIT) : _skillData.size();
-	uint16_t _skillID	= ID_INVALID;
+	// Load in the character's active skills. This is automatically limited to 6 skills for playable characters.
+	json& _innerData			= _data[KEY_ACTIVE_SKILLS];
+	size_t _length				= (_id > ID_BOUNDARY) ? std::min(_innerData.size(), PLAYER_SKILL_LIMIT) : _innerData.size();
+	uint16_t _skillID			= ID_INVALID;
 	for (size_t i = 0ui64; i < _length; i++) {
-		_skillID = _skillData[i];
+		_skillID = _innerData[i];
 		if (skills.find(_skillID) == skills.end())
 			break;
 		_character->activeSkills.push_back(_skillID);
 	}
+
+	// Finally, load in the character's base resistances into the "resistances" array as a pair containing the internal
+	// id value for the affinity alongside the effect that affinity will have on the character. This is required since the
+	// affinity indexes aren't sequential.
+	_innerData					= _data[KEY_RESISTANCES];
+	_length						= _innerData.size();
+	auto& _resists				= _character->resistances;
+	for (size_t j = 0ui64; j < _length; j++)
+		_resists[j] = std::make_pair(BaseCharacter::resistIndex[j], _innerData[j]);
 }
 
 inline void DataManager::SetEnemyAIFunction(EnemyCharacter* _enemy, uint16_t _id) {
 	switch (_id) {
 	default:
-	case ENEMY_AI_SIMPLE:			_enemy->battleAI = &EnemyCharacter::EnemySimpleAI;		return;
+	case ENEMY_AI_SIMPLE:				_enemy->battleAI = &EnemyCharacter::EnemySimpleAI;		return;
 	}
 }
 
 inline void DataManager::SetSkillUseFunction(Skill* _skill, uint16_t _id) {
 	switch (_id) {
 	default:
-	case SKILL_PHYSICAL_GENERIC:	_skill->useFunction = &Skill::UsePhysicalSkillGeneric;	return;
-	case SKILL_WATER_GENERIC:
-	case SKILL_AIR_GENERIC:
-	case SKILL_EARTH_GENERIC:		_skill->useFunction = &Skill::UseMagicSkillGeneric;		return;
-	case SKILL_FIRE_GENERIC:		
-	case SKILL_SHOCK_GENERIC:
-	case SKILL_FROST_GENERIC:		
-	case SKILL_LIGHT_GENERIC:		
-	case SKILL_DARK_GENERIC:		_skill->useFunction = &Skill::UseMagicSkillPlusEffect;	return;
-	case SKILL_VOID_GENERIC:		_skill->useFunction = &Skill::UseVoidSkillGeneric;		return;
+	case SKILL_PHYSICAL_GENERIC:		_skill->useFunction = &Skill::UsePhysicalSkillGeneric;	return;
+	case SKILL_MAGICAL_GENERIC:			_skill->useFunction = &Skill::UseMagicSkillGeneric;		return;
+	case SKILL_MAGICAL_PLUS_EFFECT:		_skill->useFunction = &Skill::UseMagicSkillPlusEffect;	return;
+	case SKILL_PHYSMAG_GENERIC:			_skill->useFunction = &Skill::UseVoidSkillGeneric;		return;
 	}
 }
 

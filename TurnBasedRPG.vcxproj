@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\extension\EngineCoreExt.cpp" />
+    <ClCompile Include="src\struct\character\BaseCharacter.cpp" />
     <ClCompile Include="src\struct\object\Animation.cpp" />
     <ClCompile Include="src\user_interface\battle\BattleUI.cpp" />
     <ClInclude Include="src\struct\user_interface\general\TextElement.hpp" />

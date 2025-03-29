@@ -27,11 +27,11 @@
 
 BattleUI::BattleUI() :
 	uiElements(),
-	damageText(),
+	textElements(),
 	totalPartyMembers(0ui8),
 	updateTimer(0.0f)
 { // Reserve a bit of memory to account for potential of simultaneous damage values being on screen at once.
-	damageText.reserve(10ui64);
+	textElements.reserve(10ui64);
 }
 
 void BattleUI::OnUserCreate() {
@@ -45,11 +45,11 @@ void BattleUI::OnUserCreate() {
 }
 
 void BattleUI::OnUserDestroy() {
-	size_t _length = damageText.size();
+	size_t _length = textElements.size();
 	for (size_t i = 0ui64; i < _length; i++)
-		delete damageText[i].second, damageText[i].second = nullptr;
-	damageText.clear();
-	damageText.shrink_to_fit();
+		delete textElements[i].second, textElements[i].second = nullptr;
+	textElements.clear();
+	textElements.shrink_to_fit();
 
 	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++)
 		delete uiElements[i], uiElements[i] = nullptr;
@@ -66,14 +66,14 @@ void BattleUI::OnUserUpdate(float_t _deltaTime) {
 }
 
 void BattleUI::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
-	auto _begin		= damageText.begin();
-	size_t _length	= damageText.size();
+	auto _begin		= textElements.begin();
+	size_t _length	= textElements.size();
 	for (size_t i = 0ui64; i < _length; i++) {
-		auto& _text = damageText[i];
+		auto& _text = textElements[i];
 		_text.first -= _deltaTime;
 		if (_text.first <= 0.0f) { // Removing the damage text from the vector once its timer runs out.
 			delete _text.second, _text.second = nullptr;
-			damageText.erase(_begin + i);
+			textElements.erase(_begin + i);
 			_length--;
 			i--;
 			continue;
@@ -121,17 +121,20 @@ void BattleUI::ActivateElement(Combatant* _combatant, size_t _index) {
 	);
 }
 
-void BattleUI::CreateDamageText(uint16_t _value, size_t _index, olc::Pixel _color, float_t _scale) {
-	std::string _sValue = std::to_string(_value);
-	size_t _sValueSize	= _sValue.size();
-	float_t _xOffset	= 8.0f * _sValueSize / 2.0f;
+void BattleUI::CreateText(const std::string& _string, size_t _index, olc::Pixel _color, float_t _scale) {
+	size_t _length		= _string.size();
+	float_t _xOffset	= 8.0f * _length / 2.0f;
 	auto& _position		= BattleScene::positions[_index];
-	TextElement* _text	= new TextElement(
-		_position.first  + 16.0f - _xOffset,
+	TextElement* _text = new TextElement(
+		_position.first + 16.0f - _xOffset,
 		_position.second + 16.0f,
-		_sValue,
+		_string,
 		_color,
 		_scale
 	);
-	damageText.push_back(std::make_pair(1.0f, _text));
+	textElements.push_back(std::make_pair(1.0f, _text));
+}
+
+void BattleUI::CreateDamageText(uint16_t _value, size_t _index, olc::Pixel _color, float_t _scale) {
+	CreateText(std::to_string(_value), _index, _color, _scale);
 }

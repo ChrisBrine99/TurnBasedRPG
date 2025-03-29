@@ -4,7 +4,6 @@
 #include "Combatant.hpp"
 
 #include <cmath>
-#include <iostream>
 
 Skill::Skill() :
 	name("Unknown"),
@@ -93,7 +92,7 @@ uint16_t Skill::PhysicalDamageCalculation(Combatant* _caster, Combatant* _target
 	_damage	= (_damage / 2.0f) + (_damage * float_t(_caster->stats[STAT_STRENGTH]) / 15.0f);
 	_damage	= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
 	_damage = _damage / std::pow(float_t(_target->stats[STAT_ENDURANCE]), 0.2f);
-	return int16_t(DamageRandomize(_damage)); // Randomly select a value between 95% and 105% of the calculated damage.
+	return std::max(uint16_t(DamageRandomize(_damage)), 1ui16); // Randomly select a value between 95% and 105% of the calculated damage.
 }
 
 uint16_t Skill::MagicDamageCalculation(Combatant* _caster, Combatant* _target) {
@@ -101,7 +100,7 @@ uint16_t Skill::MagicDamageCalculation(Combatant* _caster, Combatant* _target) {
 	_damage	= _damage + (_damage * float_t(_caster->stats[STAT_MAGIC]) / 25.0f);
 	_damage	= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
 	_damage = _damage / std::pow(float_t(_target->stats[STAT_INTELLIGENCE]), 0.2f);
-	return int16_t(DamageRandomize(_damage)); // Randomly select a value between 95% and 105% of the calculated damage.
+	return std::max(uint16_t(DamageRandomize(_damage)), 1ui16); // Randomly select a value between 95% and 105% of the calculated damage.
 }
 
 uint16_t Skill::VoidDamageCalculation(Combatant* _caster, Combatant* _target) {
@@ -109,5 +108,5 @@ uint16_t Skill::VoidDamageCalculation(Combatant* _caster, Combatant* _target) {
 	_damage = _damage + (_damage * std::sqrt(float_t(_caster->stats[STAT_STRENGTH] + _caster->stats[STAT_MAGIC]) / 3.0f));
 	_damage = _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
 	_damage = _damage / std::pow(float_t(_target->stats[STAT_ENDURANCE] + _target->stats[STAT_INTELLIGENCE]), 0.1f);
-	return int16_t(DamageRandomize(_damage)); // Randomly select a value between 95% and 105% of the calculated damage.
+	return std::max(uint16_t(DamageRandomize(_damage)), 1ui16); // Randomly select a value between 95% and 105% of the calculated damage.
 }

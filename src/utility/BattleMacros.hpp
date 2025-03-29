@@ -60,7 +60,44 @@
 #define AFFINITY_LIGHT					0x20ui8
 #define AFFINITY_DARK					0x21ui8
 // --- Strength AND Magic-based affinities --- //
-#define AFFINITY_VOID					0x80ui8
+#define AFFINITY_VOID					0x30ui8
+// --- Ailment affinities --- //
+#define AFFINITY_POISON					0x40ui8
+#define AFFINITY_SLEEP					0x41ui8
+#define AFFINITY_CHARM					0x42ui8
+#define AFFINITY_SILENCE				0x43ui8
+#define AFFINITY_CONFUSION				0x44ui8
+// --- Special affinities --- //
+#define AFFINITY_PASSIVE				0x80ui8
+#define AFFINITY_SUPPORT				0x81ui8
+#define AFFINITY_HEALING				0x82ui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Holds the total number of affinity values above that are that a character can be weak to, resist, nullify, and so on. The other		//
+//	affinities are simply used behind the scenes to determine things like the skill icon, and other cosmetic things like that.			//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define MAIN_AFFINITY_COUNT				15ui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Internal values for a skill's effect on a character relative to their current resistances and weaknesses.							//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define EFFECT_REFLECT					0b00000100ui8
+#define EFFECT_ABSORB					0b00000101ui8
+#define EFFECT_NULL						0b00000110ui8
+#define EFFECT_RESIST					0b00000111ui8
+#define EFFECT_NORMAL					0b00001000ui8
+#define EFFECT_WEAK						0b00001001ui8
+#define EFFECT_BREAK					0b00001010ui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	The two mask values that can be used to parse out the character's base resistance and the value that can optionally overwrite that	//
+//	base resistance if possible.																										//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define BASE_RESIST_MASK				0b00001111ui8
+#define OVERWRITE_RESIST_MASK			0b11110000ui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that will determine how a skill will function within a battle with regards to the targets it can affect when used.			//
@@ -131,15 +168,9 @@
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define SKILL_PHYSICAL_GENERIC			0x0000ui16
-#define SKILL_FIRE_GENERIC				0x0100ui16
-#define SKILL_WATER_GENERIC				0x0200ui16
-#define SKILL_AIR_GENERIC				0x0300ui16
-#define SKILL_EARTH_GENERIC				0x0400ui16
-#define SKILL_SHOCK_GENERIC				0x0500ui16
-#define SKILL_FROST_GENERIC				0x0600ui16
-#define SKILL_LIGHT_GENERIC				0x0700ui16
-#define SKILL_DARK_GENERIC				0x0800ui16
-#define SKILL_VOID_GENERIC				0x0900ui16
+#define SKILL_MAGICAL_GENERIC			0x0100ui16
+#define SKILL_MAGICAL_PLUS_EFFECT		0x0200ui16
+#define SKILL_PHYSMAG_GENERIC			0x0300ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that determine the function that an enemy will use during its turn in a given battle.										//

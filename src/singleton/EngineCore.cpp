@@ -9,6 +9,10 @@ INIT_SINGLETON_CPP(EngineCore)
 #include "PartyManager.hpp"
 #include "SceneManager.hpp"
 
+uint32_t EngineCore::s_HudLayer			= 0ui32;
+uint32_t EngineCore::s_ObjectLayer		= 0ui32;
+uint32_t EngineCore::s_BackgroundLayer	= 0ui32;
+
 EngineCore::EngineCore() :
 	engineExt(new EngineCoreExt(true))
 { // Sets the name for the application.
@@ -18,6 +22,12 @@ EngineCore::EngineCore() :
 bool EngineCore::OnUserCreate() {
 	CALL_SINGLETON_CREATE(DataManager, OnUserCreate);
 	CALL_SINGLETON_CREATE(SceneManager, OnUserCreate);
+
+	s_ObjectLayer		= CreateLayer();
+	s_BackgroundLayer	= CreateLayer();
+
+	EnableLayer(s_ObjectLayer, true);
+	EnableLayer(s_BackgroundLayer, true);
 	return true;
 }
 
@@ -41,11 +51,21 @@ bool EngineCore::OnUserUpdate(float_t _deltaTime) {
 }
 
 bool EngineCore::OnUserRender(float_t _deltaTime) {
-	Clear(olc::BLACK);
-
 	EngineCore* _engine = this; // Required for singletons to work with having to add an additional argument.
-	CALL_SINGLETON_RENDER(SceneManager);
-	CALL_SINGLETON_RENDER(ObjectManager);
+
+	Clear(olc::BLANK);
+	SetPixelMode(olc::Pixel::ALPHA);
 	CALL_SINGLETON_RENDER(MenuManager);
+
+	SetDrawTarget(s_ObjectLayer);
+	Clear(olc::BLANK);
+	CALL_SINGLETON_RENDER(ObjectManager);
+
+	SetDrawTarget(s_BackgroundLayer);
+	Clear(COLOR_BLACK);
+	SetPixelMode(olc::Pixel::NORMAL);
+	CALL_SINGLETON_RENDER(SceneManager);
+
+	SetDrawTarget(s_HudLayer);
 	return true;
 }

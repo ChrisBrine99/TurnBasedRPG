@@ -14,18 +14,21 @@ PartyUIElement::PartyUIElement() :
 {}
 
 void PartyUIElement::OnUserUpdate() {
+	uint16_t _prevHitpoints		= curHitpoints;
+	uint16_t _prevMagicpoints	= curMagicpoints;
+
 	BattleUIElement::OnUserUpdate();
 	if (!BATUI_ELEMENT_IS_IN_USE || !BATUI_ELEMENT_IS_VISIBLE)
 		return;
 
 	uint16_t _trueValue = combatant->curHitpoints;
-	if (curHitpoints != _trueValue) { 
+	if (_prevHitpoints != _trueValue) {
 		sCurHitpoints = std::to_string(curHitpoints);
 		sCurHitpointsWidth = float_t(sCurHitpoints.size() * 8.0f);
 	}
 
 	_trueValue = combatant->curMagicpoints;
-	if (curMagicpoints != _trueValue) { 
+	if (_prevMagicpoints != _trueValue) {
 		sCurMagicpoints = std::to_string(curMagicpoints);
 		sCurMagicpointsWidth = float_t(sCurMagicpoints.size() * 8.0f);
 	}

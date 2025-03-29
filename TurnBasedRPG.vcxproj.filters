@@ -87,6 +87,9 @@
     <ClCompile Include="src\struct\object\Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\struct\character\BaseCharacter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\singleton\EngineCore.hpp">

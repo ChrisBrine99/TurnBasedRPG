@@ -5,7 +5,6 @@
 #include "../../utility/DataMacros.hpp"
 #include "../../utility/GeneralMacros.hpp"
 
-#include <cinttypes>
 #include <string>
 #include <array>
 

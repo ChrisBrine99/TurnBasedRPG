@@ -31,11 +31,12 @@ public: // Main Engine Function Declarations
 
 public: // Publicly Accessible Utility Function Declarations
 	void ActivateElement(Combatant* _combatant, size_t _index);
+	void CreateText(const std::string& _string, size_t _index, olc::Pixel _color = COLOR_WHITE, float_t _scale = 1.0f);
 	void CreateDamageText(uint16_t _value, size_t _index, olc::Pixel _color = COLOR_WHITE, float_t _scale = 1.0f);
 
 public: // Publicly Accessible Member Variable Declarations
 	std::array<BattleUIElement*, BATTLE_TOTAL_COMBATANTS>	uiElements;
-	std::vector<std::pair<float_t, TextElement*>>			damageText;
+	std::vector<std::pair<float_t, TextElement*>>			textElements;
 	uint8_t totalPartyMembers;
 	float_t updateTimer;
 };

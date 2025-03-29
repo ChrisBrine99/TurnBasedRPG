@@ -16,6 +16,7 @@
 #define KEY_CONCENTRATION				"con"
 #define KEY_LUCK						"luk"
 #define KEY_ACTIVE_SKILLS				"aSkills"
+#define KEY_RESISTANCES					"resists"
 // --- Keys that are unique to enemy characters ---- //
 #define KEY_ENEMIES						"enemies"
 #define KEY_EXP_REWARD					"exp"
