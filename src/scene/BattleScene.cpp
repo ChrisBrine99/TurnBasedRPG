@@ -152,9 +152,9 @@ bool BattleScene::StateInitializeBattle() {
 	for (size_t i = 0ui64; i < _totalEnemies; i++) {
 		// Cache all of these values within local variables so they don't need to constantly be retrieved when the spawn count 
 		// loop is executed below.
-		_enemyID = _encounterData[KEY_ENCOUNTER_ENEMIES][i];
-		_spawnChance = _encounterData[KEY_ENCOUNTER_SPAWN_CHANCE][i];
-		_totalToSpawn = _encounterData[KEY_ENCOUNTER_SPAWN_COUNT][i];
+		_enemyID		= _encounterData[KEY_ENCOUNTER_ENEMIES][i];
+		_spawnChance	= _encounterData[KEY_ENCOUNTER_SPAWN_CHANCE][i];
+		_totalToSpawn	= _encounterData[KEY_ENCOUNTER_SPAWN_COUNT][i];
 
 		for (size_t ii = 0ui64; ii < _totalToSpawn; ii++) {
 			// Generate a number between 0 and 255 to see if the enemy will be spawned for this encounter. If the enemy's spawn 
@@ -225,13 +225,7 @@ bool BattleScene::StateExecuteSkill() {
 	if (skillToUse == nullptr || curSkillTarget >= targets.size())
 		return false;
 
-	size_t _index		= targets[curSkillTarget];
-	uint16_t _value		= skillToUse->ExecuteUseFunction(this, combatants[_index]);
-	if (_value != 0ui16)	{ battleUI->CreateDamageText(_value, _index); }
-	else					{ battleUI->CreateText("MISS", _index); }
-
-	if (_index >= PARTY_ACTIVE_MAX_SIZE)
-		battleUI->uiElements[_index]->ShowElement(1.25f);
+	skillToUse->ExecuteUseFunction(this, combatants[targets[curSkillTarget]]);
 
 	turnDelay = 0.1f;
 	curSkillTarget++;
@@ -244,21 +238,33 @@ bool BattleScene::StateExecuteSkill() {
 	return true;
 }
 
-void BattleScene::UpdateHitpoints(Combatant* _combatant, uint16_t _value) {
-	if (_value > _combatant->curHitpoints) {
+void BattleScene::UpdateHitpoints(Combatant* _combatant, int16_t _value) {
+	int32_t _hitpoints = _combatant->curHitpoints - _value;
+	if (_hitpoints > _combatant->maxHitpoints) {
+		_combatant->curHitpoints = _combatant->maxHitpoints;
+		return;
+	}
+
+	if (_hitpoints < 0i32) {
 		_combatant->curHitpoints = 0ui16;
 		RemoveCombatant(_combatant);
 		return;
 	}
-	_combatant->curHitpoints -= _value;
+	_combatant->curHitpoints = uint16_t(_hitpoints);
 }
 
-void BattleScene::UpdateMagicpoints(Combatant* _combatant, uint16_t _value) {
-	if (_value > _combatant->curMagicpoints) {
+void BattleScene::UpdateMagicpoints(Combatant* _combatant, int16_t _value) {
+	int32_t _magicpoints = _combatant->curMagicpoints - _value;
+	if (_magicpoints > _combatant->maxMagicpoints) {
+		_combatant->curMagicpoints = _combatant->maxMagicpoints;
+		return;
+	}
+
+	if (_magicpoints < 0i32) {
 		_combatant->curMagicpoints = 0ui16;
 		return;
 	}
-	_combatant->curMagicpoints -= _value;
+	_combatant->curMagicpoints = uint16_t(_magicpoints);
 }
 
 bool BattleScene::StateIsRoundFinished() {

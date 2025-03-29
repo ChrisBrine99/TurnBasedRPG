@@ -7,26 +7,28 @@ struct Combatant {
 	uint8_t							level;
 	std::array<uint8_t, STAT_COUNT> stats;
 
-	uint16_t						curHitpoints;
-	uint16_t						maxHitpoints;
-	float_t							maxHitpointMultiplier;
+	uint16_t	curHitpoints;
+	uint16_t	maxHitpoints;
+	float_t		maxHitpointMultiplier;
 
-	uint16_t						curMagicpoints;
-	uint16_t						maxMagicpoints;
-	float_t							maxMagicpointMultiplier;
+	uint16_t	curMagicpoints;
+	uint16_t	maxMagicpoints;
+	float_t		maxMagicpointMultiplier;
 
-	std::vector<uint16_t>			activeSkills;
+	std::vector<uint16_t>	activeSkills;
 
-	uint8_t							curNerveAilment;
-	uint8_t							curMindAilment;
-	uint8_t							curSpecialAilment;
+	uint8_t		curNerveAilment;
+	uint8_t		curMindAilment;
+	uint8_t		curSpecialAilment;
 
-	bool							isActive;
+	bool		isActive;
 
-	uint16_t						baseSpeed;
-	uint16_t						statModifiers;
+	uint16_t	baseSpeed;
+	uint16_t	statModifiers;
 
-	BaseCharacter*					character;
+	BaseCharacter*	character;
+
+	std::array<Affinity, MAIN_AFFINITY_COUNT>	resistances;
 
 public: // Constructor/Destructor Definitions
 	Combatant() :
@@ -81,10 +83,19 @@ public: // Constructor/Destructor Definitions
 		// considered 0 by the BattleManager since it offsets the values by -3 during calculations.
 		statModifiers = 0x36DBui16;
 
-		// Finally, flip the toggle that lets the battle manager know that the Combatant has been activated witin the
-		// battle, and store a pointer to the character they represent in case their data is required.
+		// Flip the toggle that lets the battle manager know that the Combatant has been activated witin the battle, 
+		// and store a pointer to the character they represent in case their data is required.
 		isActive = true;
 		character = _character;
+
+		// Finally, copy over the character's affinity resistance values but only either the base resistance or the
+		// overwritten value should there be one that exists for the character being initialized from.
+		auto& _affinities = BaseCharacter::resistIndex;
+		uint8_t _affinity = 0ui8;
+		for (size_t i = 0ui64; i < MAIN_AFFINITY_COUNT; i++) {
+			_affinity = _affinities[i];
+			resistances[i] = std::make_pair(_affinity, _character->GetResistance(_affinity));
+		}
 	}
 
 	// Isolates the bits within the "statModifiers" variable that represent the current modifier values for each of the 

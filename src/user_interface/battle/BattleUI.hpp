@@ -31,8 +31,8 @@ public: // Main Engine Function Declarations
 
 public: // Publicly Accessible Utility Function Declarations
 	void ActivateElement(Combatant* _combatant, size_t _index);
-	void CreateText(const std::string& _string, size_t _index, olc::Pixel _color = COLOR_WHITE, float_t _scale = 1.0f);
-	void CreateDamageText(uint16_t _value, size_t _index, olc::Pixel _color = COLOR_WHITE, float_t _scale = 1.0f);
+	void CreateText(const std::string& _string, size_t _index, olc::Pixel _color = COLOR_WHITE, float_t _xOffset = 0.0f, float_t _yOffset = 0.0f, float_t _scale = 1.0f);
+	void CreateDamageText(uint16_t _value, size_t _index, olc::Pixel _color = COLOR_WHITE, float_t _xOffset = 0.0f, float_t _yOffset = 0.0f, float_t _scale = 1.0f);
 
 public: // Publicly Accessible Member Variable Declarations
 	std::array<BattleUIElement*, BATTLE_TOTAL_COMBATANTS>	uiElements;

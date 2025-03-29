@@ -44,8 +44,8 @@ private: // State Function Declarations
 
 public: // Publicly Accessible Utility Function Declarations
 	void ExecuteSkill(Skill* _skill);
-	void UpdateHitpoints(Combatant* _combatant, uint16_t _value);
-	void UpdateMagicpoints(Combatant* _combatant, uint16_t _value);
+	void UpdateHitpoints(Combatant* _combatant, int16_t _value);
+	void UpdateMagicpoints(Combatant* _combatant, int16_t _value);
 
 	void SetEncounterID(uint16_t _encounterID);
 	uint16_t GetCombatantSpeed(Combatant* _combatant) const;
@@ -79,11 +79,12 @@ public: // Accessible Member Variable Declarations
 	uint8_t nextState;
 	uint8_t lastState;
 
+	uint8_t	curSkillTarget;
+
 private: // Hidden Member Variable Declarations 
-	uint8_t		curTurn;
 	uint16_t	encounterID;
+	uint8_t		curTurn;
 	uint8_t		curRound;
-	uint8_t		curSkillTarget;
 
 	uint32_t	flags;
 

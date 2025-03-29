@@ -1,9 +1,12 @@
 #include "Skill.hpp"
 
 #include "../../scene/BattleScene.hpp"
+#include "../../user_interface/battle/BattleUI.hpp"
+#include "../../user_interface/battle/BattleUIElement.hpp"
 #include "Combatant.hpp"
 
 #include <cmath>
+#include <iostream>
 
 Skill::Skill() :
 	name("Unknown"),
@@ -24,55 +27,42 @@ Skill::Skill() :
 	effectChance.fill(0ui8);
 }
 
-uint16_t Skill::UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene->curCombatant, _target))
-		return 0ui16;
-
-	uint16_t _damage = PhysicalDamageCalculation(_scene->curCombatant, _target);
-	_scene->UpdateHitpoints(_target, _damage);
-
-	return _damage;
+void Skill::UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target) {
+	if (!AccuracyCheck(_scene, _target))
+		return;
+	PhysicalDamageCalculation(_scene, _target);
 }
 
-uint16_t Skill::UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene->curCombatant, _target))
-		return 0ui16;
-
-	uint16_t _damage = MagicDamageCalculation(_scene->curCombatant, _target);
-	_scene->UpdateHitpoints(_target, _damage);
-
-	return _damage;
+void Skill::UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target) {
+	if (!AccuracyCheck(_scene, _target))
+		return;
+	MagicDamageCalculation(_scene, _target);
 }
 
-uint16_t Skill::UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene->curCombatant, _target))
-		return 0ui16;
-
-	uint16_t _damage = VoidDamageCalculation(_scene->curCombatant, _target);
-	_scene->UpdateHitpoints(_target, _damage);
-
-	return _damage;
+void Skill::UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target) {
+	if (!AccuracyCheck(_scene, _target))
+		return;
+	VoidDamageCalculation(_scene, _target);
 }
 
-uint16_t Skill::UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene->curCombatant, _target))
-		return 0ui16;
-
+void Skill::UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target) {
+	if (!AccuracyCheck(_scene, _target))
+		return;
 	AdditionalEffectCheck(_target); // Attempt to apply one of the skill's possible status ailment on top of damaging the target.
-	uint16_t _damage = MagicDamageCalculation(_scene->curCombatant, _target);
-	_scene->UpdateHitpoints(_target, _damage);
-
-	return _damage;
+	MagicDamageCalculation(_scene, _target);
 }
 
-bool Skill::AccuracyCheck(Combatant* _caster, Combatant* _target) const {
-	uint16_t _accuracyBuff	= uint16_t(_caster->GetCurrentStatModifier(ACCURACY_MODIFIER) - _target->GetCurrentStatModifier(EVASION_MODIFIER));
+bool Skill::AccuracyCheck(BattleScene* _scene, Combatant* _target) const {
+	uint16_t _accuracyBuff	= uint16_t(_scene->curCombatant->GetCurrentStatModifier(ACCURACY_MODIFIER) - _target->GetCurrentStatModifier(EVASION_MODIFIER));
 	uint16_t _accuracy		= accuracy;
 
 	if (_accuracyBuff > 0ui16)		{ _accuracy *= (9ui16 + _accuracyBuff) / 9ui16; }
 	else if (_accuracyBuff < 0ui16) { _accuracy *= 9ui16 / (9ui16 - _accuracyBuff); }
 
-	return (_accuracy >= uint16_t(std::rand() % 0x00FFui16));
+	bool _attackHit = (_accuracy >= std::rand() % 0xFFui16);
+	if (!_attackHit)
+		_scene->battleUI->CreateText("MISS", _scene->targets[_scene->curSkillTarget], COLOR_WHITE, 16.0f, 16.0f);
+	return _attackHit;
 }
 
 void Skill::AdditionalEffectCheck(Combatant* _target) {
@@ -87,26 +77,82 @@ void Skill::AdditionalEffectCheck(Combatant* _target) {
 	}
 }
 
-uint16_t Skill::PhysicalDamageCalculation(Combatant* _caster, Combatant* _target) {
-	float_t _damage	= float_t(basePower);
-	_damage	= (_damage / 2.0f) + (_damage * float_t(_caster->stats[STAT_STRENGTH]) / 15.0f);
-	_damage	= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
-	_damage = _damage / std::pow(float_t(_target->stats[STAT_ENDURANCE]), 0.2f);
-	return std::max(uint16_t(DamageRandomize(_damage)), 1ui16); // Randomly select a value between 95% and 105% of the calculated damage.
+void Skill::PhysicalDamageCalculation(BattleScene* _scene, Combatant* _target) {
+	Combatant* _caster	= _scene->curCombatant;
+	float_t _damage		= float_t(basePower);
+	_damage				= (_damage / 2.0f) + (_damage * float_t(_caster->stats[STAT_STRENGTH]) / 15.0f);
+	_damage				= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
+	_damage				= _damage / std::pow(float_t(_target->stats[STAT_ENDURANCE]), 0.2f);
+	_damage				= DamageRandomize(_damage); // Randomly select a value between 95% and 105% of the calculated damage.
+	ResistanceEffect(_scene, _damage, _target);
 }
 
-uint16_t Skill::MagicDamageCalculation(Combatant* _caster, Combatant* _target) {
-	float_t _damage	= float_t(basePower);
-	_damage	= _damage + (_damage * float_t(_caster->stats[STAT_MAGIC]) / 25.0f);
-	_damage	= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
-	_damage = _damage / std::pow(float_t(_target->stats[STAT_INTELLIGENCE]), 0.2f);
-	return std::max(uint16_t(DamageRandomize(_damage)), 1ui16); // Randomly select a value between 95% and 105% of the calculated damage.
+void Skill::MagicDamageCalculation(BattleScene* _scene, Combatant* _target) {
+	Combatant* _caster	= _scene->curCombatant;
+	float_t _damage		= float_t(basePower);
+	_damage				= _damage + (_damage * float_t(_caster->stats[STAT_MAGIC]) / 25.0f);
+	_damage				= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
+	_damage				= _damage / std::pow(float_t(_target->stats[STAT_INTELLIGENCE]), 0.2f);
+	_damage				= DamageRandomize(_damage); // Randomly select a value between 95% and 105% of the calculated damage.
+	ResistanceEffect(_scene, _damage, _target);
 }
 
-uint16_t Skill::VoidDamageCalculation(Combatant* _caster, Combatant* _target) {
-	float_t _damage = float_t(basePower);
-	_damage = _damage + (_damage * std::sqrt(float_t(_caster->stats[STAT_STRENGTH] + _caster->stats[STAT_MAGIC]) / 3.0f));
-	_damage = _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
-	_damage = _damage / std::pow(float_t(_target->stats[STAT_ENDURANCE] + _target->stats[STAT_INTELLIGENCE]), 0.1f);
-	return std::max(uint16_t(DamageRandomize(_damage)), 1ui16); // Randomly select a value between 95% and 105% of the calculated damage.
+void Skill::VoidDamageCalculation(BattleScene* _scene, Combatant* _target) {
+	Combatant* _caster	= _scene->curCombatant;
+	float_t _damage		= float_t(basePower);
+	_damage				= _damage + (_damage * std::sqrt(float_t(_caster->stats[STAT_STRENGTH] + _caster->stats[STAT_MAGIC]) / 3.0f));
+	_damage				= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
+	_damage				= _damage / std::pow(float_t(_target->stats[STAT_ENDURANCE] + _target->stats[STAT_INTELLIGENCE]), 0.1f);
+	_damage				= DamageRandomize(_damage); // Randomly select a value between 95% and 105% of the calculated damage.
+	ResistanceEffect(_scene, _damage, _target);
+}
+
+void Skill::ResistanceEffect(BattleScene* _scene, float_t _damage, Combatant* _target) const {
+	auto& _resists	= _target->resistances;
+	uint8_t _effect = 0ui8;
+	for (size_t i = 0ui64; i < MAIN_AFFINITY_COUNT; i++) {
+		if (_resists[i].first == affinity) {
+			_effect = _resists[i].second;
+			break; // Once the affinity's effect value is found, exit the loop.
+		}
+	}
+
+	if (_effect & OVERWRITE_RESIST_MASK)	{ _effect = (_effect & OVERWRITE_RESIST_MASK) >> 4; }
+	else									{ _effect = (_effect & BASE_RESIST_MASK); }
+
+	int16_t _finalDamage	= 0ui16;
+	BattleUI* _battleUI		= _scene->battleUI;
+	size_t _index			= _scene->targets[_scene->curSkillTarget];
+	switch (_effect) { // Determine what to do to the damage value relative to how the target is affected by the skill's affinity.
+	case EFFECT_BREAK:
+		_finalDamage = int16_t(_damage * 2.0f);
+		_battleUI->CreateText("BREAK", _index, COLOR_LIGHT_YELLOW, 16.0f, 8.0f);
+		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
+		break;
+	case EFFECT_WEAK:
+		_finalDamage = int16_t(_damage * 1.5f);
+		_battleUI->CreateText("WEAK", _index, COLOR_YELLOW, 16.0f, 8.0f);
+		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
+		break;
+	case EFFECT_RESIST:
+		_finalDamage = int16_t(_damage * 0.5f);
+		_battleUI->CreateText("RESIST", _index, COLOR_LIGHT_RED, 16.0f, 8.0f);
+		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
+		break;
+	case EFFECT_NULL:
+		_battleUI->CreateText("NULL", _index, COLOR_DARK_RED, 16.0f, 8.0f);
+		break;
+	case EFFECT_ABSORB:
+		_finalDamage = -int16_t(_damage);
+		_battleUI->CreateDamageText(-_finalDamage, _index, COLOR_GREEN, 16.0f, 16.0f);
+		break;
+	case EFFECT_REFLECT:
+		
+		break;
+	}
+
+	if (_finalDamage != 0i16) {
+		_battleUI->uiElements[_index]->ShowElement(1.0f);
+		_scene->UpdateHitpoints(_target, _finalDamage);
+	}
 }

@@ -28,7 +28,7 @@ struct Skill {
 								effectChance;	// Stores another group of four 8-bit integers that simply determine the chance of inflicting each added effect.
 
 	// The function that will be called upon the skill's use in battle.
-	uint16_t (Skill::*useFunction)(BattleScene*, Combatant*);
+	void (Skill::*useFunction)(BattleScene*, Combatant*);
 
 public: // Constructor/Destructor Declarations
 	Skill();
@@ -36,27 +36,29 @@ public: // Constructor/Destructor Declarations
 	~Skill() = default;
 
 public: // Skill Use Function Declarations
-	uint16_t UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target);
-	uint16_t UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target);
-	uint16_t UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target);
+	void UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target);
+	void UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target);
+	void UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target);
 
-	uint16_t UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target);
+	void UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target);
 
 	// A simple function that is responsible for calling the skill's use function through the pointer stored to the function 
 	// it requires. Does nothing if "useFunction" isn't set to a proper funciton pointer.
-	inline uint16_t ExecuteUseFunction(BattleScene* _scene, Combatant* _target) {
+	inline void ExecuteUseFunction(BattleScene* _scene, Combatant* _target) {
 		if (useFunction == nullptr)
-			return 0ui16;
-		return ((*this).*(this->useFunction))(_scene, _target);
+			return;
+		((*this).*(this->useFunction))(_scene, _target);
 	}
 
 private: // Skill Utility Function Declarations (Defined within Skill.cpp)
-	bool AccuracyCheck(Combatant* _caster, Combatant* _target) const;
+	bool AccuracyCheck(BattleScene* _scene, Combatant* _target) const;
 	void AdditionalEffectCheck(Combatant* _target);
 
-	uint16_t PhysicalDamageCalculation(Combatant* _caster, Combatant* _target);
-	uint16_t MagicDamageCalculation(Combatant* _caster, Combatant* _target);
-	uint16_t VoidDamageCalculation(Combatant* _caster, Combatant* _target);
+	void PhysicalDamageCalculation(BattleScene* _scene, Combatant* _target);
+	void MagicDamageCalculation(BattleScene* _scene, Combatant* _target);
+	void VoidDamageCalculation(BattleScene* _scene, Combatant* _target);
+
+	void ResistanceEffect(BattleScene* _scene, float_t _damage, Combatant* _target) const;
 
 	// Returns either a value calculated through using the buff formula (The value passed in as the argument was above 0) or 
 	// the debuff formula (The value passed in was below 0).

@@ -17,6 +17,7 @@ bool EngineCoreExt::OnBeforeUserCreate() {
 }
 
 bool EngineCoreExt::OnAfterUserCreate() {
+	srand((uint32_t)time(NULL));
 	return true;
 }
 

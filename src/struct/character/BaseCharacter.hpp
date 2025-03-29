@@ -32,7 +32,7 @@ struct BaseCharacter {
 	
 	std::vector<uint16_t> activeSkills;
 
-	std::array<Affinity, MAIN_AFFINITY_COUNT> resistances;
+	std::array<Affinity, MAIN_AFFINITY_COUNT>		resistances;
 	static std::array<uint8_t, MAIN_AFFINITY_COUNT> resistIndex;
 
 public: // Constructor/Destructor Declarations
@@ -69,6 +69,21 @@ public: // Publicly Accessible Utility Function Definitions
 		uint16_t _maxMagicpoints = uint16_t((maxMagicpointBase + maxMagicpointBonus) * maxMagicpointMultiplier);
 		ValueLowerLimit(_maxMagicpoints, MINIMUM_HP_AND_MP);
 		return _maxMagicpoints;
+	}
+
+	// 
+	inline uint8_t GetResistance(uint8_t _affinity) const {
+		for (auto& _data : resistances) {
+			if (_data.first != _affinity)
+				continue;
+
+			uint8_t _overwriteResist = _data.second & OVERWRITE_RESIST_MASK;
+			if (_overwriteResist)
+				return _overwriteResist;
+
+			return _data.second & BASE_RESIST_MASK;
+		}
+		return EFFECT_NORMAL;
 	}
 };
 
