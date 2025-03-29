@@ -55,7 +55,6 @@ bool Object::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
 		blendColor							// Optional blending color for the sprite
 	);
 
-	_engine->DrawStringDecal({ 5.0f, 5.0f }, std::to_string(curAnimation->curFrame) + '\n' + std::to_string(animTimer));
 	return true;
 }
 

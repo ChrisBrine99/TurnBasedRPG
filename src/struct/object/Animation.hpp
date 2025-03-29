@@ -18,7 +18,7 @@ public: // Constructor/Destructor Declarations
 	Animation(const Animation& _other) = delete;
 	~Animation() = default;
 
-public: // Publicly Accessible Utility Function Declarations
+public: // Publicly Accessible Utility Function Declarations/Definitions
 	bool UpdateAnimation(float_t& _animTimer);
 
 	// Simply fetches the frame the sprite's animation is at currently.

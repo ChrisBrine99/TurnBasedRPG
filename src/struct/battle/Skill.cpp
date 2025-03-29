@@ -25,38 +25,45 @@ Skill::Skill() :
 	effectChance.fill(0ui8);
 }
 
-void Skill::UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target) {
+uint16_t Skill::UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target) {
 	if (!AccuracyCheck(_scene->curCombatant, _target))
-		return;
+		return 0ui16;
 
 	uint16_t _damage = PhysicalDamageCalculation(_scene->curCombatant, _target);
+	_scene->UpdateHitpoints(_target, _damage);
+
+	return _damage;
 }
 
-void Skill::UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target) {
+uint16_t Skill::UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target) {
 	if (!AccuracyCheck(_scene->curCombatant, _target))
-		return;
+		return 0ui16;
 
 	uint16_t _damage = MagicDamageCalculation(_scene->curCombatant, _target);
 	_scene->UpdateHitpoints(_target, _damage);
+
+	return _damage;
 }
 
-void Skill::UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target) {
+uint16_t Skill::UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target) {
 	if (!AccuracyCheck(_scene->curCombatant, _target))
-		return;
+		return 0ui16;
 
 	uint16_t _damage = VoidDamageCalculation(_scene->curCombatant, _target);
 	_scene->UpdateHitpoints(_target, _damage);
+
+	return _damage;
 }
 
-void Skill::UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene->curCombatant, _target)) {
-		std::cout << "Attack Missed!" << std::endl;
-		return;
-	}
+uint16_t Skill::UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target) {
+	if (!AccuracyCheck(_scene->curCombatant, _target))
+		return 0ui16;
 
 	AdditionalEffectCheck(_target); // Attempt to apply one of the skill's possible status ailment on top of damaging the target.
 	uint16_t _damage = MagicDamageCalculation(_scene->curCombatant, _target);
 	_scene->UpdateHitpoints(_target, _damage);
+
+	return _damage;
 }
 
 bool Skill::AccuracyCheck(Combatant* _caster, Combatant* _target) const {

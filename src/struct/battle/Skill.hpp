@@ -29,7 +29,7 @@ struct Skill {
 								effectChance;	// Stores another group of four 8-bit integers that simply determine the chance of inflicting each added effect.
 
 	// The function that will be called upon the skill's use in battle.
-	void (Skill::*useFunction)(BattleScene*, Combatant*);
+	uint16_t (Skill::*useFunction)(BattleScene*, Combatant*);
 
 public: // Constructor/Destructor Declarations
 	Skill();
@@ -37,18 +37,18 @@ public: // Constructor/Destructor Declarations
 	~Skill() = default;
 
 public: // Skill Use Function Declarations
-	void UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target);
-	void UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target);
-	void UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target);
+	uint16_t UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target);
+	uint16_t UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target);
+	uint16_t UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target);
 
-	void UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target);
+	uint16_t UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target);
 
 	// A simple function that is responsible for calling the skill's use function through the pointer stored to the function 
 	// it requires. Does nothing if "useFunction" isn't set to a proper funciton pointer.
-	inline void ExecuteUseFunction(BattleScene* _scene, Combatant* _target) {
+	inline uint16_t ExecuteUseFunction(BattleScene* _scene, Combatant* _target) {
 		if (useFunction == nullptr)
-			return;
-		((*this).*(this->useFunction))(_scene, _target);
+			return 0ui16;
+		return ((*this).*(this->useFunction))(_scene, _target);
 	}
 
 private: // Skill Utility Function Declarations (Defined within Skill.cpp)

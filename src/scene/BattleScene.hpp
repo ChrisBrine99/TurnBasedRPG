@@ -59,7 +59,7 @@ public: // Combatant Management Function Declarations
 	void RemoveCombatant(Combatant* _combatant, bool _defeatedByPlayer = false);
 
 public: // Accessible Member Variable Declarations
-	static std::array<std::pair<int32_t, int32_t>, BATTLE_TOTAL_COMBATANTS> positions;
+	static std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> positions;
 
 	BattleMainMenu* actionMenu;
 	BattleUI* battleUI;

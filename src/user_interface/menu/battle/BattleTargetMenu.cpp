@@ -34,16 +34,18 @@ bool BattleTargetMenu::OnUserDestroy() {
 }
 
 bool BattleTargetMenu::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
-	std::pair<int32_t, int32_t> _data;
-	olc::Pixel _color	= COLOR_WHITE;
-	size_t _length		= menuOptions.size();
-	for (size_t i = 0ui64; i < _length; i++){
-		if (i == curOption)	{ _color = COLOR_LIGHT_YELLOW; }
-		else				{ _color = COLOR_WHITE; }
-
-		_data = BattleScene::positions[validTargets[i]];
-		_engine->DrawRectDecal({ float_t(_data.first), float_t(_data.second) }, { 32.0f, 32.0f }, _color);
+	if (TGTMENU_CAN_ONLY_CONFIRM) {
+		size_t _index	= 0ui64;
+		size_t _length	= validTargets.size();
+		for (size_t i = 0ui64; i < _length; i++) {
+			_index = validTargets[i];
+			_engine->DrawRectDecal({ BattleScene::positions[_index].first, BattleScene::positions[_index].second }, { 32.0f, 32.0f }, COLOR_LIGHT_YELLOW);
+		}
+		return true;
 	}
+
+	std::pair<float_t, float_t> _data = BattleScene::positions[validTargets[curOption]];
+	_engine->DrawRectDecal({ _data.first, _data.second }, { 32.0f, 32.0f }, COLOR_LIGHT_YELLOW);
 
 	return true;
 }
@@ -108,7 +110,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 
 	auto& _positions = BattleScene::positions;
 	for (size_t i : validTargets) // Create options for all valid targets so their names can be listed for selection.
-		AddOption(_positions[i].first + 16i32, _positions[i].second + 16i32, "");
+		AddOption(int32_t(_positions[i].first) + 16i32, int32_t(_positions[i].second) + 16i32, "");
 }
 
 bool BattleTargetMenu::StateDefault(float_t _deltaTime) {

@@ -1,8 +1,8 @@
 #ifndef BATTLE_UI_ELEMENT_HPP
 #define BATTLE_UI_ELEMENT_HPP
 
-#include "../../../struct/battle/Combatant.hpp"
-#include "../../../singleton/EngineCore.hpp"
+#include "../../struct/battle/Combatant.hpp"
+#include "../../singleton/EngineCore.hpp"
 
 #include <math.h>
 
@@ -31,43 +31,14 @@
 //	Defines for the width of the ui element's HP and MP bars as both an integer and float, respectively.								//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define BATUI_ELEMENT_BAR_WIDTH				40ui16
-#define BATUI_ELEMENT_BAR_WIDTH_F			40.0f
-#define BATUI_ElEMENT_BAR_HEIGHT_F			2.0f
+#define BATUI_ELEMENT_BAR_WIDTH				40.0f
+#define BATUI_ElEMENT_BAR_HEIGHT			2.0f
 
 class EngineCore;
 
-struct BattleUIElement {
-	uint32_t		flags;
-	int32_t			x;
-	int32_t			y;
-	uint16_t		curHitpoints;
-	uint16_t		curMagicpoints;
-	uint16_t		curHpBarWidth;
-	uint16_t		curMpBarWidth;
-	int32_t			hpBarX;
-	int32_t			hpBarY;
-	int32_t			mpBarX;
-	int32_t			mpBarY;
-	float_t			visibleTime;
-	Combatant*		combatant;
-
+class BattleUIElement {
 public: // Constructor/Destructor Declarations
-	BattleUIElement() :
-		flags(0ui32),
-		visibleTime(0.0f),
-		x(0i32),
-		y(0i32),
-		curHitpoints(0ui16),
-		curMagicpoints(0ui16),
-		curHpBarWidth(0ui16),
-		curMpBarWidth(0ui16),
-		hpBarX(0i32),
-		hpBarY(0i32),
-		mpBarX(0i32),
-		mpBarY(0i32),
-		combatant(nullptr)
-	{}
+	BattleUIElement();
 	BattleUIElement(const BattleUIElement& _other) = delete;
 	~BattleUIElement() = default;
 
@@ -76,8 +47,25 @@ public: // Main Engine Function Declarations
 	virtual void OnUserRender(EngineCore* _engine);
 
 public: // Publicly Accessible Utility Function Declarations
-	virtual void ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, int32_t _mpBarX, int32_t _mpBarY, Combatant* _combatant, uint32_t _flags);
+	virtual void ActivateElement(float_t _x, float_t _y, float_t _hpBarX, float_t _hpBarY, float_t _mpBarX, float_t _mpBarY, Combatant* _combatant, uint32_t _flags);
 	void ShowElement(float_t _time);
+
+public: // Publicly Accessible Member Variable Declarations
+	uint32_t		flags;
+	float_t			x;
+	float_t			y;
+
+protected: // Hidden (Only Accesible To Children) Member Variable Declarations
+	uint16_t		curHitpoints;
+	uint16_t		curMagicpoints;
+	uint16_t		curHpBarWidth;
+	uint16_t		curMpBarWidth;
+	float_t			hpBarX;
+	float_t			hpBarY;
+	float_t			mpBarX;
+	float_t			mpBarY;
+	float_t			visibleTime;
+	Combatant*		combatant;
 };
 
 #endif

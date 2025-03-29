@@ -152,9 +152,9 @@
     <ClInclude Include="src\struct\user_interface\menu\MenuOption.hpp" />
     <ClInclude Include="src\struct\user_interface\menu\MenuTitle.hpp" />
     <ClInclude Include="src\struct\object\Animation.hpp" />
-    <ClInclude Include="src\struct\user_interface\battle\BattleUIElement.hpp" />
-    <ClCompile Include="src\struct\user_interface\battle\BattleUIElement.cpp" />
-    <ClCompile Include="src\struct\user_interface\battle\PartyUIElement.cpp" />
+    <ClInclude Include="src\user_interface\battle\BattleUIElement.hpp" />
+    <ClCompile Include="src\user_interface\battle\BattleUIElement.cpp" />
+    <ClCompile Include="src\user_interface\battle\PartyUIElement.cpp" />
     <ClCompile Include="src\user_interface\menu\battle\BattleTargetMenu.cpp" />
     <ClCompile Include="src\user_interface\menu\battle\BattleSkillMenu.cpp" />
     <ClCompile Include="src\struct\battle\Skill.cpp" />
@@ -175,7 +175,7 @@
     <ClCompile Include="third_party\olcPixelGameEngine.cpp" />
     <ClInclude Include="src\extension\EngineCoreExt.hpp" />
     <ClInclude Include="src\user_interface\battle\BattleUI.hpp" />
-    <ClInclude Include="src\struct\user_interface\battle\PartyUIElement.hpp" />
+    <ClInclude Include="src\user_interface\battle\PartyUIElement.hpp" />
     <ClInclude Include="src\user_interface\menu\battle\BattleTargetMenu.hpp" />
     <ClInclude Include="src\user_interface\menu\battle\BattleSkillMenu.hpp" />
     <ClInclude Include="src\user_interface\menu\battle\BattleMainMenu.hpp" />

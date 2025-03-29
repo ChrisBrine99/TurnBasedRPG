@@ -1,6 +1,6 @@
 #include "EnemyCharacter.hpp"
 
-#include <iostream>
+#include "../../scene/BattleScene.hpp"
 
 EnemyCharacter::EnemyCharacter() :
 	BaseCharacter(),
@@ -13,6 +13,6 @@ EnemyCharacter::EnemyCharacter() :
 	itemRewards.reserve(3ui64);
 }
 
-void EnemyCharacter::EnemySimpleAI() {
-	std::cout << "ENEMY AI FUNCTION CALLED" << std::endl;
+void EnemyCharacter::EnemySimpleAI(BattleScene* _battle) {
+	
 }

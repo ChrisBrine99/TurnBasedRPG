@@ -78,10 +78,10 @@
     <ClCompile Include="src\user_interface\battle\BattleUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\struct\user_interface\battle\BattleUIElement.cpp">
+    <ClCompile Include="src\user_interface\battle\BattleUIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\struct\user_interface\battle\PartyUIElement.cpp">
+    <ClCompile Include="src\user_interface\battle\PartyUIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\struct\object\Animation.cpp">
@@ -191,10 +191,10 @@
     <ClInclude Include="src\user_interface\battle\BattleUI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\struct\user_interface\battle\BattleUIElement.hpp">
+    <ClInclude Include="src\user_interface\battle\BattleUIElement.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\struct\user_interface\battle\PartyUIElement.hpp">
+    <ClInclude Include="src\user_interface\battle\PartyUIElement.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\struct\user_interface\menu\MenuOption.hpp">

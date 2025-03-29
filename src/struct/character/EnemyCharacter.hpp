@@ -5,6 +5,8 @@
 
 #include <unordered_map>
 
+class BattleScene;
+
 struct EnemyCharacter : public BaseCharacter {
 	uint16_t									basicAttack;
 
@@ -13,7 +15,7 @@ struct EnemyCharacter : public BaseCharacter {
 
 	std::unordered_map<uint16_t, uint8_t>		itemRewards;
 
-	void										(EnemyCharacter::*battleAI)();
+	void										(EnemyCharacter::*battleAI)(BattleScene*);
 
 public: // Constructor/Destructor Declarations
 	EnemyCharacter();
@@ -24,14 +26,14 @@ public: // Utility Function Definitions
 
 	// The function that is responsible for executing the Enemy's ai function. If the value in "battleAI" is nullptr, this 
 	// function will do nothing and the enemy's turn is completely skipped as a result.
-	inline void ExecuteAI() {
+	inline void ExecuteAI(BattleScene* _battle) {
 		if (battleAI == nullptr)
 			return;
-		((*this).*(this->battleAI))();
+		((*this).*(this->battleAI))(_battle);
 	}
 
 public: // Enemy AI Function Declarations
-	void EnemySimpleAI();
+	void EnemySimpleAI(BattleScene* _battle);
 };
 
 #endif

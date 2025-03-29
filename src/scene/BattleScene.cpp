@@ -14,18 +14,18 @@
 #include "../user_interface/battle/BattleUIElement.hpp"
 #include "../utility/UtilityFunctions.hpp"
 
-std::array<std::pair<int32_t, int32_t>, BATTLE_TOTAL_COMBATANTS> BattleScene::positions = {
-	std::make_pair(288i32, 256i32),		// First party member's position.
-	std::make_pair(224i32, 256i32),		// Second party member's position.
-	std::make_pair(352i32, 256i32),		// Third party member's position.
-	std::make_pair(256i32, 64i32),		// First enemy combatant's position.
-	std::make_pair(320i32, 64i32),		// Second enemy combatant's position.
-	std::make_pair(256i32, 128i32),		// Third enemy combatant's position.
-	std::make_pair(320i32, 128i32),		// Fourth enemy combatant's position.
-	std::make_pair(384i32, 64i32),		// Fifth enemy combatant's position.
-	std::make_pair(192i32, 64i32),		// Sixth enemy combatant's position.
-	std::make_pair(384i32, 192i32),		// Seventh enemy combatant's position.
-	std::make_pair(192i32, 192i32)		// Eighth enemy combatant's position.
+std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> BattleScene::positions = {
+	std::make_pair(288.0f, 256.0f),		// First party member's position.
+	std::make_pair(224.0f, 256.0f),		// Second party member's position.
+	std::make_pair(352.0f, 256.0f),		// Third party member's position.
+	std::make_pair(256.0f,  64.0f),		// First enemy combatant's position.
+	std::make_pair(320.0f,  64.0f),		// Second enemy combatant's position.
+	std::make_pair(256.0f, 128.0f),		// Third enemy combatant's position.
+	std::make_pair(320.0f, 128.0f),		// Fourth enemy combatant's position.
+	std::make_pair(384.0f,  64.0f),		// Fifth enemy combatant's position.
+	std::make_pair(192.0f,  64.0f),		// Sixth enemy combatant's position.
+	std::make_pair(384.0f, 192.0f),		// Seventh enemy combatant's position.
+	std::make_pair(192.0f, 192.0f)		// Eighth enemy combatant's position.
 };
 
 BattleScene::BattleScene() :
@@ -65,8 +65,6 @@ bool BattleScene::OnUserCreate() {
 	GET_SINGLETON(PartyManager)->AddToPartyRoster(ID_TEST_PLAYER);
 	GET_SINGLETON(PartyManager)->AddToActiveRoster(0ui64, 0ui64);
 
-	CREATE_OBJECT(ID_OBJECT_PLAYER, 10, 50);
-
 	SetEncounterID(0ui16);
 
 	return true;
@@ -74,7 +72,11 @@ bool BattleScene::OnUserCreate() {
 
 bool BattleScene::OnUserDestroy() {
 	DESTROY_MENU(actionMenu, BattleMainMenu);
-	if (battleUI) { delete battleUI, battleUI = nullptr; }
+
+	if (battleUI) {
+		battleUI->OnUserDestroy();
+		delete battleUI, battleUI = nullptr; 
+	}
 
 	for (Combatant* _c : combatants)
 		delete _c, _c = nullptr;
@@ -207,36 +209,30 @@ bool BattleScene::StateIsPlayerOrEnemyTurn() {
 }
 
 bool BattleScene::StatePlayerTurn() {
-	if (GET_SINGLETON(EngineCore)->GetKey(olc::SPACE).bPressed) {
-		curCombatant->curHitpoints = std::rand() % curCombatant->maxHitpoints;
-		curCombatant->curMagicpoints = std::rand() % curCombatant->maxMagicpoints;
-	}
 	return true;
 }
 
 bool BattleScene::StateEnemyTurn(float_t _deltaTime) {
 	EnemyCharacter* _enemy = (EnemyCharacter*)curCombatant->character;
-	if (typeid(*_enemy).hash_code() == typeid(EnemyCharacter).hash_code()) {
-		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
-		_enemy->ExecuteAI();
-		return true;
-	}
+	_enemy->ExecuteAI(this);
 
-	return false;
+	SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
+	return true;
 }
 
 bool BattleScene::StateExecuteSkill() {
 	if (skillToUse == nullptr || curSkillTarget >= targets.size())
 		return false;
 
-	size_t _index = targets[curSkillTarget];
-	Combatant* _target = combatants[_index];
-	skillToUse->ExecuteUseFunction(this, _target);
-	turnDelay = 0.05f;
+	size_t _index		= targets[curSkillTarget];
+	uint16_t _value		= skillToUse->ExecuteUseFunction(this, combatants[_index]);
+	if (_value != 0ui16)
+		battleUI->CreateDamageText(_value, _index);
 
 	if (_index >= PARTY_ACTIVE_MAX_SIZE)
 		battleUI->uiElements[_index]->ShowElement(1.25f);
 
+	turnDelay = 0.1f;
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
@@ -401,6 +397,8 @@ void BattleScene::AddEnemyCombatant(uint16_t _enemyID) {
 		_combatant = combatants[i];
 		if (_combatant->isActive)
 			continue;
+
+		CREATE_OBJECT(ID_OBJECT_PLAYER, int32_t(positions[i].first) + 8i32, int32_t(positions[i].second) + 8i32);
 
 		_combatant->ActivateCombatant(_enemy);
 		battleUI->ActivateElement(_combatant, i);

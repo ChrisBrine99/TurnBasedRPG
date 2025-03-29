@@ -1,35 +1,38 @@
 #include "BattleUI.hpp"
 
-#include "../../struct/user_interface/battle/PartyUIElement.hpp"
+#include "PartyUIElement.hpp"
 #include "../../scene/BattleScene.hpp"
-#include "../../singleton/EngineCore.hpp"
+#include "../../struct/user_interface/general/TextElement.hpp"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for the position of the party UI within a battle and the offsets for its various elements.									//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define PARTY_UI_X						360i32
-#define PARTY_UI_Y						280i32
-#define PARTY_UI_HP_BAR_X				168i32
-#define PARTY_UI_HP_BAR_Y				10i32
-#define PARTY_UI_MP_BAR_X				216i32
-#define PARTY_UI_MP_BAR_Y				10i32
-#define PARTY_UI_SPACING_Y				16i32
+#define PARTY_UI_X						360.0f
+#define PARTY_UI_Y						280.0f
+#define PARTY_UI_HP_BAR_X				168.0f
+#define PARTY_UI_HP_BAR_Y				10.0f
+#define PARTY_UI_MP_BAR_X				216.0f
+#define PARTY_UI_MP_BAR_Y				10.0f
+#define PARTY_UI_SPACING_Y				16.0f
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for the position of a given enemy's UI within a battle and the offsets for its various elements.							//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define ENEMY_UI_HP_BAR_X				8i32
-#define ENEMY_UI_HP_BAR_Y				32i32
-#define ENEMY_UI_MP_BAR_X				8i32
-#define ENEMY_UI_MP_BAR_Y				38i32
+#define ENEMY_UI_HP_BAR_X			   -4.0f
+#define ENEMY_UI_HP_BAR_Y				32.0f
+#define ENEMY_UI_MP_BAR_X			   -4.0f
+#define ENEMY_UI_MP_BAR_Y				38.0f
 
 BattleUI::BattleUI() :
 	uiElements(),
+	damageText(),
 	totalPartyMembers(0ui8),
 	updateTimer(0.0f)
-{}
+{ // Reserve a bit of memory to account for potential of simultaneous damage values being on screen at once.
+	damageText.reserve(10ui64);
+}
 
 void BattleUI::OnUserCreate() {
 	// Create the 3 UI elements that are exclusively used by player party members.
@@ -42,6 +45,12 @@ void BattleUI::OnUserCreate() {
 }
 
 void BattleUI::OnUserDestroy() {
+	size_t _length = damageText.size();
+	for (size_t i = 0ui64; i < _length; i++)
+		delete damageText[i].second, damageText[i].second = nullptr;
+	damageText.clear();
+	damageText.shrink_to_fit();
+
 	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++)
 		delete uiElements[i], uiElements[i] = nullptr;
 }
@@ -57,6 +66,25 @@ void BattleUI::OnUserUpdate(float_t _deltaTime) {
 }
 
 void BattleUI::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+	auto _begin		= damageText.begin();
+	size_t _length	= damageText.size();
+	for (size_t i = 0ui64; i < _length; i++) {
+		auto& _text = damageText[i];
+		_text.first -= _deltaTime;
+		if (_text.first <= 0.0f) { // Removing the damage text from the vector once its timer runs out.
+			delete _text.second, _text.second = nullptr;
+			damageText.erase(_begin + i);
+			_length--;
+			i--;
+			continue;
+		}
+
+		if (_text.second) { // Render the text and slowly move it up the screen.
+			_text.second->OnUserRender(_engine);
+			_text.second->yOffset -= 8.0f * _deltaTime;
+		}
+	}
+
 	for (BattleUIElement* _element : uiElements)
 		_element->OnUserRender(_engine);
 }
@@ -68,7 +96,7 @@ void BattleUI::ActivateElement(Combatant* _combatant, size_t _index) {
 	if (_index < BATTLE_MAX_PARTY_SIZE) {
 		uiElements[_index]->ActivateElement(
 			PARTY_UI_X, 
-			PARTY_UI_Y + (PARTY_UI_SPACING_Y * totalPartyMembers),
+			PARTY_UI_Y + float_t(PARTY_UI_SPACING_Y * totalPartyMembers),
 			PARTY_UI_HP_BAR_X, 
 			PARTY_UI_HP_BAR_Y, 
 			PARTY_UI_MP_BAR_X,
@@ -91,4 +119,19 @@ void BattleUI::ActivateElement(Combatant* _combatant, size_t _index) {
 		_combatant,
 		FLAG_BATUI_ELEMENT_IN_USE | FLAG_BATUI_ELEMENT_USE_TIMER | FLAG_BATUI_ELEMENT_HP_SHOWN
 	);
+}
+
+void BattleUI::CreateDamageText(uint16_t _value, size_t _index, olc::Pixel _color, float_t _scale) {
+	std::string _sValue = std::to_string(_value);
+	size_t _sValueSize	= _sValue.size();
+	float_t _xOffset	= 8.0f * _sValueSize / 2.0f;
+	auto& _position		= BattleScene::positions[_index];
+	TextElement* _text	= new TextElement(
+		_position.first  + 16.0f - _xOffset,
+		_position.second + 16.0f,
+		_sValue,
+		_color,
+		_scale
+	);
+	damageText.push_back(std::make_pair(1.0f, _text));
 }

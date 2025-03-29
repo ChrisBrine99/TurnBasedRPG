@@ -156,8 +156,12 @@ Skill* DataManager::LoadSkillData(uint16_t _id) {
 }
 
 olc::Decal* DataManager::LoadSprite(uint16_t _id, const std::string& _filepath) {
-	if (sprites.find(_id) != sprites.end() || sprites[_id].Load(_filepath) != olc::OK)
+	if (sprites.find(_id) != sprites.end())
+		return sprites[_id].Decal();
+
+	if (sprites[_id].Load(_filepath) != olc::OK)
 		return nullptr;
+
 	return sprites[_id].Decal();
 }
 

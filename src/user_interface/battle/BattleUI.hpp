@@ -1,10 +1,10 @@
 #ifndef BATTLE_UI_HPP
 #define BATTLE_UI_HPP
 
+#include "../../singleton/EngineCore.hpp"
 #include "../../utility/BattleMacros.hpp"
 
 #include <array>
-#include <math.h>
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Determines how fast the ui elements can update their visual representations per second (1.0f = one full second).					//
@@ -13,8 +13,9 @@
 #define BATUI_UPDATE_INTERVAL			0.01f
 
 class EngineCore;
-struct BattleUIElement;
+class BattleUIElement;
 struct Combatant;
+struct TextElement;
 
 class BattleUI {
 public: // Constructor/Destructor Declarations
@@ -30,9 +31,11 @@ public: // Main Engine Function Declarations
 
 public: // Publicly Accessible Utility Function Declarations
 	void ActivateElement(Combatant* _combatant, size_t _index);
+	void CreateDamageText(uint16_t _value, size_t _index, olc::Pixel _color = COLOR_WHITE, float_t _scale = 1.0f);
 
 public: // Publicly Accessible Member Variable Declarations
-	std::array<BattleUIElement*, BATTLE_TOTAL_COMBATANTS> uiElements;
+	std::array<BattleUIElement*, BATTLE_TOTAL_COMBATANTS>	uiElements;
+	std::vector<std::pair<float_t, TextElement*>>			damageText;
 	uint8_t totalPartyMembers;
 	float_t updateTimer;
 };
