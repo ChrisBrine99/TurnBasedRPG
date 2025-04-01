@@ -30,13 +30,13 @@
     <ClCompile Include="src\singleton\DataManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\user_interface\menu\Menu.cpp">
+    <ClCompile Include="src\ui\menu\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\singleton\GameSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\user_interface\menu\battle\BattleMainMenu.cpp">
+    <ClCompile Include="src\ui\menu\battle\BattleMainMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\singleton\PartyManager.cpp">
@@ -51,13 +51,13 @@
     <ClCompile Include="src\struct\character\EnemyCharacter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\user_interface\menu\battle\BattleSkillMenu.cpp">
+    <ClCompile Include="src\ui\menu\battle\BattleSkillMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\user_interface\menu\general\ConfirmWindow.cpp">
+    <ClCompile Include="src\ui\menu\general\ConfirmWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\user_interface\menu\battle\BattleTargetMenu.cpp">
+    <ClCompile Include="src\ui\menu\battle\BattleTargetMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\singleton\ObjectManager.cpp">
@@ -75,19 +75,28 @@
     <ClCompile Include="src\object\dynamic\DynamicObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\user_interface\battle\BattleUI.cpp">
+    <ClCompile Include="src\ui\battle\BattleUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\user_interface\battle\BattleUIElement.cpp">
+    <ClCompile Include="src\ui\battle\BattleUIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\user_interface\battle\PartyUIElement.cpp">
+    <ClCompile Include="src\ui\battle\PartyUIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\struct\object\Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\struct\character\BaseCharacter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\struct\battle\Combatant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\struct\character\PlayerCharacter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\LevelScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -140,7 +149,7 @@
     <ClInclude Include="src\struct\battle\Skill.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\user_interface\menu\Menu.hpp">
+    <ClInclude Include="src\ui\menu\Menu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\singleton\GameSettings.hpp">
@@ -149,7 +158,7 @@
     <ClInclude Include="src\utility\MenuMacros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\user_interface\menu\battle\BattleMainMenu.hpp">
+    <ClInclude Include="src\ui\menu\battle\BattleMainMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\singleton\PartyManager.hpp">
@@ -164,13 +173,13 @@
     <ClInclude Include="src\singleton\MenuManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\user_interface\menu\battle\BattleSkillMenu.hpp">
+    <ClInclude Include="src\ui\menu\battle\BattleSkillMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\user_interface\menu\general\ConfirmWindow.hpp">
+    <ClInclude Include="src\ui\menu\general\ConfirmWindow.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\user_interface\menu\battle\BattleTargetMenu.hpp">
+    <ClInclude Include="src\ui\menu\battle\BattleTargetMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\singleton\ObjectManager.hpp">
@@ -191,36 +200,42 @@
     <ClInclude Include="src\object\dynamic\DynamicObject.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\user_interface\battle\BattleUI.hpp">
+    <ClInclude Include="src\ui\battle\BattleUI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\user_interface\battle\BattleUIElement.hpp">
+    <ClInclude Include="src\ui\battle\BattleUIElement.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\user_interface\battle\PartyUIElement.hpp">
+    <ClInclude Include="src\ui\battle\PartyUIElement.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\struct\user_interface\menu\MenuOption.hpp">
+    <ClInclude Include="src\struct\ui\menu\MenuOption.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\struct\user_interface\menu\MenuTitle.hpp">
+    <ClInclude Include="src\struct\ui\menu\MenuTitle.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\struct\object\Animation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\struct\user_interface\general\TextElement.hpp">
+    <ClInclude Include="src\struct\ui\general\TextElement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\LevelScene.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utility\Logger.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />
-    <None Include="resources\data\characters.json" />
-    <None Include="resources\data\encounters.json" />
-    <None Include="resources\data\skills.json" />
+    <None Include="res\data\characters.json" />
+    <None Include="res\data\encounters.json" />
+    <None Include="res\data\skills.json" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\graphics\test_spritesheet.png">
+    <Image Include="res\graphics\test_spritesheet.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

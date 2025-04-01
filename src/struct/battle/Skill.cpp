@@ -1,8 +1,8 @@
 #include "Skill.hpp"
 
 #include "../../scene/BattleScene.hpp"
-#include "../../user_interface/battle/BattleUI.hpp"
-#include "../../user_interface/battle/BattleUIElement.hpp"
+#include "../../ui/battle/BattleUI.hpp"
+#include "../../ui/battle/BattleUIElement.hpp"
 #include "Combatant.hpp"
 
 #include <cmath>
@@ -124,34 +124,33 @@ void Skill::ResistanceEffect(BattleScene* _scene, float_t _damage, Combatant* _t
 	BattleUI* _battleUI		= _scene->battleUI;
 	size_t _index			= _scene->targets[_scene->curSkillTarget];
 	switch (_effect) { // Determine what to do to the damage value relative to how the target is affected by the skill's affinity.
+	default:
+		_finalDamage = int16_t(_damage);
+		break;
 	case EFFECT_BREAK:
 		_finalDamage = int16_t(_damage * 2.0f);
 		_battleUI->CreateText("BREAK", _index, COLOR_LIGHT_YELLOW, 16.0f, 8.0f);
-		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
 		break;
 	case EFFECT_WEAK:
 		_finalDamage = int16_t(_damage * 1.5f);
 		_battleUI->CreateText("WEAK", _index, COLOR_YELLOW, 16.0f, 8.0f);
-		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
 		break;
 	case EFFECT_RESIST:
 		_finalDamage = int16_t(_damage * 0.5f);
 		_battleUI->CreateText("RESIST", _index, COLOR_LIGHT_RED, 16.0f, 8.0f);
-		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
 		break;
 	case EFFECT_NULL:
 		_battleUI->CreateText("NULL", _index, COLOR_DARK_RED, 16.0f, 8.0f);
 		break;
 	case EFFECT_ABSORB:
 		_finalDamage = -int16_t(_damage);
-		_battleUI->CreateDamageText(-_finalDamage, _index, COLOR_GREEN, 16.0f, 16.0f);
 		break;
 	case EFFECT_REFLECT:
-		
 		break;
 	}
 
-	if (_finalDamage != 0i16) {
+	if (_finalDamage > 0i16) {
+		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
 		_battleUI->uiElements[_index]->ShowElement(1.0f);
 		_scene->UpdateHitpoints(_target, _finalDamage);
 	}

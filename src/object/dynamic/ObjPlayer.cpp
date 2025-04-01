@@ -7,7 +7,7 @@ ObjPlayer::ObjPlayer(int32_t _x, int32_t _y, uint16_t _index, size_t _id) :
 {}
 
 bool ObjPlayer::OnUserCreate() {
-	spritesheet = GET_SINGLETON(DataManager)->LoadSprite(0x0000ui16, "resources/graphics/test_spritesheet.png");
+	spritesheet = GET_SINGLETON(DataManager)->LoadSprite(0x0000ui16, "res/graphics/test_spritesheet.png");
 	if (!spritesheet) { return false; }
 
 	Animation* _testAnimation = new Animation(16.0f, 16.0f, 0.25f, 8ui8, 0ui8, 0ui8);

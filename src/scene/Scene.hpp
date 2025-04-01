@@ -3,8 +3,8 @@
 
 #include "../utility/SceneMacros.hpp"
 
-#include <math.h>
-#include <cinttypes>
+#include <cmath>
+#include <cstdint>
 
 class EngineCore;
 
@@ -22,8 +22,8 @@ public: // Main Engine/Engine Extension Function Declarations
 	virtual bool OnUserUpdate(float_t _deltaTime) = 0;
 	virtual bool OnUserRender(EngineCore* _engine, float_t _deltaTime) = 0;
 
-	virtual bool OnBeforeUserUpdate(float_t _deltaTime) = 0;
-	virtual bool OnAfterUserUpdate(float_t _deltaTime) = 0;
+	virtual bool OnBeforeUserUpdate(float_t _deltaTime) { return true; };
+	virtual bool OnAfterUserUpdate(float_t _deltaTime) { return true; };
 
 protected: // Child-Only Accessible Member Variable Declarations
 	uint32_t sceneIndex;

@@ -10,7 +10,9 @@ INIT_SINGLETON_CPP(SceneManager)
 SceneManager::SceneManager() :
 	scenes(),
 	flags(INVALID_SCENE_INDEX),
-	currentSceneIndex(INVALID_SCENE_INDEX),
+	curSceneIndex(INVALID_SCENE_INDEX),
+	nextSceneIndex(INVALID_SCENE_INDEX),
+	prevSceneIndex(INVALID_SCENE_INDEX),
 	currentScene(nullptr)
 {}
 
@@ -42,6 +44,8 @@ bool SceneManager::OnBeforeUserUpdate(float_t _deltaTime) {
 	if (SCENE_SHOULD_CHANGE) {
 		flags &= ~FLAG_SCENE_CHANGE;
 
+		prevSceneIndex	= curSceneIndex;
+		curSceneIndex	= nextSceneIndex;
 		if (!currentScene->OnUserCreate())
 			return false;
 	}
@@ -59,8 +63,7 @@ bool SceneManager::OnAfterUserUpdate(float_t _deltaTime) {
 		std::cout << "Previous scene failed to properly destroy itself!" << std::endl;
 		return false;
 	}
-
-	currentScene = scenes.at(currentSceneIndex);
+	currentScene = scenes.at(curSceneIndex);
 	return true;
 }
 
@@ -83,7 +86,7 @@ void SceneManager::UnloadScene(uint32_t _index) {
 	if (_iter == scenes.end())
 		return;
 
-	if (_index == currentSceneIndex) {
+	if (_index == curSceneIndex) {
 		if (!currentScene->OnUserDestroy())
 			return;
 	}
@@ -91,13 +94,13 @@ void SceneManager::UnloadScene(uint32_t _index) {
 }
 
 void SceneManager::ChangeScene(uint32_t _index) {
-	if (_index == currentSceneIndex)
+	if (_index == curSceneIndex)
 		return;
 
 	auto _iter = scenes.find(_index);
 	if (_iter == scenes.end())
 		return;
 
-	currentSceneIndex = _index;
+	nextSceneIndex = _index;
 	flags |= FLAG_SCENE_CHANGE;
 }

@@ -9,23 +9,26 @@
 #include "../struct/battle/Skill.hpp"
 #include "../struct/character/PlayerCharacter.hpp"
 #include "../struct/character/EnemyCharacter.hpp"
-#include "../user_interface/menu/battle/BattleMainMenu.hpp"
-#include "../user_interface/battle/BattleUI.hpp"
-#include "../user_interface/battle/BattleUIElement.hpp"
+#include "../ui/menu/battle/BattleMainMenu.hpp"
+#include "../ui/battle/BattleUI.hpp"
+#include "../ui/battle/BattleUIElement.hpp"
 #include "../utility/UtilityFunctions.hpp"
 
+#include "../utility/Logger.hpp"
+
 std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> BattleScene::positions = {
-	std::make_pair(288.0f, 256.0f),		// First party member's position.
-	std::make_pair(224.0f, 256.0f),		// Second party member's position.
-	std::make_pair(352.0f, 256.0f),		// Third party member's position.
-	std::make_pair(256.0f,  64.0f),		// First enemy combatant's position.
-	std::make_pair(320.0f,  64.0f),		// Second enemy combatant's position.
-	std::make_pair(256.0f, 128.0f),		// Third enemy combatant's position.
-	std::make_pair(320.0f, 128.0f),		// Fourth enemy combatant's position.
-	std::make_pair(384.0f,  64.0f),		// Fifth enemy combatant's position.
-	std::make_pair(192.0f,  64.0f),		// Sixth enemy combatant's position.
-	std::make_pair(384.0f, 192.0f),		// Seventh enemy combatant's position.
-	std::make_pair(192.0f, 192.0f)		// Eighth enemy combatant's position.
+	std::make_pair(288.0f, 256.0f),		//  0 -- First party member's position.
+	std::make_pair(224.0f, 256.0f),		//  1 -- Second party member's position.
+	std::make_pair(352.0f, 256.0f),		//  2 -- Third party member's position.
+
+	std::make_pair(256.0f,  64.0f),		//  3 -- First enemy combatant's position.
+	std::make_pair(320.0f,  64.0f),		//  4 -- Second enemy combatant's position.
+	std::make_pair(256.0f, 128.0f),		//  5 -- Third enemy combatant's position.
+	std::make_pair(320.0f, 128.0f),		//  6 -- Fourth enemy combatant's position.
+	std::make_pair(384.0f,  64.0f),		//  7 -- Fifth enemy combatant's position.
+	std::make_pair(192.0f,  64.0f),		//  8 -- Sixth enemy combatant's position.
+	std::make_pair(384.0f, 128.0f),		//  9 -- Seventh enemy combatant's position.
+	std::make_pair(192.0f, 128.0f)		// 10 -- Eighth enemy combatant's position.
 };
 
 BattleScene::BattleScene() :
@@ -123,11 +126,6 @@ bool BattleScene::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
 	return true;
 }
 
-bool BattleScene::OnBeforeUserUpdate(float_t _deltaTime) {
-	(void)(_deltaTime);
-	return true;
-}
-
 bool BattleScene::OnAfterUserUpdate(float_t _deltaTime) {
 	(void)(_deltaTime);
 	UPDATE_STATE(nextState);
@@ -135,6 +133,7 @@ bool BattleScene::OnAfterUserUpdate(float_t _deltaTime) {
 }
 
 bool BattleScene::StateInitializeBattle() {
+	LOG_TRACE("Battle Initialized");
 	if (BATTLE_IS_ACTIVE)
 		return true; // Prevents a battle from being initialized when one is already active.
 	flags |= FLAG_BATTLE_ACTIVE;
@@ -216,8 +215,6 @@ bool BattleScene::StatePlayerTurn() {
 bool BattleScene::StateEnemyTurn(float_t _deltaTime) {
 	EnemyCharacter* _enemy = (EnemyCharacter*)curCombatant->character;
 	_enemy->ExecuteAI(this);
-
-	SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
 	return true;
 }
 
@@ -310,6 +307,7 @@ bool BattleScene::StateIsRoundFinished() {
 }
 
 bool BattleScene::StateBattleWin() {
+	LOG_TRACE("Battle Won");
 	return true;
 }
 
@@ -353,23 +351,42 @@ uint16_t BattleScene::GetCombatantSpeed(Combatant* _combatant) const {
 	return _combatant->baseSpeed;
 }
 
+size_t BattleScene::GetCombatantIndex(Combatant* _combatant) const {
+	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++) {
+		if (combatants[i] == _combatant)
+			return i;
+	}
+	return BATTLE_INVALID_INDEX;
+}
+
+size_t BattleScene::GetCurCombatantIndex() const {
+	return turnOrder[curTurn];
+}
+
 void BattleScene::AddToPlayerRewards(Combatant* _combatant) {
 	EnemyCharacter* _enemy = (EnemyCharacter*)_combatant->character;
-	if (typeid(*_enemy).hash_code() != typeid(EnemyCharacter).hash_code())
-		return;
-
-	curExpReward += _enemy->expReward;
+	curExpReward   += _enemy->expReward;
 	curMoneyReward += _enemy->moneyReward;
 
+	bool _addNewItem	= true;
+	size_t _length		= curItemRewards.size();
 	for (auto& _data : _enemy->itemRewards) {
 		if (_data.second < std::rand() % 0xFFui8)
 			continue;
 
-		if (curItemRewards.find(_data.first) != curItemRewards.end()) {
-			curItemRewards[_data.first]++;
+		for (size_t i = 0ui64; i < _length; i++) {
+			if (curItemRewards[i].first == _data.first) {
+				curItemRewards[i].second++;
+				_addNewItem = false;
+				break;
+			}
+		}
+
+		if (!_addNewItem) { // Prevent a duplicate item being pushed onto the vector; reset the flag and loop again.
+			_addNewItem = true;
 			continue;
 		}
-		curItemRewards[_data.first] = 1ui8;
+		curItemRewards.push_back(std::make_pair(_data.first, 1ui8));
 	}
 }
 

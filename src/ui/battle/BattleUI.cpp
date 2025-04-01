@@ -2,7 +2,7 @@
 
 #include "PartyUIElement.hpp"
 #include "../../scene/BattleScene.hpp"
-#include "../../struct/user_interface/general/TextElement.hpp"
+#include "../../struct/ui/general/TextElement.hpp"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for the position of the party UI within a battle and the offsets for its various elements.									//

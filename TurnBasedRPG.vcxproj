@@ -153,41 +153,45 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\scene\LevelScene.cpp" />
     <ClCompile Include="src\extension\EngineCoreExt.cpp" />
+    <ClCompile Include="src\struct\battle\Combatant.cpp" />
     <ClCompile Include="src\struct\character\BaseCharacter.cpp" />
+    <ClCompile Include="src\struct\character\PlayerCharacter.cpp" />
     <ClCompile Include="src\struct\object\Animation.cpp" />
-    <ClCompile Include="src\user_interface\battle\BattleUI.cpp" />
-    <ClInclude Include="src\struct\user_interface\general\TextElement.hpp" />
-    <ClInclude Include="src\struct\user_interface\menu\MenuOption.hpp" />
-    <ClInclude Include="src\struct\user_interface\menu\MenuTitle.hpp" />
+    <ClCompile Include="src\ui\battle\BattleUI.cpp" />
+    <ClInclude Include="src\scene\LevelScene.hpp" />
+    <ClInclude Include="src\struct\ui\general\TextElement.hpp" />
+    <ClInclude Include="src\struct\ui\menu\MenuOption.hpp" />
+    <ClInclude Include="src\struct\ui\menu\MenuTitle.hpp" />
     <ClInclude Include="src\struct\object\Animation.hpp" />
-    <ClInclude Include="src\user_interface\battle\BattleUIElement.hpp" />
-    <ClCompile Include="src\user_interface\battle\BattleUIElement.cpp" />
-    <ClCompile Include="src\user_interface\battle\PartyUIElement.cpp" />
-    <ClCompile Include="src\user_interface\menu\battle\BattleTargetMenu.cpp" />
-    <ClCompile Include="src\user_interface\menu\battle\BattleSkillMenu.cpp" />
+    <ClInclude Include="src\ui\battle\BattleUIElement.hpp" />
+    <ClCompile Include="src\ui\battle\BattleUIElement.cpp" />
+    <ClCompile Include="src\ui\battle\PartyUIElement.cpp" />
+    <ClCompile Include="src\ui\menu\battle\BattleTargetMenu.cpp" />
+    <ClCompile Include="src\ui\menu\battle\BattleSkillMenu.cpp" />
     <ClCompile Include="src\struct\battle\Skill.cpp" />
     <ClCompile Include="src\struct\character\EnemyCharacter.cpp" />
-    <ClCompile Include="src\user_interface\menu\battle\BattleMainMenu.cpp" />
+    <ClCompile Include="src\ui\menu\battle\BattleMainMenu.cpp" />
     <ClCompile Include="src\singleton\DataManager.cpp" />
     <ClCompile Include="src\singleton\SceneManager.cpp" />
     <ClCompile Include="src\scene\BattleScene.cpp" />
-    <ClCompile Include="src\user_interface\menu\Menu.cpp" />
+    <ClCompile Include="src\ui\menu\Menu.cpp" />
     <ClCompile Include="src\singleton\GameSettings.cpp" />
     <ClCompile Include="src\singleton\PartyManager.cpp" />
     <ClCompile Include="src\singleton\MenuManager.cpp" />
-    <ClCompile Include="src\user_interface\menu\general\ConfirmWindow.cpp" />
+    <ClCompile Include="src\ui\menu\general\ConfirmWindow.cpp" />
     <ClCompile Include="src\singleton\ObjectManager.cpp" />
     <ClCompile Include="src\object\Object.cpp" />
     <ClCompile Include="src\object\dynamic\ObjPlayer.cpp" />
     <ClCompile Include="src\object\dynamic\DynamicObject.cpp" />
     <ClCompile Include="third_party\olcPixelGameEngine.cpp" />
     <ClInclude Include="src\extension\EngineCoreExt.hpp" />
-    <ClInclude Include="src\user_interface\battle\BattleUI.hpp" />
-    <ClInclude Include="src\user_interface\battle\PartyUIElement.hpp" />
-    <ClInclude Include="src\user_interface\menu\battle\BattleTargetMenu.hpp" />
-    <ClInclude Include="src\user_interface\menu\battle\BattleSkillMenu.hpp" />
-    <ClInclude Include="src\user_interface\menu\battle\BattleMainMenu.hpp" />
+    <ClInclude Include="src\ui\battle\BattleUI.hpp" />
+    <ClInclude Include="src\ui\battle\PartyUIElement.hpp" />
+    <ClInclude Include="src\ui\menu\battle\BattleTargetMenu.hpp" />
+    <ClInclude Include="src\ui\menu\battle\BattleSkillMenu.hpp" />
+    <ClInclude Include="src\ui\menu\battle\BattleMainMenu.hpp" />
     <ClInclude Include="src\scene\Scene.hpp" />
     <ClCompile Include="src\singleton\EngineCore.cpp" />
   </ItemGroup>
@@ -204,16 +208,17 @@
     <ClInclude Include="src\utility\CharacterMacros.hpp" />
     <ClInclude Include="src\utility\DataMacros.hpp" />
     <ClInclude Include="src\utility\GeneralMacros.hpp" />
+    <ClInclude Include="src\utility\Logger.hpp" />
     <ClInclude Include="src\utility\MenuMacros.hpp" />
     <ClInclude Include="src\utility\ObjectMacros.hpp" />
     <ClInclude Include="src\utility\SceneMacros.hpp" />
     <ClInclude Include="src\utility\UtilityFunctions.hpp" />
     <ClInclude Include="src\scene\BattleScene.hpp" />
-    <ClInclude Include="src\user_interface\menu\Menu.hpp" />
+    <ClInclude Include="src\ui\menu\Menu.hpp" />
     <ClInclude Include="src\singleton\GameSettings.hpp" />
     <ClInclude Include="src\singleton\PartyManager.hpp" />
     <ClInclude Include="src\singleton\MenuManager.hpp" />
-    <ClInclude Include="src\user_interface\menu\general\ConfirmWindow.hpp" />
+    <ClInclude Include="src\ui\menu\general\ConfirmWindow.hpp" />
     <ClInclude Include="src\singleton\ObjectManager.hpp" />
     <ClInclude Include="src\object\Object.hpp" />
     <ClInclude Include="src\object\dynamic\ObjPlayer.hpp" />
@@ -222,13 +227,13 @@
     <ClInclude Include="third_party\olcPixelGameEngine.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\data\characters.json" />
-    <None Include="resources\data\encounters.json" />
-    <None Include="resources\data\skills.json" />
+    <None Include="res\data\characters.json" />
+    <None Include="res\data\encounters.json" />
+    <None Include="res\data\skills.json" />
     <None Include="settings.ini" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\graphics\test_spritesheet.png" />
+    <Image Include="res\graphics\test_spritesheet.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

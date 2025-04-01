@@ -1,7 +1,7 @@
 #include "MenuManager.hpp"
 INIT_SINGLETON_CPP(MenuManager)
 
-#include "../user_interface/menu/Menu.hpp"
+#include "../ui/menu/Menu.hpp"
 
 MenuManager::MenuManager() :
 	activeMenus()

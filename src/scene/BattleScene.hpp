@@ -7,7 +7,6 @@
 
 #include <array>
 #include <vector>
-#include <unordered_map>
 
 class BattleMainMenu;
 class BattleUI;
@@ -26,7 +25,6 @@ public: // Main Engine Function Declarations
 	bool OnUserUpdate(float_t _deltaTime) override;
 	bool OnUserRender(EngineCore* _engine, float_t _deltaTime) override;
 
-	bool OnBeforeUserUpdate(float_t _deltaTime) override;
 	bool OnAfterUserUpdate(float_t _deltaTime) override;
 
 private: // State Function Declarations
@@ -49,6 +47,8 @@ public: // Publicly Accessible Utility Function Declarations
 
 	void SetEncounterID(uint16_t _encounterID);
 	uint16_t GetCombatantSpeed(Combatant* _combatant) const;
+	size_t GetCombatantIndex(Combatant* _combatant) const;
+	size_t GetCurCombatantIndex() const;
 
 private:
 	void AddToPlayerRewards(Combatant* _combatant);
@@ -62,24 +62,24 @@ public: // Accessible Member Variable Declarations
 	static std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> positions;
 
 	BattleMainMenu* actionMenu;
-	BattleUI* battleUI;
-	Combatant* curCombatant;
+	BattleUI*		battleUI;
+	Combatant*		curCombatant;
 
-	std::unordered_map<uint16_t, uint8_t> curItemRewards;
-	uint32_t curMoneyReward;
-	uint32_t curExpReward;
+	std::vector<std::pair<uint16_t, uint8_t>> curItemRewards;
+	uint32_t	curMoneyReward;
+	uint32_t	curExpReward;
 
 	std::array<Combatant*, BATTLE_TOTAL_COMBATANTS> combatants;
 	std::vector<size_t>	turnOrder;
 	std::vector<size_t> targets;
 
-	float_t turnDelay;
+	float_t		turnDelay;
 
-	uint8_t curState;
-	uint8_t nextState;
-	uint8_t lastState;
+	uint8_t		curState;
+	uint8_t		nextState;
+	uint8_t		lastState;
 
-	uint8_t	curSkillTarget;
+	uint8_t		curSkillTarget;
 
 private: // Hidden Member Variable Declarations 
 	uint16_t	encounterID;
@@ -88,7 +88,7 @@ private: // Hidden Member Variable Declarations
 
 	uint32_t	flags;
 
-	Skill* skillToUse;
+	Skill*		skillToUse;
 };
 
 #endif

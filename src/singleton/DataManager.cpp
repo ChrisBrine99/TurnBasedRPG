@@ -25,12 +25,9 @@ bool DataManager::OnUserDestroy() {
 }
 
 bool DataManager::OnBeforeUserCreate() {
-	characterData	= json::parse(std::ifstream("resources/data/characters.json"));
-	skillData		= json::parse(std::ifstream("resources/data/skills.json"));
-	encounterData	= json::parse(std::ifstream("resources/data/encounters.json"));
-
-	LoadSkillData(ID_IGNIA);
-	LoadSkillData(ID_POLIGNIA);
+	characterData	= json::parse(std::ifstream("res/data/characters.json"));
+	skillData		= json::parse(std::ifstream("res/data/skills.json"));
+	encounterData	= json::parse(std::ifstream("res/data/encounters.json"));
 
 	LoadCharacterData(ID_TEST_PLAYER);
 	LoadCharacterData(ID_GREEN_SLIME);
@@ -67,8 +64,8 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 		_newPlayerChar->knownSkills.reserve(_newPlayerChar->knownSkills.size() + _knownSkills.size());
 		for (size_t i = 0ui64; i < _knownSkills.size(); i++) {
 			_skillID = _knownSkills[i];
-			if (skills.find(_skillID) == skills.end())
-				break;
+			if (!LoadSkillData(_skillID))
+				continue;
 			_newPlayerChar->knownSkills.push_back(_skillID);
 		}
 
@@ -98,6 +95,9 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 	characters[_id] = _newEnemyChar;
 	LoadSharedCharacterData(_id, _data);
 
+	// Assign the proper AI function to the enemy that it will utilize in battle.
+	SetEnemyAIFunction(_newEnemyChar, _data[KEY_ENEMY_AI]);
+
 	// Unique to enemy character's is a maximum HP and MP value that aren't calculated by a formula, so they're set here by
 	// simply reading the contents of that data within the JSON object. The current HP and MP are also set to those maximums.
 	_newEnemyChar->maxHitpointBase		= uint16_t(_data[KEY_MAXIMUM_HP]);
@@ -107,29 +107,28 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 
 	// Another element unique to an enemy is a dedicated basic attack, which is set in the same way the above elements were.
 	_newEnemyChar->basicAttack			= uint16_t(_data[KEY_BASIC_ATTACK]);
+	LoadSkillData(_newEnemyChar->basicAttack); // Make sure to load in the skill so it actually exists within the data structure.
 
-	// 
+	// Copy over the experience and money rewards upon the defeat of the enemy in battle.
 	_newEnemyChar->expReward			= uint16_t(_data[KEY_EXP_REWARD]);
 	_newEnemyChar->moneyReward			= uint16_t(_data[KEY_MONEY_REWARD]);
 
-	// 
+	// Load in the enemy character's item drop information, which stores the item IDs and their respective drop chances as a
+	// pair. If this data doesn't exist within the enemy character's json object, the enemy is simply returned without that data.
 	json& _itemRewards = _data[KEY_ITEM_REWARDS];
 	json& _itemChances = _data[KEY_ITEM_CHANCES];
 	if (_itemRewards.is_null() || _itemChances.is_null())
-		return nullptr;
+		return _newEnemyChar;
 
 	for (size_t i = 0ui64; i < _itemRewards.size(); i++) // Add all potential item rewards and their chances out of 255.
-		_newEnemyChar->itemRewards.insert(std::pair(uint16_t(_itemRewards[i]), uint8_t(_itemChances[i])));
-
-	// Finally, assign the proper AI function to the enemy that it will utilize in battle.
-	SetEnemyAIFunction(_newEnemyChar, _data[KEY_ENEMY_AI]);
+		_newEnemyChar->itemRewards.push_back(std::make_pair(uint16_t(_itemRewards[i]), uint8_t(_itemChances[i])));
 	return _newEnemyChar;
 }
 
 Skill* DataManager::LoadSkillData(uint16_t _id) {
-	// Don't attempt to load in a skill that already exists.
+	// Don't attempt to load in a skill that already exists. Simply return the existing skill's pointer.
 	if (skills.find(_id) != skills.end())
-		return nullptr;
+		return skills[_id];
 
 	// Don't try loading in a skill if the relevant data couldn't be retrieved at the specified ID.
 	json& _data = skillData[std::to_string(_id)];
@@ -191,13 +190,13 @@ inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 	_stats[STAT_LUCK]			= uint8_t(_data[KEY_LUCK]);
 
 	// Load in the character's active skills. This is automatically limited to 6 skills for playable characters.
-	json& _innerData			= _data[KEY_ACTIVE_SKILLS];
-	size_t _length				= (_id > ID_BOUNDARY) ? std::min(_innerData.size(), PLAYER_SKILL_LIMIT) : _innerData.size();
-	uint16_t _skillID			= ID_INVALID;
+	json& _innerData	= _data[KEY_ACTIVE_SKILLS];
+	size_t _length		= (_id > ID_BOUNDARY) ? std::min(_innerData.size(), PLAYER_SKILL_LIMIT) : _innerData.size();
+	uint16_t _skillID	= ID_INVALID;
 	for (size_t i = 0ui64; i < _length; i++) {
 		_skillID = _innerData[i];
-		if (skills.find(_skillID) == skills.end())
-			break;
+		if (!LoadSkillData(_skillID))
+			continue;
 		_character->activeSkills.push_back(_skillID);
 	}
 

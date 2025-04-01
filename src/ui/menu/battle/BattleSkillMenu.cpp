@@ -85,10 +85,15 @@ void BattleSkillMenu::GenerateMenuOptions(Combatant* _curCombatant) {
 	}
 	curCombatant = _curCombatant;
 
-	AddOption(0, 0, "Attack", "Perform a low-damage physical attack on a single target.");
-
 	DataManager* _manager = GET_SINGLETON(DataManager);
 	Skill* _skill = nullptr;
+
+	_skill = _manager->GetSkill(_curCombatant->basicAttack);
+	if (_skill) { // Add the character's basic attack as an option to use.
+		AddOption(0, 0, "Attack", _skill->description);
+		skillIDs.push_back(_curCombatant->basicAttack);
+	}
+
 	for (uint16_t _id : _curCombatant->activeSkills) {
 		_skill = _manager->GetSkill(_id);
 		AddOption(0, 0, _skill->name, _skill->description);
@@ -142,17 +147,12 @@ bool BattleSkillMenu::StateProcessSelection() {
 		return true;
 	}
 
-	if (selOption == OPTION_SKLMENU_ATTACK) {
-		PrepareForDeactivation();
-		return true;
-	}
-
-	Skill* _skill = GET_SINGLETON(DataManager)->GetSkill(skillIDs[size_t(selOption) - 1ui64]);
+	Skill* _skill = GET_SINGLETON(DataManager)->GetSkill(skillIDs[size_t(selOption)]);
 	if (_skill == nullptr) { // Atempted to use a non-existent skill; deactive menu and return false.
 		PrepareForDeactivation();
 		return false;
 	}
-	
+
 	BattleTargetMenu* _tMenu = (BattleTargetMenu*)subMenu;
 	if (typeid(*_tMenu).hash_code() != typeid(BattleTargetMenu).hash_code())
 		return false;

@@ -17,6 +17,7 @@
 #define KEY_LUCK						"luk"
 #define KEY_ACTIVE_SKILLS				"aSkills"
 #define KEY_RESISTANCES					"resists"
+#define KEY_BASIC_ATTACK				"bAtk"
 // --- Keys that are unique to enemy characters ---- //
 #define KEY_ENEMIES						"enemies"
 #define KEY_EXP_REWARD					"exp"
@@ -25,7 +26,6 @@
 #define KEY_ITEM_CHANCES				"chances"
 #define KEY_MAXIMUM_HP					"hp"
 #define KEY_MAXIMUM_MP					"mp"
-#define KEY_BASIC_ATTACK				"bAtk"
 #define KEY_ENEMY_AI					"ai"
 // --- Keys that are unique to player characters --- //
 #define KEY_FRIENDLIES					"friendlies"
@@ -76,6 +76,8 @@
 
 #define ID_IGNIA						0x0000ui16
 #define ID_POLIGNIA						0x0010ui16
+#define ID_PLAYER_BASIC_ATK_0			0xF000ui16
+#define ID_ENEMY_BASIC_ATK_0			0xF001ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	A simple default value that represents an invalid ID within the various data structures in the game. As a result, they must all be	//

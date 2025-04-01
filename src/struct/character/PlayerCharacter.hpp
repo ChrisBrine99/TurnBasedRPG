@@ -9,39 +9,13 @@ struct PlayerCharacter : public BaseCharacter {
 
 	std::vector<uint16_t>			knownSkills;
 
-public: // Constructor/Destructor Definitions
-	PlayerCharacter() : 
-		BaseCharacter(),
-		curExperience(0ui32),
-		nextLevelExperience(0Ui32),
-		knownSkills()
-	{}
+public: // Constructor/Destructor Declarations
+	PlayerCharacter();
 	PlayerCharacter(const PlayerCharacter& _other) = delete;
 	~PlayerCharacter() = default;
 
 public: // Publicly Accessible Utilty Function Definitions
-
-	// Adds the given amount to the player character's current experience value. Then it checks to see if that value exceeds
-	// the current requirement to reach the next level. If so, a loop will begin that increases their level until the 
-	// calculated requirement exceeds the current experience value OR their level reaches 100. The character's max HP and MP 
-	// values are updated to match the new level value after the loop has completed execution.
-	inline void RewardExperience(uint32_t _amount) {
-		curExperience += _amount;
-		if (level >= MAXIMUM_LEVEL || curExperience < nextLevelExperience)
-			return;
-
-		while (curExperience >= nextLevelExperience) {
-			level++;
-			if (level == MAXIMUM_LEVEL) {
-				nextLevelExperience = 0Ui32;
-				break;
-			}
-			nextLevelExperience = DetermineRequiredExperience(level + 1);
-		}
-
-		maxHitpointBase = CalculateMaxBaseHitpoints();
-		maxMagicpointBase = CalculateMaxBaseMagicpoints();
-	}
+	void RewardExperience(uint32_t _amount);
 
 	// Returns a value for the experience required in order for the player character to increase their current level by one. 
 	// Exceptions to the formula used are when the level value is 0, 1, or any value above 100--where a 0 is returned instead.

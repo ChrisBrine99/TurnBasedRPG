@@ -11,7 +11,14 @@
 #define BATTLE_TOTAL_COMBATANTS			BATTLE_MAX_ENEMY_SIZE + BATTLE_MAX_PARTY_SIZE
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Makes sense of the numbers that represent the BattleManager's various states.													//
+//	A define that will denote whether or not the "GetCombatantIndex" function returned a valid index AKA the function parameter was		//
+//	a valid pointer to a combatant that exists within the current battle.																//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define BATTLE_INVALID_INDEX			0xFFFFFFFFFFFFFFFFui64
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Makes sense of the numbers that represent the BattleManager's various states.														//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define STATE_BATTLE_INITIALIZE			0x00ui8

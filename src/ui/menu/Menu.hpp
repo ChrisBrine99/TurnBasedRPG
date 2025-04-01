@@ -2,7 +2,7 @@
 #define MENU_HPP
 
 #include "../../singleton/EngineCore.hpp"
-#include "../../struct/user_interface/menu/MenuOption.hpp"
+#include "../../struct/ui/menu/MenuOption.hpp"
 #include "../../utility/MenuMacros.hpp"
 #include "../../utility/GeneralMacros.hpp"
 #include "../../utility/UtilityFunctions.hpp"

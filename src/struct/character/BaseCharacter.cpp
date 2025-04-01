@@ -31,7 +31,8 @@ BaseCharacter::BaseCharacter() :
 	maxMagicpointBase(0ui16),
 	maxMagicpointBonus(0i16),
 	maxMagicpointMultiplier(1.0f),
-	activeSkills() 
+	activeSkills(),
+	basicAttack(ID_INVALID)
 { // Initialize default resistance values and also reserve a small chunk of memory for the character's pool of usable skills.
 	for (size_t i = 0ui64; i < MAIN_AFFINITY_COUNT; i++)
 		resistances[i] = std::make_pair(resistIndex[i], EFFECT_NORMAL);

@@ -35,6 +35,8 @@ struct BaseCharacter {
 	std::array<Affinity, MAIN_AFFINITY_COUNT>		resistances;
 	static std::array<uint8_t, MAIN_AFFINITY_COUNT> resistIndex;
 
+	uint16_t basicAttack;
+
 public: // Constructor/Destructor Declarations
 	BaseCharacter();
 	BaseCharacter(BaseCharacter& _other) = delete;
@@ -71,17 +73,24 @@ public: // Publicly Accessible Utility Function Definitions
 		return _maxMagicpoints;
 	}
 
-	// 
+	// Returns the character's resistance to a given affinity. If will first check to see if there is data found within the
+	// top 4 bits of the value. If so, it will utilize that value over the character's base value. Otherwise, that original
+	// value is utilized. If both bit groups have no data, the default value of EFFECT_NORMAL is returned.
 	inline uint8_t GetResistance(uint8_t _affinity) const {
 		for (auto& _data : resistances) {
 			if (_data.first != _affinity)
-				continue;
+				continue; // Skip each index until the desired affinity has been reached.
 
-			uint8_t _overwriteResist = _data.second & OVERWRITE_RESIST_MASK;
-			if (_overwriteResist)
-				return _overwriteResist;
+			uint8_t _resistance = (_data.second & OVERWRITE_RESIST_MASK) >> 4;
+			if (_resistance) { // Clamp the value to be between the valid ranges for affinity effectiveness.
+				ValueClamp(_resistance, EFFECT_REFLECT, EFFECT_BREAK);
+			} else { // If that value happens to return false, the base resistance for the character will be parsed.
+				_resistance = _data.second & BASE_RESIST_MASK;
+				ValueClamp(_resistance, EFFECT_REFLECT, EFFECT_BREAK);
+			}
 
-			return _data.second & BASE_RESIST_MASK;
+			// Finally, return whichever of the two values was determined through the checks above.
+			return _resistance;
 		}
 		return EFFECT_NORMAL;
 	}
