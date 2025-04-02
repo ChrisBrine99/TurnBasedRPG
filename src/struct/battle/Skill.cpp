@@ -11,7 +11,7 @@
 Skill::Skill() :
 	name("Unknown"),
 	description("N/A"),
-	id(ID_INVALID),
+	id(SKL_INVALID),
 	basePower(0ui16),
 	affinity(AFFINITY_INVALID),
 	accuracy(0ui8),
@@ -151,7 +151,7 @@ void Skill::ResistanceEffect(BattleScene* _scene, float_t _damage, Combatant* _t
 
 	if (_finalDamage > 0i16) {
 		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
-		_battleUI->uiElements[_index]->ShowElement(1.0f);
+		_battleUI->uiElements[_index]->ShowElement(60.0f);
 		_scene->UpdateHitpoints(_target, _finalDamage);
 	}
 }

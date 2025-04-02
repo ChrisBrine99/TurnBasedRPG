@@ -14,11 +14,11 @@ class SceneManager {
 public: // Main Engine/Engine Extension Function Declarations
 	bool OnUserCreate();
 	bool OnUserDestroy();
-	bool OnUserUpdate(float_t _deltaTime);
-	bool OnUserRender(EngineCore* _engine, float_t _deltaTime);
+	bool OnUserUpdate();
+	bool OnUserRender(EngineCore* _engine);
 
-	bool OnBeforeUserUpdate(float_t _deltaTime);
-	bool OnAfterUserUpdate(float_t _deltaTime);
+	bool OnBeforeUserUpdate();
+	bool OnAfterUserUpdate();
 
 public: //Scene Management Function Declarations
 	void LoadScene(Scene* _scene, uint32_t _index, bool _swapInstantly = false);
@@ -26,7 +26,7 @@ public: //Scene Management Function Declarations
 	void ChangeScene(uint32_t _index);
 
 public: // Accessible Member Variable Declarations
-	Scene* currentScene;
+	Scene* curScene;
 
 private: // Hidden Member Variable Declarations
 	uint32_t flags;

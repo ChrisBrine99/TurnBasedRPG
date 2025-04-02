@@ -44,7 +44,7 @@ bool BattleTargetMenu::OnUserDestroy() {
 	return true;
 }
 
-bool BattleTargetMenu::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+bool BattleTargetMenu::OnUserRender(EngineCore* _engine) {
 	std::pair<float_t, float_t> _positions;
 	size_t _offset = 0ui64;
 
@@ -86,7 +86,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		return;
 	validTargets.clear();
 
-	BattleScene* _scene			= (BattleScene*)GET_SINGLETON(SceneManager)->currentScene;
+	BattleScene* _scene			= (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 	Combatant* _curCombatant	= _scene->curCombatant;
 	auto& _combatants			= _scene->combatants;
 	bool _shouldSkipCaster		= false;
@@ -133,13 +133,13 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 	}
 }
 
-bool BattleTargetMenu::StateDefault(float_t _deltaTime) {
+bool BattleTargetMenu::StateDefault() {
 	if (TGTMENU_CAN_ONLY_CONFIRM) {
 		if (MINPUT_IS_SELECT_PRESSED) {
 			GET_SINGLETON(MenuManager)->DeactivateAllMenus();
 			flags &= ~FLAG_TGTMENU_ONLY_CONFIRM;
 
-			BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->currentScene;
+			BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 			_scene->targets.insert(_scene->targets.begin(), validTargets.begin(), validTargets.end());
 			_scene->ExecuteSkill(skillToUse);
 		}
@@ -172,7 +172,7 @@ bool BattleTargetMenu::StateDefault(float_t _deltaTime) {
 bool BattleTargetMenu::StateProcessSelection() {
 	GET_SINGLETON(MenuManager)->DeactivateAllMenus();
 
-	BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->currentScene;
+	BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 	if (TGTMENU_WILL_TARGET_SELF) { _scene->targets.push_back(_scene->GetCurCombatantIndex()); }
 	_scene->targets.push_back(validTargets[selOption]);
 

@@ -22,11 +22,11 @@ public: // Constructor and Destructor Declarations
 public: // Main Engine Function Declarations
 	virtual bool OnUserCreate() = 0;
 	virtual bool OnUserDestroy();
-	virtual bool OnUserUpdate(float_t _deltaTime);
-	virtual bool OnUserRender(EngineCore* _engine, float_t _deltaTime);
+	virtual bool OnUserUpdate();
+	virtual bool OnUserRender(EngineCore* _engine);
 
-	bool OnBeforeUserUpdate(float_t _deltaTime);
-	bool OnAfterUserUpdate(float_t _deltaTime);
+	virtual bool OnBeforeUserUpdate();
+	virtual bool OnAfterUserUpdate();
 
 public: // Publicly Accessible Utility Function Declarations
 	void AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description = "", uint8_t _alpha = 0xFFui8,
@@ -70,15 +70,15 @@ protected: // Hidden (Accessible to Children Only) Utility Function Declarations
 		olc::Pixel _selColor = COLOR_LIGHT_GREEN, olc::Pixel _inactiveColor = COLOR_GRAY);
 	void InitializeDescriptionParams(int32_t _x, int32_t _y);
 
-	void UpdateCursor(float_t _deltaTime);
-	void RenderVisibleOptions(EngineCore* _engine, float_t _deltaTime);
+	void UpdateCursor();
+	void RenderVisibleOptions(EngineCore* _engine);
 
 public: // Publicly Accessible Utility Function Declarations
 	void PrepareForActivation(uint8_t _state);
 	void PrepareForDeactivation();
 
 protected: // Hidden (Accessible to Children Only) State Function Declarations
-	virtual bool StateDefault(float_t _deltaTime);
+	virtual bool StateDefault();
 	virtual bool StateProcessSelection() = 0;
 
 protected: // Hidden (Accessible to Children Only) Member Variable Declarations

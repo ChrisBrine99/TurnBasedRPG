@@ -9,9 +9,10 @@ INIT_SINGLETON_CPP(EngineCore)
 #include "PartyManager.hpp"
 #include "SceneManager.hpp"
 
-uint32_t EngineCore::s_HudLayer			= 0ui32;
-uint32_t EngineCore::s_ObjectLayer		= 0ui32;
-uint32_t EngineCore::s_BackgroundLayer	= 0ui32;
+uint32_t	EngineCore::s_HudLayer			= 0ui32;
+uint32_t	EngineCore::s_ObjectLayer		= 0ui32;
+uint32_t	EngineCore::s_BackgroundLayer	= 0ui32;
+float_t		EngineCore::deltaTime			= 0.0f;
 
 EngineCore::EngineCore() :
 	engineExt(new EngineCoreExt(true))
@@ -44,13 +45,15 @@ bool EngineCore::OnUserDestroy() {
 }
 
 bool EngineCore::OnUserUpdate(float_t _deltaTime) {
-	CALL_SINGLETON_UPDATE(SceneManager, OnUserUpdate);
+	(void)(_deltaTime);
 	CALL_SINGLETON_UPDATE(ObjectManager, OnUserUpdate);
+	CALL_SINGLETON_UPDATE(SceneManager, OnUserUpdate);
 	CALL_SINGLETON_UPDATE(MenuManager, OnUserUpdate);
 	return true;
 }
 
 bool EngineCore::OnUserRender(float_t _deltaTime) {
+	(void)(_deltaTime);
 	EngineCore* _engine = this; // Required for singletons to work with having to add an additional argument.
 
 	Clear(olc::BLANK);

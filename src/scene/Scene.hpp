@@ -3,7 +3,6 @@
 
 #include "../utility/SceneMacros.hpp"
 
-#include <cmath>
 #include <cstdint>
 
 class EngineCore;
@@ -19,11 +18,11 @@ public: // Constructor/Destructor Declarations and Definitions
 public: // Main Engine/Engine Extension Function Declarations
 	virtual bool OnUserCreate() = 0;
 	virtual bool OnUserDestroy() = 0;
-	virtual bool OnUserUpdate(float_t _deltaTime) = 0;
-	virtual bool OnUserRender(EngineCore* _engine, float_t _deltaTime) = 0;
+	virtual bool OnUserUpdate() = 0;
+	virtual bool OnUserRender(EngineCore* _engine) = 0;
 
-	virtual bool OnBeforeUserUpdate(float_t _deltaTime) { return true; };
-	virtual bool OnAfterUserUpdate(float_t _deltaTime) { return true; };
+	virtual bool OnBeforeUserUpdate() { return true; };
+	virtual bool OnAfterUserUpdate() { return true; };
 
 protected: // Child-Only Accessible Member Variable Declarations
 	uint32_t sceneIndex;

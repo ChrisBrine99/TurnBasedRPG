@@ -2,6 +2,22 @@
 #define DATA_MACROS_HPP
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Some defines for the amount of area reserved in memory for character,skill, and graphical data, as well as another macro that		//
+//	determines how many slots are added to each data type's respective structure when the capacity has been hit/exceeded.				//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define DATA_CHAR_RESERVE_SIZE			32ui64
+#define DATA_SKILL_RESERVE_SIZE			64ui64
+#define DATA_SPRITE_RESERVE_SIZE		16ui64
+#define DATA_RESERVE_CHUNK_SIZE			16ui64
+
+#define ADD_DATA(_storage, _id, _data)									\
+			size_t _capacity = _storage.bucket_count();					\
+			if (_storage.size() == _capacity)							\
+				_storage.reserve(_capacity + DATA_RESERVE_CHUNK_SIZE);	\
+			_storage[_id] = _data										\
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Macros that hold key values for each element found within a character's raw JSON data. Certain values are unique to only enemy or	//
 //	friendly characters, respectively.																									//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
@@ -63,27 +79,36 @@
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 // --- Master list of enemy character IDs --- //
-#define ID_GREEN_SLIME					0x0000ui16
-#define ID_RED_SLIME					0x0001ui16
+#define CHR_GREEN_SLIME					0x0000ui16
+#define CHR_RED_SLIME					0x0001ui16
 // --- The boundary value between what is considered a enemy character or a player character --- //
-#define ID_BOUNDARY						0xF000ui16
+#define CHR_ID_BOUNDARY					0xF000ui16
 // --- Master list of playable character IDs --- //
-#define ID_TEST_PLAYER					0xF001ui16
+#define CHR_TEST_PLAYER					0xF001ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the unique ID values for each skill within the game.															//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define ID_IGNIA						0x0000ui16
-#define ID_POLIGNIA						0x0010ui16
-#define ID_PLAYER_BASIC_ATK_0			0xF000ui16
-#define ID_ENEMY_BASIC_ATK_0			0xF001ui16
+#define SKL_IGNIA						0x0000ui16
+#define SKL_POLIGNIA					0x0010ui16
+#define SKL_PLAYER_BASIC_ATK_0			0xF000ui16
+#define SKL_ENEMY_BASIC_ATK_0			0xF001ui16
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that represent the unique ID values for each spritesheet within the game.													//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define SPR_PLAYER						0x0000ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
-//	A simple default value that represents an invalid ID within the various data structures in the game. As a result, they must all be	//
+//	Simple default values that represents an invalid ID within the various data structures in the game. As a result, they must all be	//
 //	16-bit values ranging from 0-65534 AKA no more than 65535 unique pieces of data can exist for any one group.						//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define ID_INVALID						0xFFFFui16
+#define CHR_INVALID						0xFFFFui16
+#define SKL_INVALID						0xFFFFui16
+#define SPR_INVALID						0xFFFFui16
+#define ENC_INVALID						0xFFFFui16
 
 #endif

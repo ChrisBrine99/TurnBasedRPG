@@ -7,7 +7,7 @@ INIT_SINGLETON_CPP(PartyManager)
 PartyManager::PartyManager() :
 	partyMembers(),
 	curPartyRoster(),
-	curActiveRoster({ ID_INVALID, ID_INVALID, ID_INVALID })
+	curActiveRoster({ CHR_INVALID, CHR_INVALID, CHR_INVALID })
 { // Reserve enough memory to store data within the vector representing the current party members.
 	curPartyRoster.reserve(PARTY_ROSTER_MAX_SIZE);
 }
@@ -20,7 +20,7 @@ bool PartyManager::OnUserDestroy() {
 }
 
 void PartyManager::AddPartyMember(uint16_t _characterID) {
-	if (_characterID < ID_BOUNDARY || partyMembers.find(_characterID) != partyMembers.end())
+	if (_characterID < CHR_ID_BOUNDARY || partyMembers.find(_characterID) != partyMembers.end())
 		return;
 
 	PlayerCharacter* _character = (PlayerCharacter*)GET_SINGLETON(DataManager)->GetCharacter(_characterID);
@@ -41,7 +41,7 @@ void PartyManager::RemovePartyMember(uint16_t _characterID) {
 
 uint16_t PartyManager::GetPartyMemberID(size_t _activeIndex) {
 	if (_activeIndex >= curActiveRoster.size())
-		return ID_INVALID;
+		return CHR_INVALID;
 	return curPartyRoster[curActiveRoster[_activeIndex]];
 }
 
@@ -72,7 +72,7 @@ bool PartyManager::AddToActiveRoster(size_t _activeSlot, size_t _partyIndex) {
 bool PartyManager::RemoveFromActiveRoster(uint16_t _characterID) {
 	for (size_t i = 0ui64; i < PARTY_ACTIVE_MAX_SIZE; i++) {
 		if (curActiveRoster[i] == _characterID) {
-			curActiveRoster[i] = ID_INVALID;
+			curActiveRoster[i] = CHR_INVALID;
 			return true;
 		}
 	}
@@ -80,7 +80,7 @@ bool PartyManager::RemoveFromActiveRoster(uint16_t _characterID) {
 }
 
 PlayerCharacter* PartyManager::GetActiveRosterMember(size_t _activeSlot){
-	if (_activeSlot >= curActiveRoster.size() || curActiveRoster[_activeSlot] == ID_INVALID)
+	if (_activeSlot >= curActiveRoster.size() || curActiveRoster[_activeSlot] == CHR_INVALID)
 		return nullptr;
 	return partyMembers[curActiveRoster[_activeSlot]];
 }

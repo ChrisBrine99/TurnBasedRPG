@@ -1,15 +1,25 @@
 #include "Animation.hpp"
 
-Animation::Animation(float_t _width, float_t _height, float_t _frameLength, uint8_t _numFrames, uint8_t _startFrame, uint8_t _loopStart) :
+Animation::Animation(uint8_t _id, float_t _width, float_t _height, float_t _frameLength, uint8_t _numFrames, uint8_t _startFrame, uint8_t _loopStart) :
 	frameData(),
 	size({ _width, _height }),
+	id(_id),
 	curFrame(_startFrame),
 	numFrames(_numFrames),
 	loopStart(_loopStart),
 	frameLength(_frameLength) 
-{ // Reserve a small bit of space to make room for potential frames within the animation.
-	frameData.reserve(3ui64);
+{ // Reserve enough frames for the supplied length of the animation.
+	frameData.reserve(_numFrames);
 };
+
+Animation* Animation::CreateAnimation(uint8_t _id, float_t _width, float_t _height, float_t _frameLength, const std::initializer_list<olc::vf2d>& _frames, 
+		uint8_t _startFrame, uint8_t _loopStart) 
+{
+	Animation* _newAnimation = new Animation(_id, _width, _height, _frameLength, uint8_t(_frames.size()), _startFrame, _loopStart);
+	for (auto& _frame : _frames)
+		_newAnimation->frameData.push_back(_frame);
+	return _newAnimation;
+}
 
 bool Animation::UpdateAnimation(float_t& _animTimer) {
 	bool _animEnded = false;

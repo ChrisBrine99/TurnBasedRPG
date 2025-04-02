@@ -6,12 +6,18 @@ INIT_SINGLETON_CPP(DataManager)
 #include "../struct/character/PlayerCharacter.hpp"
 #include "../struct/character/EnemyCharacter.hpp"
 #include "../struct/battle/Skill.hpp"
+#include "../utility/Logger.hpp"
 
 DataManager::DataManager() :
 	characterData(),
 	characters(),
-	skills()
-{}
+	skills(),
+	sprites()
+{
+	characters.reserve(DATA_CHAR_RESERVE_SIZE);
+	skills.reserve(DATA_SKILL_RESERVE_SIZE);
+	sprites.reserve(DATA_SPRITE_RESERVE_SIZE);
+}
 
 bool DataManager::OnUserCreate() {
 	return true;
@@ -29,22 +35,22 @@ bool DataManager::OnBeforeUserCreate() {
 	skillData		= json::parse(std::ifstream("res/data/skills.json"));
 	encounterData	= json::parse(std::ifstream("res/data/encounters.json"));
 
-	LoadCharacterData(ID_TEST_PLAYER);
-	LoadCharacterData(ID_GREEN_SLIME);
-	LoadCharacterData(ID_RED_SLIME);
+	LOG_ASSERT(LoadCharacterData(CHR_TEST_PLAYER));
+	LOG_ASSERT(LoadCharacterData(CHR_GREEN_SLIME));
+	LOG_ASSERT(LoadCharacterData(CHR_RED_SLIME));
 
 	return true;
 }
 
 BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
-	// Don't attempt to load in a character that already exists.
+	// Don't attempt to load in a character that already exists; simply return the exist character instead.
 	if (characters.find(_id) != characters.end())
-		return nullptr;
+		return characters[_id];
 	std::string _idString = std::to_string(_id);
 
 	// The supplied ID is above the boundary between player and enemy characters, so the data will be interpreted as if the
 	// character is an player even if the data is supposed to represent an enemy.
-	if (_id >= ID_BOUNDARY) {
+	if (_id >= CHR_ID_BOUNDARY) {
 		// Try to find the container for the character's data. Exit and return nullptr if the required container doesn't exist.
 		json& _data = characterData[KEY_FRIENDLIES][_idString];
 		if (_data.is_null())
@@ -53,19 +59,18 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 
 		// Set the proper ID value to be occupied by this new player character instance and then begin loading in the data
 		// that is shared between both enemies and players.
-		characters[_id]	= _newPlayerChar;
+		ADD_DATA(characters, _id, _newPlayerChar);
 		LoadSharedCharacterData(_id, _data);
 		
 		// Make sure the player character's known skills match up with what their active skills vector currently contains.
 		// After that, another loops begins to parse all the known skills into said vector.
-		uint16_t _skillID	= ID_INVALID;
+		uint16_t _skillID	= CHR_INVALID;
 		json& _knownSkills	= _data[KEY_KNOWN_SKILLS];
 		_newPlayerChar->knownSkills.insert(_newPlayerChar->knownSkills.begin(), _newPlayerChar->activeSkills.begin(), _newPlayerChar->activeSkills.end());
 		_newPlayerChar->knownSkills.reserve(_newPlayerChar->knownSkills.size() + _knownSkills.size());
 		for (size_t i = 0ui64; i < _knownSkills.size(); i++) {
 			_skillID = _knownSkills[i];
-			if (!LoadSkillData(_skillID))
-				continue;
+			LOG_ASSERT(LoadSkillData(_skillID));
 			_newPlayerChar->knownSkills.push_back(_skillID);
 		}
 
@@ -92,7 +97,7 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 	
 	// Do the same as above, but for an enemy character that is being added instead of a player one.
 	EnemyCharacter* _newEnemyChar = new EnemyCharacter();
-	characters[_id] = _newEnemyChar;
+	ADD_DATA(characters, _id, _newEnemyChar);
 	LoadSharedCharacterData(_id, _data);
 
 	// Assign the proper AI function to the enemy that it will utilize in battle.
@@ -107,7 +112,7 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 
 	// Another element unique to an enemy is a dedicated basic attack, which is set in the same way the above elements were.
 	_newEnemyChar->basicAttack			= uint16_t(_data[KEY_BASIC_ATTACK]);
-	LoadSkillData(_newEnemyChar->basicAttack); // Make sure to load in the skill so it actually exists within the data structure.
+	LOG_ASSERT(LoadSkillData(_newEnemyChar->basicAttack)); // Make sure to load in the skill so it actually exists within the data structure.
 
 	// Copy over the experience and money rewards upon the defeat of the enemy in battle.
 	_newEnemyChar->expReward			= uint16_t(_data[KEY_EXP_REWARD]);
@@ -136,7 +141,6 @@ Skill* DataManager::LoadSkillData(uint16_t _id) {
 		return nullptr;
 
 	Skill* _newSkill		= new Skill();
-	skills[_id]				= _newSkill;
 	_newSkill->name			= _data[KEY_SKILL_NAME];
 	_newSkill->description	= _data[KEY_SKILL_INFO];
 	_newSkill->id			= _id;
@@ -151,12 +155,17 @@ Skill* DataManager::LoadSkillData(uint16_t _id) {
 	_newSkill->effectChance = _data[KEY_SKILL_EFFECT_CHANCE];
 	SetSkillUseFunction(_newSkill, _data[KEY_SKILL_USE_FUNCTION]);
 
+	ADD_DATA(skills, _id, _newSkill);
 	return _newSkill;
 }
 
 olc::Decal* DataManager::LoadSprite(uint16_t _id, const std::string& _filepath) {
 	if (sprites.find(_id) != sprites.end())
 		return sprites[_id].Decal();
+
+	size_t _capacity = sprites.bucket_count();
+	if (sprites.size() == _capacity)
+		sprites.reserve(_capacity + DATA_RESERVE_CHUNK_SIZE);
 
 	if (sprites[_id].Load(_filepath) != olc::OK)
 		return nullptr;
@@ -176,8 +185,8 @@ inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 	BaseCharacter* _character	= characters[_id];
 
 	// Loads in the character's given name (This can be changed for playable characters) as well as their level.
-	_character->name			= _data[KEY_NAME];
-	_character->level			= uint8_t(_data[KEY_LEVEL]);
+	_character->name	= _data[KEY_NAME];
+	_character->level	= uint8_t(_data[KEY_LEVEL]);
 
 	// Load in each of the character's seven major stats from where they're stored in the JSON data.
 	auto& _stats				= _character->statBase;
@@ -191,21 +200,20 @@ inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 
 	// Load in the character's active skills. This is automatically limited to 6 skills for playable characters.
 	json& _innerData	= _data[KEY_ACTIVE_SKILLS];
-	size_t _length		= (_id > ID_BOUNDARY) ? std::min(_innerData.size(), PLAYER_SKILL_LIMIT) : _innerData.size();
-	uint16_t _skillID	= ID_INVALID;
+	size_t _length		= (_id > CHR_ID_BOUNDARY) ? std::min(_innerData.size(), PLAYER_SKILL_LIMIT) : _innerData.size();
+	uint16_t _skillID	= CHR_INVALID;
 	for (size_t i = 0ui64; i < _length; i++) {
 		_skillID = _innerData[i];
-		if (!LoadSkillData(_skillID))
-			continue;
+		LOG_ASSERT(LoadSkillData(_skillID));
 		_character->activeSkills.push_back(_skillID);
 	}
 
 	// Finally, load in the character's base resistances into the "resistances" array as a pair containing the internal
 	// id value for the affinity alongside the effect that affinity will have on the character. This is required since the
 	// affinity indexes aren't sequential.
-	_innerData					= _data[KEY_RESISTANCES];
-	_length						= _innerData.size();
-	auto& _resists				= _character->resistances;
+	_innerData		= _data[KEY_RESISTANCES];
+	_length			= _innerData.size();
+	auto& _resists	= _character->resistances;
 	for (size_t j = 0ui64; j < _length; j++)
 		_resists[j] = std::make_pair(BaseCharacter::resistIndex[j], _innerData[j]);
 }

@@ -33,9 +33,9 @@ bool BattleMainMenu::OnUserDestroy() {
 	return true;
 }
 
-bool BattleMainMenu::OnUserUpdate(float_t _deltaTime) {
+bool BattleMainMenu::OnUserUpdate() {
 	switch (curState) {
-	case STATE_MENU_DEFAULT:			return StateDefault(_deltaTime);
+	case STATE_MENU_DEFAULT:			return StateDefault();
 	case STATE_MENU_PROCESS_SELECTION:	return StateProcessSelection();
 	case STATE_BTLMENU_IN_SKILLS:		return StateInsideSkills();
 	case STATE_BTLMENU_IN_ITEMS:		return StateInsideItems();

@@ -3,7 +3,6 @@
 
 #include "../utility/GeneralMacros.hpp"
 
-#include <math.h>
 #include <vector>
 
 class EngineCore;
@@ -14,11 +13,11 @@ class MenuManager {
 	INIT_SINGLETON_HPP(MenuManager)
 public: // Main Engine Function Declarations
 	bool OnUserDestroy();
-	bool OnUserUpdate(float_t _deltaTime);
-	bool OnUserRender(EngineCore* _engine, float_t _deltaTime);
+	bool OnUserUpdate();
+	bool OnUserRender(EngineCore* _engine);
 	
-	bool OnBeforeUserUpdate(float_t _deltaTime);
-	bool OnAfterUserUpdate(float_t _deltaTime);
+	bool OnBeforeUserUpdate();
+	bool OnAfterUserUpdate();
 
 public: // Publicly Accessible Utility Funciton Declarations
 	Menu* CreateMenu(Menu* _menu);

@@ -2,6 +2,7 @@
 #define UTILITY_FUNCTIONS_HPP
 
 #include <cstdint>
+#include <cmath>
 
 // A generic function that assigns the next state to swap over to at the end of the current frame.
 inline void SetNextState(uint8_t _state, uint8_t& _nextState) {
@@ -21,6 +22,21 @@ inline void UpdateCurrentState(uint8_t _state, uint8_t& _curState, uint8_t& _las
 }
 // Create a define that will allow this function to be called without having to place "curState" and "lastState" into the parameters.
 #define UPDATE_STATE(_state)			UpdateCurrentState(_state, curState, lastState)
+
+// 
+template<typename T>
+inline T ValueSign(T _value) {
+	return (_value >> ((sizeof(T) * 8ui64) - 1i64)) ? T(-1) : T(1);
+}
+
+// 
+template<typename T>
+inline T ValueSignF(T _value) {
+	size_t _size = sizeof(T);
+	if (_size == sizeof(double_t))
+		return (*(int64_t*)&_value >> 63i32) ? -1.0f : 1.0f;
+	return (*(int32_t*)&_value >> 31i32) ? -1.0f : 1.0f;
+}
 
 // A simple function that will ensure a value will not be allowed to go below the supplied limit. If it does, the value in
 // question will be replaced by the limit. Otherwise, the funtion does nothing to the value.
@@ -55,6 +71,16 @@ inline void ValueSetLinear(T& _value, T _target, T _amount) {
 		if (_value <= _target)		// Prevent the value from undershooting.
 			_value = _target;
 	}
+}
+
+// 
+inline float_t PointDirection(float_t _x1, float_t _y1, float_t _x2, float_t _y2) {
+	float_t _radians = std::atan2f(_y2 - _y1, _x2 - _x1);
+	float_t _angle = (_radians * 180.0f / 3.1415926535f);
+	if (_angle < 0.0f)
+		return -_angle;
+	_angle = (360.0f - _angle);
+	return _angle < 360.0f ? _angle : 0.0f;
 }
 
 #endif

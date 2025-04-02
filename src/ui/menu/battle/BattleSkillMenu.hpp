@@ -29,8 +29,8 @@ public: // Constructor/Destructor Declaration
 public: // Inherited Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
-	bool OnUserUpdate(float_t _deltaTime) override;
-	bool OnUserRender(EngineCore* _engine, float_t _deltaTime) override;
+	bool OnUserUpdate() override;
+	bool OnUserRender(EngineCore* _engine) override;
 
 public: // Publicly Accessibly Utility Function Declarations
 	void GenerateMenuOptions(Combatant* _curCombatant);

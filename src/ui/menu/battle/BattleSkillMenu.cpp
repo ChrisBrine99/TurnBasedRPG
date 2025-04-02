@@ -38,9 +38,9 @@ bool BattleSkillMenu::OnUserDestroy() {
 	return true;
 }
 
-bool BattleSkillMenu::OnUserUpdate(float_t _deltaTime) {
+bool BattleSkillMenu::OnUserUpdate() {
 	switch (curState) {
-	case STATE_MENU_DEFAULT:			return StateDefault(_deltaTime);
+	case STATE_MENU_DEFAULT:			return StateDefault();
 	case STATE_MENU_PROCESS_SELECTION:	return StateProcessSelection();
 	case STATE_SKLMENU_TARGET_SELECT:	return StateTargetSelect();
 	case STATE_INVALID:					return true;
@@ -49,8 +49,8 @@ bool BattleSkillMenu::OnUserUpdate(float_t _deltaTime) {
 	return false;
 }
 
-bool BattleSkillMenu::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
-	RenderVisibleOptions(_engine, _deltaTime);
+bool BattleSkillMenu::OnUserRender(EngineCore* _engine) {
+	RenderVisibleOptions(_engine);
 
 	// Loop through the six menu options that have costs associated with them and render their costs to the right.
 	int32_t		_length	= int32_t(sSkillCost.size());

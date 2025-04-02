@@ -22,17 +22,17 @@ public: // Constructor/Destructor Declarations
 public: // Main Engine Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
-	bool OnUserUpdate(float_t _deltaTime) override;
-	bool OnUserRender(EngineCore* _engine, float_t _deltaTime) override;
+	bool OnUserUpdate() override;
+	bool OnUserRender(EngineCore* _engine) override;
 
-	bool OnAfterUserUpdate(float_t _deltaTime) override;
+	bool OnAfterUserUpdate() override;
 
 private: // State Function Declarations
 	bool StateInitializeBattle();
 	bool StateDetermineTurnOrder();
 	bool StateIsPlayerOrEnemyTurn();
 	bool StatePlayerTurn();
-	bool StateEnemyTurn(float_t _deltaTime);
+	bool StateEnemyTurn();
 	bool StateExecuteSkill();
 	bool StateIsRoundFinished();
 	bool StateBattleWin();
@@ -89,6 +89,9 @@ private: // Hidden Member Variable Declarations
 	uint32_t	flags;
 
 	Skill*		skillToUse;
+
+	uint8_t		totalPartyMembers;
+	uint8_t		totalEnemies;
 };
 
 #endif

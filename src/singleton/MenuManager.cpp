@@ -22,31 +22,31 @@ bool MenuManager::OnUserDestroy() {
 	return true;
 }
 
-bool MenuManager::OnUserUpdate(float_t _deltaTime) {
+bool MenuManager::OnUserUpdate() {
 	for (Menu* _menu : activeMenus) {
 		if (!(_menu->GetFlags() & FLAG_MENU_ACTIVE_STATE))
 			continue; // Skip over the inactive menu instances.
 
-		if (!_menu->OnUserUpdate(_deltaTime))
+		if (!_menu->OnUserUpdate())
 			return false;
 	}
 	return true;
 }
 
-bool MenuManager::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+bool MenuManager::OnUserRender(EngineCore* _engine) {
 	for (Menu* _menu : activeMenus) {
 		if (!(_menu->GetFlags() & FLAG_MENU_VISIBLE))
 			continue; // Skip over the inactive menu instances.
 
-		if (!_menu->OnUserRender(_engine, _deltaTime))
+		if (!_menu->OnUserRender(_engine))
 			return false;
 	}
 	return true;
 }
 
-bool MenuManager::OnBeforeUserUpdate(float_t _deltaTime) {
-	Menu* _menu		= nullptr;
-	size_t _length	= activeMenus.size();
+bool MenuManager::OnBeforeUserUpdate() {
+	Menu* _menu			= nullptr;
+	size_t _length		= activeMenus.size();
 	for (size_t i = 0ui64; i < _length; i++) {
 		if (!activeMenus[i]) {
 			activeMenus.erase(activeMenus.begin() + i);
@@ -58,18 +58,18 @@ bool MenuManager::OnBeforeUserUpdate(float_t _deltaTime) {
 		if (!(_menu->GetFlags() & FLAG_MENU_ACTIVE_STATE))
 			continue; // Skip over the inactive menu instances.
 
-		if (!_menu->OnBeforeUserUpdate(_deltaTime))
+		if (!_menu->OnBeforeUserUpdate())
 			return false;
 	}
 	return true;
 }
 
-bool MenuManager::OnAfterUserUpdate(float_t _deltaTime) {
+bool MenuManager::OnAfterUserUpdate() {
 	for (Menu* _menu : activeMenus) {
 		if (!(_menu->GetFlags() & FLAG_MENU_ACTIVE_STATE))
 			continue; // Skip over the inactive menu instances.
 		
-		if (!_menu->OnAfterUserUpdate(_deltaTime))
+		if (!_menu->OnAfterUserUpdate())
 			return false;
 	}
 	return true;

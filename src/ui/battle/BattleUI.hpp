@@ -10,7 +10,7 @@
 //	Determines how fast the ui elements can update their visual representations per second (1.0f = one full second).					//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define BATUI_UPDATE_INTERVAL			0.01f
+#define BATUI_UPDATE_INTERVAL			2.0f
 
 class EngineCore;
 class BattleUIElement;
@@ -26,8 +26,8 @@ public: // Constructor/Destructor Declarations
 public: // Main Engine Function Declarations
 	void OnUserCreate();
 	void OnUserDestroy();
-	void OnUserUpdate(float_t _deltaTime);
-	void OnUserRender(EngineCore* _engine, float_t _deltaTime);
+	void OnUserUpdate();
+	void OnUserRender(EngineCore* _engine);
 
 public: // Publicly Accessible Utility Function Declarations
 	void ActivateElement(Combatant* _combatant, size_t _index);

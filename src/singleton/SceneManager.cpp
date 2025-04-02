@@ -4,8 +4,7 @@ INIT_SINGLETON_CPP(SceneManager)
 #include "../utility/SceneMacros.hpp"
 #include "../singleton/EngineCore.hpp"
 #include "../scene/BattleScene.hpp"
-
-#include <iostream>
+#include "../scene/LevelScene.hpp"
 
 SceneManager::SceneManager() :
 	scenes(),
@@ -13,12 +12,13 @@ SceneManager::SceneManager() :
 	curSceneIndex(INVALID_SCENE_INDEX),
 	nextSceneIndex(INVALID_SCENE_INDEX),
 	prevSceneIndex(INVALID_SCENE_INDEX),
-	currentScene(nullptr)
+	curScene(nullptr)
 {}
 
 bool SceneManager::OnUserCreate() {
-	LoadScene(new BattleScene(), BATTLE_SCENE_INDEX, true);
-	return !(currentScene == nullptr);
+	//LoadScene(new BattleScene(), BATTLE_SCENE_INDEX, true);
+	LoadScene(new LevelScene(), LEVEL_SCENE_INDEX, true);
+	return !(curScene == nullptr);
 }
 
 bool SceneManager::OnUserDestroy() {
@@ -28,42 +28,41 @@ bool SceneManager::OnUserDestroy() {
 	}
 	scenes.clear();
 
-	currentScene = nullptr;
+	curScene = nullptr;
 	return true;
 }
 
-bool SceneManager::OnUserUpdate(float_t _deltaTime) {
-	return currentScene->OnUserUpdate(_deltaTime);
+bool SceneManager::OnUserUpdate() {
+	return curScene->OnUserUpdate();
 }
 
-bool SceneManager::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
-	return currentScene->OnUserRender(_engine, _deltaTime);
+bool SceneManager::OnUserRender(EngineCore* _engine) {
+	return curScene->OnUserRender(_engine);
 }
 
-bool SceneManager::OnBeforeUserUpdate(float_t _deltaTime) {
+bool SceneManager::OnBeforeUserUpdate() {
 	if (SCENE_SHOULD_CHANGE) {
 		flags &= ~FLAG_SCENE_CHANGE;
 
 		prevSceneIndex	= curSceneIndex;
 		curSceneIndex	= nextSceneIndex;
-		if (!currentScene->OnUserCreate())
+		if (!curScene->OnUserCreate())
 			return false;
 	}
 
-	return currentScene->OnBeforeUserUpdate(_deltaTime);
+	return curScene->OnBeforeUserUpdate();
 }
 
-bool SceneManager::OnAfterUserUpdate(float_t _deltaTime) {
-	currentScene->OnAfterUserUpdate(_deltaTime);
+bool SceneManager::OnAfterUserUpdate() {
+	curScene->OnAfterUserUpdate();
 
 	if (!SCENE_SHOULD_CHANGE)
 		return true;
 
-	if (!currentScene->OnUserDestroy()) {
-		std::cout << "Previous scene failed to properly destroy itself!" << std::endl;
+	if (!curScene->OnUserDestroy()) {
 		return false;
 	}
-	currentScene = scenes.at(curSceneIndex);
+	curScene = scenes.at(curSceneIndex);
 	return true;
 }
 
@@ -77,7 +76,7 @@ void SceneManager::LoadScene(Scene* _scene, uint32_t _index, bool _swapInstantly
 	scenes.emplace(_index, _scene);
 	if (_swapInstantly) {
 		ChangeScene(_index);
-		currentScene = scenes.at(_index);
+		curScene = scenes.at(_index);
 	}
 }
 
@@ -87,7 +86,7 @@ void SceneManager::UnloadScene(uint32_t _index) {
 		return;
 
 	if (_index == curSceneIndex) {
-		if (!currentScene->OnUserDestroy())
+		if (!curScene->OnUserDestroy())
 			return;
 	}
 	scenes.erase(_index);

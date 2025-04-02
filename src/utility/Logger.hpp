@@ -2,7 +2,7 @@
 #define LOGGER_HPP
 
 #include <cstdint>
-#include <stdio.h>
+#include <iostream>
 #include <string>
 
 #define LOG_COLOR_BLACK					0x00ui8
@@ -22,12 +22,20 @@
 #define LOG_COLOR_BRIGHT_CYAN			0x16ui8
 #define LOG_COLOR_BRIGHT_WHITE			0x17ui8
 
+#define DEBUG
+
+#ifdef DEBUG
+#define LOG_ASSERT(_x)					if (!(_x)) __debugbreak();
+#else
+#define LOG_ASSERT(_x)					_x
+#endif
+
 #define LOG_TRACE(_message, ...)		__log("TRACE -- ",		_message, LOG_COLOR_GREEN,		##__VA_ARGS__)
 #define LOG_WARN(_message, ...)			__log("WARNING -- ",	_message, LOG_COLOR_YELLOW,		##__VA_ARGS__)
 #define LOG_ERROR(_message, ...)		__log("ERROR -- ",		_message, LOG_COLOR_RED,		##__VA_ARGS__)
 
 template<typename ...Args>
-void __log(const char* _prefix, const char* _message, uint8_t _color, Args... _args) {
+void __log(const std::string& _prefix, const std::string& _message, uint8_t _color, Args... _args) {
 	std::string _textColor;
 	switch (_color) {
 	default:

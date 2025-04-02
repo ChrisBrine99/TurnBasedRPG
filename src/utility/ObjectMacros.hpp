@@ -30,6 +30,12 @@
 #define DESTROY_OBJECT(_id)				GET_SINGLETON(ObjectManager)->RemoveObject(_id)
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
+//	A define that denotes if an object is using a valid index or not. This value signifies the animation shouldn't be used.				//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define ANIM_INVALID					0xFFui8
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for the flags required by all standard objects. The bits not referenced here can be utilized for whatever purpose within	//
 //	each child object.																													//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
@@ -54,9 +60,29 @@
 #define OBJ_DID_ANIMATION_END			(flags & FLAG_OBJ_ANIMATION_END)
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Defines for the input flags that can be utilized by player-controlled objects.														//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define FLAG_INPUT_OBJ_RIGHT			0x00000001ui32
+#define FLAG_INPUT_OBJ_LEFT				0x00000002ui32
+#define FLAG_INPUT_OBJ_UP				0x00000004ui32
+#define FLAG_INPUT_OBJ_DOWN				0x00000008ui32
+#define FLAG_INPUT_OBJ_INTERACT			0x00000010ui32
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Checks to see if the input flags utilized by player-controlled obnects have been pressed, released, or held.						//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define OINPUT_IS_RIGHT_ACTIVE			(inputFlags & FLAG_INPUT_OBJ_RIGHT)		&& !(inputFlags & FLAG_INPUT_OBJ_LEFT)
+#define OINPUT_IS_LEFT_ACTIVE			(inputFlags & FLAG_INPUT_OBJ_LEFT)		&& !(inputFlags & FLAG_INPUT_OBJ_RIGHT)
+#define OINPUT_IS_UP_ACTIVE				(inputFlags & FLAG_INPUT_OBJ_UP)		&& !(inputFlags & FLAG_INPUT_OBJ_DOWN)
+#define OINPUT_IS_DOWN_ACTIVE			(inputFlags & FLAG_INPUT_OBJ_DOWN)		&& !(inputFlags & FLAG_INPUT_OBJ_UP)
+#define OINPUT_IS_INTERACT_PRESSED		(inputFlags & FLAG_INPUT_OBJ_INTERACT)	&& !(prevInputFlags & FLAG_INPUT_OBJ_INTERACT)
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for the number that is used to reference an object during creation, so the object manager knows which one to initialize.	//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define ID_OBJECT_PLAYER				0x0000ui16
+#define OBJ_PLAYER						0x0000ui16
 
 #endif

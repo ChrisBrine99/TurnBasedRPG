@@ -13,7 +13,6 @@
 #include "../ui/battle/BattleUI.hpp"
 #include "../ui/battle/BattleUIElement.hpp"
 #include "../utility/UtilityFunctions.hpp"
-
 #include "../utility/Logger.hpp"
 
 std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> BattleScene::positions = {
@@ -41,16 +40,18 @@ BattleScene::BattleScene() :
 	curExpReward(0ui32),
 	combatants(),
 	turnOrder(),
-	turnDelay(0.0f),
+	turnDelay(120.0f),
 	curState(STATE_INVALID),
 	nextState(STATE_INVALID),
 	lastState(STATE_INVALID),
 	curTurn(0ui8),
-	encounterID(ID_INVALID),
+	encounterID(ENC_INVALID),
 	curRound(0ui8),
 	curSkillTarget(0ui8),
 	flags(0u),
-	skillToUse(nullptr) 
+	skillToUse(nullptr),
+	totalPartyMembers(0ui8),
+	totalEnemies(0ui8)
 {
 	combatants.fill(nullptr); // Fill all indexes with nullptr to avoid unintended behavior before the array is populated.
 	turnOrder.reserve(BATTLE_TOTAL_COMBATANTS); // Reserve the memory for the vector's maximum number of elements.
@@ -64,8 +65,8 @@ bool BattleScene::OnUserCreate() {
 	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++)
 		combatants[i] = new Combatant();
 
-	GET_SINGLETON(PartyManager)->AddPartyMember(ID_TEST_PLAYER);
-	GET_SINGLETON(PartyManager)->AddToPartyRoster(ID_TEST_PLAYER);
+	GET_SINGLETON(PartyManager)->AddPartyMember(CHR_TEST_PLAYER);
+	GET_SINGLETON(PartyManager)->AddToPartyRoster(CHR_TEST_PLAYER);
 	GET_SINGLETON(PartyManager)->AddToActiveRoster(0ui64, 0ui64);
 
 	SetEncounterID(0ui16);
@@ -92,50 +93,52 @@ bool BattleScene::OnUserDestroy() {
 	return true;
 }
 
-bool BattleScene::OnUserUpdate(float_t _deltaTime) {
-	if (battleUI) { battleUI->OnUserUpdate(_deltaTime); }
+bool BattleScene::OnUserUpdate() {
+	if (battleUI) { battleUI->OnUserUpdate(); }
 
 	if (turnDelay > 0.0f) {
-		turnDelay -= _deltaTime;
+		turnDelay -= EngineCore::deltaTime;
 		if (turnDelay < 0.0f)
 			turnDelay = 0.0f;
 		return true;
 	}
 
 	switch (curState) {
+	case STATE_INVALID:					return true;
 	case STATE_BATTLE_INITIALIZE:		return StateInitializeBattle();
 	case STATE_BATTLE_SET_TURN_ORDER:	return StateDetermineTurnOrder();
 	case STATE_BATTLE_CHECK_TURN_TYPE:	return StateIsPlayerOrEnemyTurn();
 	case STATE_BATTLE_PLAYER_TURN:		return StatePlayerTurn();
-	case STATE_BATTLE_ENEMY_TURN:		return StateEnemyTurn(_deltaTime);
+	case STATE_BATTLE_ENEMY_TURN:		return StateEnemyTurn();
 	case STATE_BATTLE_EXECUTE_SKILL:	return StateExecuteSkill();
 	case STATE_BATTLE_IS_ROUND_DONE:	return StateIsRoundFinished();
 	case STATE_BATTLE_WIN:				return StateBattleWin();
 	case STATE_BATTLE_LOSE:				return StateBattleLose();
 	case STATE_BATTLE_ESCAPE:			return StateBattleEscape();
 	case STATE_BATTLE_POST:				return StatePostBattle();
-	case STATE_INVALID:					return true;
 	}
 
 	return false;
 }
 
-bool BattleScene::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+bool BattleScene::OnUserRender(EngineCore* _engine) {
 	_engine->SetDrawTarget(EngineCore::s_HudLayer);
-	if (battleUI) { battleUI->OnUserRender(_engine, _deltaTime); }
+	if (battleUI) { battleUI->OnUserRender(_engine); }
 	return true;
 }
 
-bool BattleScene::OnAfterUserUpdate(float_t _deltaTime) {
-	(void)(_deltaTime);
+bool BattleScene::OnAfterUserUpdate() {
 	UPDATE_STATE(nextState);
 	return true;
 }
 
 bool BattleScene::StateInitializeBattle() {
-	LOG_TRACE("Battle Initialized");
-	if (BATTLE_IS_ACTIVE)
+	if (BATTLE_IS_ACTIVE) {
+		LOG_WARN("Battle already initialized!");
+		SET_NEXT_STATE(lastState);
 		return true; // Prevents a battle from being initialized when one is already active.
+	}
+	LOG_TRACE("Battle initialization begun...");
 	flags |= FLAG_BATTLE_ACTIVE;
 
 	// Attempt to fetch the relevant encounter data from within the data that was loaded on startup. The attempt to initialize
@@ -144,7 +147,7 @@ bool BattleScene::StateInitializeBattle() {
 	if (_encounterData.is_null())
 		return false;
 
-	uint16_t _enemyID		= ID_INVALID;
+	uint16_t _enemyID		= CHR_INVALID;
 	uint32_t _totalToSpawn	= 0u;
 	uint8_t _spawnChance	= 0ui8;
 	size_t _totalEnemies	= _encounterData[KEY_ENCOUNTER_ENEMIES].size();
@@ -172,6 +175,7 @@ bool BattleScene::StateInitializeBattle() {
 }
 
 bool BattleScene::StateDetermineTurnOrder() {
+	LOG_TRACE("Turn Order Being Updated...");
 	uint16_t _firstSpeed = 0ui16;
 	uint16_t _secondSpeed = 0ui16;
 
@@ -199,11 +203,13 @@ bool BattleScene::StateIsPlayerOrEnemyTurn() {
 	curCombatant = combatants[_index];
 
 	if (_index < BATTLE_MAX_PARTY_SIZE) {
+		LOG_TRACE("Beginning player turn...");
 		SET_NEXT_STATE(STATE_BATTLE_PLAYER_TURN);
 		actionMenu->PrepareForActivation(STATE_MENU_DEFAULT, curCombatant);
 		return true;
 	}
 
+	LOG_TRACE("Beginning enemy turn...");
 	SET_NEXT_STATE(STATE_BATTLE_ENEMY_TURN);
 	return true;
 }
@@ -212,24 +218,25 @@ bool BattleScene::StatePlayerTurn() {
 	return true;
 }
 
-bool BattleScene::StateEnemyTurn(float_t _deltaTime) {
+bool BattleScene::StateEnemyTurn() {
 	EnemyCharacter* _enemy = (EnemyCharacter*)curCombatant->character;
 	_enemy->ExecuteAI(this);
 	return true;
 }
 
 bool BattleScene::StateExecuteSkill() {
-	if (skillToUse == nullptr || curSkillTarget >= targets.size())
+	if (skillToUse == nullptr || curSkillTarget >= targets.size()) {
+		LOG_ERROR("No skill provided before executing state OR \"curSkillTarget\" was set to an out-of-bounds value!!!");
 		return false;
-
+	}
 	skillToUse->ExecuteUseFunction(this, combatants[targets[curSkillTarget]]);
 
-	turnDelay = 0.1f;
+	turnDelay = 6.0f;
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
 		skillToUse = nullptr;
-		turnDelay = 0.5f;
+		turnDelay = 60.0f;
 		targets.clear();
 	}
 	return true;
@@ -265,28 +272,16 @@ void BattleScene::UpdateMagicpoints(Combatant* _combatant, int16_t _value) {
 }
 
 bool BattleScene::StateIsRoundFinished() {
-	// Perform a check to see how many party members and enemies are left in the battle.
-	size_t _playersRemaining = 0ui64;
-	size_t _enemiesRemaining = 0ui64;
-	size_t _numCombatants = turnOrder.size();
-	for (size_t i = 0ui64; i < _numCombatants; i++) {
-		if (turnOrder[i] < BATTLE_MAX_PARTY_SIZE) {
-			_playersRemaining++;
-			continue;
-		}
-		_enemiesRemaining++;
-	}
-
 	// If the number of player party members remaining in the battle is zero the battle has been lost, and the battle 
 	// will switch to its loss state to reflect that.
-	if (_playersRemaining == 0ui64) {
+	if (totalPartyMembers == 0ui8) {
 		SET_NEXT_STATE(STATE_BATTLE_LOSE);
 		return true;
 	}
 
 	// If the number of enemies remaining in the battle is zero the battle has been lost, and the battle  will switch 
 	// to its win state to reflect that.
-	if (_enemiesRemaining == 0ui64) {
+	if (totalEnemies == 0ui8) {
 		SET_NEXT_STATE(STATE_BATTLE_WIN);
 		return true;
 	}
@@ -294,7 +289,7 @@ bool BattleScene::StateIsRoundFinished() {
 	// If the battle should continue, increment the turn counter and then check if the value exceeds the current number 
 	// of active combatants. If so, the round counter will increment and start the turn loop once again.
 	curTurn++;
-	if (curTurn >= _numCombatants) {
+	if (curTurn == turnOrder.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_SET_TURN_ORDER);
 		curTurn = 0ui8;
 		curRound++;
@@ -307,7 +302,6 @@ bool BattleScene::StateIsRoundFinished() {
 }
 
 bool BattleScene::StateBattleWin() {
-	LOG_TRACE("Battle Won");
 	return true;
 }
 
@@ -324,8 +318,11 @@ bool BattleScene::StatePostBattle() {
 }
 
 void BattleScene::ExecuteSkill(Skill* _skill) {
-	if (skillToUse)
+	if (skillToUse) {
+		LOG_WARN("No skill was selected for use...");
 		return;
+	}
+	LOG_TRACE("Executing skill...");
 
 	if (_skill->hpCost > 0ui16) { UpdateHitpoints(curCombatant, _skill->hpCost); }
 	if (_skill->mpCost > 0ui16) { UpdateMagicpoints(curCombatant, _skill->mpCost); }
@@ -336,8 +333,10 @@ void BattleScene::ExecuteSkill(Skill* _skill) {
 }
 
 void BattleScene::SetEncounterID(uint16_t _encounterID) {
-	if (BATTLE_IS_ACTIVE)
+	if (BATTLE_IS_ACTIVE) {
+		LOG_WARN("Battle already active; don't attempt to start another!");
 		return;
+	}
 	encounterID = _encounterID;
 	SET_NEXT_STATE(STATE_BATTLE_INITIALIZE);
 }
@@ -356,6 +355,7 @@ size_t BattleScene::GetCombatantIndex(Combatant* _combatant) const {
 		if (combatants[i] == _combatant)
 			return i;
 	}
+	LOG_ERROR("Combatant instance isn't within array of Combatant instances managed by the battle scene!!!");
 	return BATTLE_INVALID_INDEX;
 }
 
@@ -391,30 +391,44 @@ void BattleScene::AddToPlayerRewards(Combatant* _combatant) {
 }
 
 void BattleScene::AddPlayerCombatant(size_t _partyIndex) {
-	PlayerCharacter* _player = GET_SINGLETON(PartyManager)->GetActiveRosterMember(_partyIndex);
-	if (_player == nullptr)
+	if (totalPartyMembers == BATTLE_MAX_PARTY_SIZE) {
+		LOG_WARN("Maximum amount of party members already present in battle!");
 		return;
+	}
+
+	PlayerCharacter* _player = GET_SINGLETON(PartyManager)->GetActiveRosterMember(_partyIndex);
+	if (_player == nullptr) {
+		LOG_WARN("Party slot is empty!");
+		return;
+	}
 
 	Combatant* _combatant = combatants[_partyIndex];
-	if (_combatant->isActive)
+	if (_combatant->isActive) {
+		LOG_WARN("Party member is already active within the battle!");
 		return; // Active member is already within the battle; don't bother activating them again
+	}
 
 	_combatant->ActivateCombatant(_player);
 	battleUI->ActivateElement(_combatant, _partyIndex);
 	turnOrder.push_back(_partyIndex);
+	totalPartyMembers++;
 }
 
 void BattleScene::AddEnemyCombatant(uint16_t _enemyID) {
-	if (turnOrder.size() >= BATTLE_TOTAL_COMBATANTS)
+	if (totalEnemies == BATTLE_MAX_ENEMY_SIZE) {
+		LOG_WARN("Maximum amount of enemies already present in the battle!");
 		return;
+	}
 
 	BaseCharacter* _character = GET_SINGLETON(DataManager)->GetCharacter(_enemyID);
 	if (_character == nullptr) // Load in the enemy character's data if it hasn't been loaded yet.
 		_character = GET_SINGLETON(DataManager)->LoadCharacterData(_enemyID);
 
 	EnemyCharacter* _enemy = (EnemyCharacter*)_character;
-	if (typeid(*_enemy).hash_code() != typeid(EnemyCharacter).hash_code())
+	if (typeid(*_enemy).hash_code() != typeid(EnemyCharacter).hash_code()) {
+		LOG_WARN("Attempted to add a non-enemy character as an enemy combatant!");
 		return;
+	}
 
 	Combatant* _combatant = nullptr;
 	for (size_t i = BATTLE_MAX_PARTY_SIZE; i < BATTLE_TOTAL_COMBATANTS; i++) {
@@ -422,11 +436,10 @@ void BattleScene::AddEnemyCombatant(uint16_t _enemyID) {
 		if (_combatant->isActive)
 			continue;
 
-		CREATE_OBJECT(ID_OBJECT_PLAYER, int32_t(positions[i].first) + 8i32, int32_t(positions[i].second) + 8i32);
-
 		_combatant->ActivateCombatant(_enemy);
 		battleUI->ActivateElement(_combatant, i);
 		turnOrder.push_back(i);
+		totalEnemies++;
 		return;
 	}
 }
@@ -437,8 +450,14 @@ void BattleScene::RemoveCombatant(Combatant* _combatant, bool _defeatedByPlayer)
 		if (combatants[turnOrder[i]] != _combatant)
 			continue;
 
-		if (turnOrder[i] >= BATTLE_MAX_PARTY_SIZE)
+		if (turnOrder[i] >= BATTLE_MAX_PARTY_SIZE) {
 			AddToPlayerRewards(_combatant);
+			LOG_TRACE("An enemy has been defeated...");
+			totalEnemies--;
+		} else {
+			LOG_TRACE("A party mamber has been defeated...");
+			totalPartyMembers--;
+		}
 
 		turnOrder.erase(turnOrder.begin() + i);
 		_combatant->isActive = false;

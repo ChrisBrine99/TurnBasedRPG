@@ -11,8 +11,8 @@ public: // Constructor/Destructor Declarations
 public: // Main Engine Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
-	bool OnUserUpdate(float_t _deltaTime) override;
-	bool OnUserRender(EngineCore* _engine, float_t _deltaTime) override;
+	bool OnUserUpdate() override;
+	bool OnUserRender(EngineCore* _engine) override;
 };
 
 #endif

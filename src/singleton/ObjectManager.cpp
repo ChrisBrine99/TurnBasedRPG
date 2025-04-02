@@ -2,13 +2,14 @@
 INIT_SINGLETON_CPP(ObjectManager)
 
 #include "../object/dynamic/ObjPlayer.hpp"
-
-#include <iostream>
+#include "../singleton/EngineCore.hpp"
+#include "../utility/Logger.hpp"
 
 ObjectManager::ObjectManager() :
 	instances(),
 	objsToDelete(),
-	nextInstanceID(0ui64)
+	nextInstanceID(0ui64),
+	nextCapacity(OBJMNGR_RESERVE_SIZE)
 { // Reserve some memory for the first couple of objects. This amount in increased/decreased as required.
 	instances.reserve(OBJMNGR_RESERVE_SIZE);
 	objsToDelete.reserve(OBJMNGR_RESERVE_SIZE);
@@ -27,45 +28,45 @@ bool ObjectManager::OnUserDestroy() {
 	return true;
 }
 
-bool ObjectManager::OnUserUpdate(float_t _deltaTime) {
-	Object* _object = nullptr;
+bool ObjectManager::OnUserUpdate() {
+	Object* _object		= nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
 		if (_object->flags & FLAG_OBJ_ACTIVE)
-			_object->OnUserUpdate(_deltaTime);
+			_object->OnUserUpdate();
 	}
 
 	return true;
 }
 
-bool ObjectManager::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
-	Object* _object = nullptr;
+bool ObjectManager::OnUserRender(EngineCore* _engine) {
+	Object* _object		= nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
 		if (_object->flags & FLAG_OBJ_ACTIVE && _object->flags & FLAG_OBJ_VISIBLE)
-			_object->OnUserRender(_engine, _deltaTime);
+			_object->OnUserRender(_engine);
 	}
 
 	return true;
 }
 
-bool ObjectManager::OnBeforeUserUpdate(float_t _deltaTime) {
-	Object* _object = nullptr;
+bool ObjectManager::OnBeforeUserUpdate() {
+	Object* _object		= nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
 		if (_object->flags & FLAG_OBJ_ACTIVE)
-			_object->OnBeforeUserUpdate(_deltaTime);
+			_object->OnBeforeUserUpdate();
 	}
 
 	return true;
 }
 
-bool ObjectManager::OnAfterUserUpdate(float_t _deltaTime) {
-	Object* _object = nullptr;
+bool ObjectManager::OnAfterUserUpdate() {
+	Object* _object		= nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
 		if (_object->flags & FLAG_OBJ_ACTIVE)
-			_object->OnAfterUserUpdate(_deltaTime);
+			_object->OnAfterUserUpdate();
 	}
 
 	// Only remove object instances from memory in chunks of 16 each (or more) to avoid constant allocation/deallocation 
@@ -80,14 +81,15 @@ bool ObjectManager::OnAfterUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-size_t ObjectManager::AddObject(uint16_t _index, int32_t _x, int32_t _y) {
+size_t ObjectManager::AddObject(uint16_t _index, float_t _x, float_t _y) {
 	size_t _objectID = nextInstanceID;
-	Object* _newObject = CreateObjectFromIndex(_index, _objectID, _x, _y);
-	if (_newObject == nullptr) {
-		std::cout << "Object with provided index does not exist. No object will be created." << std::endl;
-		return OBJMNGR_INVALID_INSTANCE_ID;
-	}
 
+	Object* _newObject = CreateObjectFromIndex(_index, _objectID, _x, _y);
+	if (_newObject == nullptr) 
+		return OBJMNGR_INVALID_INSTANCE_ID;
+
+	if (instances.size() >= nextCapacity)
+		instances.reserve(nextCapacity + OBJMNGR_RESERVE_SIZE);
 	instances[_objectID] = _newObject;
 	nextInstanceID++;
 
@@ -104,9 +106,9 @@ void ObjectManager::RemoveObject(size_t _id) {
 	instances.erase(_id);
 }
 
-Object* ObjectManager::CreateObjectFromIndex(uint16_t _index, size_t _id, int32_t _x, int32_t _y) {
+Object* ObjectManager::CreateObjectFromIndex(uint16_t _index, size_t _id, float_t _x, float_t _y) {
 	switch (_index) {
-	case ID_OBJECT_PLAYER:			return new ObjPlayer(_x, _y, _index, _id);
+	case OBJ_PLAYER:				return new ObjPlayer(_x, _y, _index, _id);
 	}
 
 	return nullptr;

@@ -18,6 +18,7 @@ public: // Publicly Accessible Member Variable Declarations
 	static uint32_t s_HudLayer;
 	static uint32_t s_ObjectLayer;
 	static uint32_t s_BackgroundLayer;
+	static float_t	deltaTime;
 
 private: // Hidden Member Variable Declarations
 	const EngineCoreExt* engineExt;

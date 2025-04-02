@@ -50,9 +50,9 @@ bool Menu::OnUserDestroy() {
 	return true;
 }
 
-bool Menu::OnUserUpdate(float_t _deltaTime) {
+bool Menu::OnUserUpdate() {
 	switch (curState) {
-	case STATE_MENU_DEFAULT:			return StateDefault(_deltaTime);
+	case STATE_MENU_DEFAULT:			return StateDefault();
 	case STATE_MENU_PROCESS_SELECTION:	return StateProcessSelection();
 	case STATE_INVALID:					return true;
 	}
@@ -60,12 +60,12 @@ bool Menu::OnUserUpdate(float_t _deltaTime) {
 	return false;
 }
 
-bool Menu::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
-	RenderVisibleOptions(_engine, _deltaTime);
+bool Menu::OnUserRender(EngineCore* _engine) {
+	RenderVisibleOptions(_engine);
 	return true;
 }
 
-bool Menu::OnBeforeUserUpdate(float_t _deltaTime) {
+bool Menu::OnBeforeUserUpdate() {
 	if (MENU_IS_BLOCKING_INPUT)
 		return true;
 	prevInputFlags = inputFlags;
@@ -90,8 +90,7 @@ bool Menu::OnBeforeUserUpdate(float_t _deltaTime) {
 	return true;
 }
 
-bool Menu::OnAfterUserUpdate(float_t _deltaTime) {
-	(void)(_deltaTime);
+bool Menu::OnAfterUserUpdate() {
 	UPDATE_STATE(nextState);
 	return true;
 }
@@ -179,7 +178,7 @@ void Menu::InitializeDescriptionParams(int32_t _x, int32_t _y) {
 	optionDescriptionY = _y;
 }
 
-void Menu::UpdateCursor(float_t _deltaTime) {
+void Menu::UpdateCursor() {
 	if (MENU_IS_BLOCKING_INPUT || !MENU_IS_INITIALIZED || !MENU_ARE_OPTIONS_ALLOWED)
 		return; // Don't bother updating the cursor if the menu isn't even considered initialized.
 
@@ -195,7 +194,7 @@ void Menu::UpdateCursor(float_t _deltaTime) {
 	// The menu is waiting for the cursor's timer to run out. Without this, the cursor would update its position on every game
 	// frame, and that would be completely unusable. Instead, a frame-independent amount of time in seconds is used.
 	if (MENU_IS_CURSOR_WAITING) {
-		cursorMoveTimer -= _deltaTime;
+		cursorMoveTimer -= EngineCore::deltaTime;
 		if (cursorMoveTimer <= 0.0f) { // Signal that the menu can move the cursor on the next frame.
 			flags &= ~FLAG_MENU_WAIT_CURSOR;
 
@@ -327,7 +326,7 @@ vertical_cursor_movement_logic:
 	curOption += menuWidth * _vMovement;
 }
 
-void Menu::RenderVisibleOptions(EngineCore* _engine, float_t _deltaTime) {
+void Menu::RenderVisibleOptions(EngineCore* _engine) {
 	if (!MENU_IS_INITIALIZED || !MENU_ARE_OPTIONS_ALLOWED)
 		return;
 
@@ -399,7 +398,7 @@ void Menu::PrepareForDeactivation() {
 	flags &= ~(FLAG_MENU_VISIBLE | FLAG_MENU_ACTIVE_STATE);
 }
 
-bool Menu::StateDefault(float_t _deltaTime) {
+bool Menu::StateDefault() {
 	// Capture what option was selected so it can be parsed in the next state, but only if the option is considered selectable.
 	if (MINPUT_IS_SELECT_PRESSED && MOPTION_IS_SELECTABLE(curOption)) {
 		SET_NEXT_STATE(STATE_MENU_PROCESS_SELECTION);
@@ -407,6 +406,6 @@ bool Menu::StateDefault(float_t _deltaTime) {
 		return true;
 	}
 
-	UpdateCursor(_deltaTime);
+	UpdateCursor();
 	return true;
 }

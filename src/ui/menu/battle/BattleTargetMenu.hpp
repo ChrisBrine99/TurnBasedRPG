@@ -14,7 +14,7 @@ public: // Constructor/Destructor Declaration
 public: // Inherited Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
-	bool OnUserRender(EngineCore* _engine, float_t _deltaTime) override;
+	bool OnUserRender(EngineCore* _engine) override;
 
 public: // Publicly Accessibly Utility Function Declarations
 	void PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, Skill* _skill);
@@ -24,7 +24,7 @@ private: // Hidden Utility Function Declarations
 	void DetermineValidTargets(uint8_t _targeting);
 
 private: // Hidden (Accessible to Children Only) State Function Declarations
-	bool StateDefault(float_t _deltaTime) override;
+	bool StateDefault() override;
 	bool StateProcessSelection();
 
 private: // Hidden Member Variable Declarations

@@ -34,7 +34,7 @@ public: // Constructor/Destructor Declaration
 public: // Inherited Function Declarations
 	bool OnUserCreate() override;
 	bool OnUserDestroy() override;
-	bool OnUserUpdate(float_t _deltaTime) override;
+	bool OnUserUpdate() override;
 
 public: // Publicly Accessibly Utility Function Declarations
 	void PrepareForActivation(uint8_t _state, Combatant* _curCombatant);

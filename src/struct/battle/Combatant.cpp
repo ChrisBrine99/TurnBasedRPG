@@ -18,7 +18,7 @@ Combatant::Combatant() :
 	statModifiers(0ui16),
 	character(nullptr),
 	resistances(std::array<Affinity, MAIN_AFFINITY_COUNT>()),
-	basicAttack(ID_INVALID) 
+	basicAttack(SKL_INVALID) 
 {
 	stats.fill(1ui8); // Populate the array with default values of 1 for each stat.
 	activeSkills.reserve(PLAYER_SKILL_LIMIT); // Reserve at least enough memory to store the maximum number of skills a player character can use in battle.

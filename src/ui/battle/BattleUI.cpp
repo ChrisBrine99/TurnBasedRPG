@@ -55,8 +55,8 @@ void BattleUI::OnUserDestroy() {
 		delete uiElements[i], uiElements[i] = nullptr;
 }
 
-void BattleUI::OnUserUpdate(float_t _deltaTime) {
-	updateTimer -= _deltaTime;
+void BattleUI::OnUserUpdate() {
+	updateTimer -= EngineCore::deltaTime;
 	if (updateTimer > 0.0f)
 		return;
 	updateTimer = BATUI_UPDATE_INTERVAL;
@@ -65,7 +65,8 @@ void BattleUI::OnUserUpdate(float_t _deltaTime) {
 		_element->OnUserUpdate();
 }
 
-void BattleUI::OnUserRender(EngineCore* _engine, float_t _deltaTime) {
+void BattleUI::OnUserRender(EngineCore* _engine) {
+	float_t _deltaTime	= EngineCore::deltaTime;
 	size_t _index		= 0ui64;
 	for (auto _it = textElements.begin(); _it != textElements.end();) {
 		auto& _text		= textElements[_index];
@@ -131,7 +132,7 @@ void BattleUI::CreateText(const std::string& _string, size_t _index, olc::Pixel 
 		_color,
 		_scale
 	);
-	textElements.push_back(std::make_pair(1.0f, _text));
+	textElements.push_back(std::make_pair(60.0f, _text));
 }
 
 void BattleUI::CreateDamageText(uint16_t _value, size_t _index, olc::Pixel _color, float_t _xOffset, float_t _yOffset, float_t _scale) {
