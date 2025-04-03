@@ -233,6 +233,7 @@
     <None Include="settings.ini" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\graphics\battle\battle_ui_elements.png" />
     <Image Include="res\graphics\test_spritesheet.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

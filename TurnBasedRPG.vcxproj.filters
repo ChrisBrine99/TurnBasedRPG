@@ -238,5 +238,8 @@
     <Image Include="res\graphics\test_spritesheet.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\graphics\battle\battle_ui_elements.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -29,7 +29,7 @@ ObjPlayer::ObjPlayer(float_t _x, float_t _y, uint16_t _index, size_t _id) :
 {}
 
 bool ObjPlayer::OnUserCreate() {
-	spritesheet = GET_SINGLETON(DataManager)->LoadSprite(SPR_PLAYER, "res/graphics/test_spritesheet.png");
+	spritesheet = ADD_SPRITE(SPR_PLAYER, "res/graphics/test_spritesheet.png");
 	if (!spritesheet) { return false; }
 
 	AddAnimation(0ui8, 16.0f, 16.0f, 6.0f, {
@@ -78,8 +78,6 @@ bool ObjPlayer::OnBeforeUserUpdate() {
 }
 
 bool ObjPlayer::StateDefault() {
-	
-
 	UpdateMovementValues(0.0f);
 	return true;
 }

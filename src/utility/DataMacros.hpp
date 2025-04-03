@@ -17,6 +17,9 @@
 				_storage.reserve(_capacity + DATA_RESERVE_CHUNK_SIZE);	\
 			_storage[_id] = _data										\
 
+#define ADD_SPRITE(_id, _file)											\
+			GET_SINGLETON(DataManager)->LoadSprite(_id, _file)
+
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Macros that hold key values for each element found within a character's raw JSON data. Certain values are unique to only enemy or	//
 //	friendly characters, respectively.																									//
