@@ -46,6 +46,7 @@
 #define FLAG_OBJ_ACTIVE					0x00000008ui32
 #define FLAG_OBJ_VISIBLE				0x00000010ui32
 #define FLAG_OBJ_ANIMATION_END			0x00000020ui32
+#define FLAG_OBJ_SOLID					0x00000040ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for simplifying the typing required to check for an object's flag (within that object itself) bit to see if it is set to 0	//
@@ -58,6 +59,21 @@
 #define OBJ_IS_ACTIVE					(flags & FLAG_OBJ_ACTIVE)
 #define OBJ_IS_VISIBLE					(flags & FLAG_OBJ_VISIBLE) && OBJ_IS_ACTIVE
 #define OBJ_DID_ANIMATION_END			(flags & FLAG_OBJ_ANIMATION_END)
+#define OBJ_IS_SOLID					(flags & FLAG_OBJ_SOLID)
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Defines for flags required by all dynamic objects. The bits not seen here or within the standard object flags are free to be used	//
+//	on a per-dynamic object basis as required.																							//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define FLAG_DOBJ_HOSTILE				0x00000080ui32
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Defines for simplifying the typing required to check for a dynamic object's flag (within that object itself) bit to see if it is	//
+//	set to 0 or 1; then determining the course to take after that.																		//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define DOBJ_IS_HOSTILE					(flags & FLAG_DOBJ_HOSTILE)
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for the input flags that can be utilized by player-controlled objects.														//
@@ -78,6 +94,12 @@
 #define OINPUT_IS_UP_ACTIVE				(inputFlags & FLAG_INPUT_OBJ_UP)		&& !(inputFlags & FLAG_INPUT_OBJ_DOWN)
 #define OINPUT_IS_DOWN_ACTIVE			(inputFlags & FLAG_INPUT_OBJ_DOWN)		&& !(inputFlags & FLAG_INPUT_OBJ_UP)
 #define OINPUT_IS_INTERACT_PRESSED		(inputFlags & FLAG_INPUT_OBJ_INTERACT)	&& !(prevInputFlags & FLAG_INPUT_OBJ_INTERACT)
+
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+//	Special checks against the object's input flags for things that require more than two inputs during a single check.					//
+// ------------------------------------------------------------------------------------------------------------------------------------ //
+
+#define OINPUT_ANY_DIRECTION_ACTIVE		(OINPUT_IS_RIGHT_ACTIVE || OINPUT_IS_LEFT_ACTIVE || OINPUT_IS_UP_ACTIVE || OINPUT_IS_DOWN_ACTIVE)
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for the number that is used to reference an object during creation, so the object manager knows which one to initialize.	//

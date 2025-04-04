@@ -11,7 +11,7 @@ SceneManager::SceneManager() :
 	flags(INVALID_SCENE_INDEX),
 	curSceneIndex(INVALID_SCENE_INDEX),
 	nextSceneIndex(INVALID_SCENE_INDEX),
-	prevSceneIndex(INVALID_SCENE_INDEX),
+	lastSceneIndex(INVALID_SCENE_INDEX),
 	curScene(nullptr)
 {}
 
@@ -44,7 +44,7 @@ bool SceneManager::OnBeforeUserUpdate() {
 	if (SCENE_SHOULD_CHANGE) {
 		flags &= ~FLAG_SCENE_CHANGE;
 
-		prevSceneIndex	= curSceneIndex;
+		lastSceneIndex	= curSceneIndex;
 		curSceneIndex	= nextSceneIndex;
 		if (!curScene->OnUserCreate())
 			return false;

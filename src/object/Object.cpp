@@ -29,8 +29,6 @@ Object::Object(float_t _x, float_t _y, uint16_t _index, size_t _id) :
 }
 
 bool Object::OnUserDestroy() {
-	delete spritesheet, spritesheet = nullptr;
-
 	prevAnimation = nullptr;
 	curAnimation = nullptr;
 	for (auto& _anim : animations)

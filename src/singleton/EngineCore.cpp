@@ -9,6 +9,8 @@ INIT_SINGLETON_CPP(EngineCore)
 #include "PartyManager.hpp"
 #include "SceneManager.hpp"
 
+#include "../utility/UtilityFunctions.hpp"
+
 uint32_t	EngineCore::s_HudLayer			= 0ui32;
 uint32_t	EngineCore::s_ObjectLayer		= 0ui32;
 uint32_t	EngineCore::s_BackgroundLayer	= 0ui32;

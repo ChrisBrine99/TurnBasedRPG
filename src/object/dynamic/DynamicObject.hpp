@@ -7,20 +7,20 @@
 
 class DynamicObject : public Object {
 public: // Constructor/Destructor Declarations
-	DynamicObject(float_t _x, float_t _y, uint16_t _index, size_t _id, float_t _xAccel, float_t _yAccel, float_t _xMaxSpeed, float_t _yMaxSpeed);
+	DynamicObject(float_t _x, float_t _y, uint16_t _index, size_t _id, float_t _accel, float_t _maxSpeed);
 	~DynamicObject() = default;
 
+public: // Publicly Accessible Utility Function Declarations
+	virtual void OnUserInteract();
+
 protected: // Hidden (Accessible to Children Only) Utility Function Decalarations
-	void UpdateMovementValues(float_t _deltaTime);
+	void MoveAndCollide(float_t _xSpeed, float_t _ySpeed, float_t _delta);
 
 protected: // Hidden (Accessible to Children Only) Member Variable Declarations
-	float_t					xAccel;
-	float_t					yAccel;
-
-	float_t					xMaxSpeed;
-	float_t					yMaxSpeed;
-	float_t					xSpeed;
-	float_t					ySpeed;
+	const float_t			accel;
+	const float_t			maxSpeed;
+	float_t					speed;
+	float_t					direction;
 
 	float_t					xFraction;
 	float_t					yFraction;

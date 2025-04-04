@@ -1,35 +1,45 @@
 #include "DynamicObject.hpp"
 
-#include "../../utility/Logger.hpp"
-
-DynamicObject::DynamicObject(float_t _x, float_t _y, uint16_t _index, size_t _id, float_t _xAccel, float_t _yAccel, float_t _xMaxSpeed, float_t _yMaxSpeed) :
+DynamicObject::DynamicObject(float_t _x, float_t _y, uint16_t _index, size_t _id, float_t _accel, float_t _maxSpeed) :
 	Object(_x, _y, _index, _id),
-	xAccel(_xAccel),
-	yAccel(_yAccel),
-	xMaxSpeed(_xMaxSpeed),
-	yMaxSpeed(_yMaxSpeed),
-	xSpeed(0.0f),
-	ySpeed(0.0f),
+	accel(_accel),
+	maxSpeed(_maxSpeed),
+	speed(0.0f),
+	direction(0.0f),
 	xFraction(0.0f),
 	yFraction(0.0f)
 {}
 
-void DynamicObject::UpdateMovementValues(float_t _deltaTime) {
-	float_t _xDelta = 0.0f;
-	if (xSpeed != 0.0f) {
-		_xDelta		= xSpeed * _deltaTime;
-		_xDelta	   += xFraction;
-		xFraction	= _xDelta - (std::floor(std::abs(_xDelta)) * ValueSignF(_xDelta));
-		_xDelta	   -= xFraction;
-		x		   += _xDelta;
+void DynamicObject::OnUserInteract() 
+{}
+
+void DynamicObject::MoveAndCollide(float_t _xSpeed, float_t _ySpeed, float_t _delta) {
+	// Determine whole pixel movement along the x axis for the frame.
+	if (_xSpeed != 0.0f) {
+		_xSpeed		= _xSpeed * _delta;
+		_xSpeed    += xFraction;
+		xFraction	= _xSpeed - (std::floor(std::abs(_xSpeed)) * ValueSignF(_xSpeed));
+		_xSpeed	   -= xFraction;
+		
+		// Skip collision check if the x speed isn't 1.0 or greater (After the code above it will only ever 
+		// been a whole floating-point value).
+		if (_xSpeed == 0.0f)
+			goto process_vertical_movement;
+
+
 	}
 	
-	float_t _yDelta = 0.0f;
-	if (ySpeed != 0.0f) {
-		_yDelta		= ySpeed * _deltaTime;
-		_yDelta	   += yFraction;
-		yFraction	= _yDelta - (std::floor(std::abs(_yDelta)) * ValueSignF(_yDelta));
-		_yDelta	   -= yFraction;
-		y		   += _yDelta;
+	// Determine whole pixel movement along the y axis for the frame.
+process_vertical_movement:
+	if (_ySpeed != 0.0f) {
+		_ySpeed		= _ySpeed * _delta;
+		_ySpeed    += yFraction;
+		yFraction	= _ySpeed - (std::floor(std::abs(_ySpeed)) * ValueSignF(_ySpeed));
+		_ySpeed    -= yFraction;
+		
+		// Skip vertical collision for the same reason that would cause the horizontal collision to skip but
+		// with the _ySpeed value being the determining value.
+		if (_ySpeed == 0.0f)
+			return;
 	}
 }

@@ -23,6 +23,11 @@ public: // Main Engine Function Declarations
 	virtual bool OnBeforeUserUpdate();
 	virtual bool OnAfterUserUpdate();
 
+public: // Publicly Accessible Utility Function DEclarations
+	inline bool CanUpdateObject()	const { return OBJ_IS_ACTIVE && !OBJ_IS_DESTROYED; }
+	inline bool CanRenderObject()	const { return OBJ_IS_ACTIVE && OBJ_IS_VISIBLE; }
+	inline bool CanDestroyObject()	const { return OBJ_IS_DESTROYED; }
+
 protected: // Hidden (Accessible to Children Only) Utility Function Declarations
 	void AddAnimation(uint8_t _id, float_t _width, float_t _height, float_t _frameLength, const std::initializer_list<olc::vf2d>& _frames, 
 			uint8_t _startFrame = 0ui8, uint8_t _loopStart = 0ui8);
@@ -42,9 +47,9 @@ public: // Publicly Accessible Member Variable Declarations
 
 	uint8_t					nextAnimID;
 
+protected: // Hidden (Accessible to Children Only) Member Variable Declarations
 	int32_t					flags;
 
-protected: // Hidden (Accessible to Children Only) Member Variable Declarations
 	olc::Pixel				blendColor;
 	float_t					animTimer;
 	float_t					animSpeed;

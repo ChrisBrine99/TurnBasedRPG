@@ -33,7 +33,7 @@ private: // Hidden Member Variable Declarations
 
 	uint32_t curSceneIndex;
 	uint32_t nextSceneIndex;
-	uint32_t prevSceneIndex;
+	uint32_t lastSceneIndex;
 
 	std::unordered_map<uint32_t, Scene*> scenes;
 };

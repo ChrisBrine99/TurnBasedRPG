@@ -29,10 +29,10 @@ bool ObjectManager::OnUserDestroy() {
 }
 
 bool ObjectManager::OnUserUpdate() {
-	Object* _object		= nullptr;
+	Object* _object	= nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
-		if (_object->flags & FLAG_OBJ_ACTIVE)
+		if (_object->CanUpdateObject())
 			_object->OnUserUpdate();
 	}
 
@@ -40,10 +40,10 @@ bool ObjectManager::OnUserUpdate() {
 }
 
 bool ObjectManager::OnUserRender(EngineCore* _engine) {
-	Object* _object		= nullptr;
+	Object* _object	= nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
-		if (_object->flags & FLAG_OBJ_ACTIVE && _object->flags & FLAG_OBJ_VISIBLE)
+		if (_object->CanRenderObject())
 			_object->OnUserRender(_engine);
 	}
 
@@ -51,10 +51,10 @@ bool ObjectManager::OnUserRender(EngineCore* _engine) {
 }
 
 bool ObjectManager::OnBeforeUserUpdate() {
-	Object* _object		= nullptr;
+	Object* _object	= nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
-		if (_object->flags & FLAG_OBJ_ACTIVE)
+		if (_object->CanUpdateObject())
 			_object->OnBeforeUserUpdate();
 	}
 
@@ -62,10 +62,10 @@ bool ObjectManager::OnBeforeUserUpdate() {
 }
 
 bool ObjectManager::OnAfterUserUpdate() {
-	Object* _object		= nullptr;
+	Object* _object	= nullptr;
 	for (auto& _data : instances) {
 		_object = _data.second;
-		if (_object->flags & FLAG_OBJ_ACTIVE)
+		if (_object->CanUpdateObject())
 			_object->OnAfterUserUpdate();
 	}
 
@@ -98,7 +98,7 @@ size_t ObjectManager::AddObject(uint16_t _index, float_t _x, float_t _y) {
 }
 
 void ObjectManager::RemoveObject(size_t _id) {
-	if (instances.find(_id) == instances.end() || instances[_id]->flags & FLAG_OBJ_PERSISTENT)
+	if (instances.find(_id) == instances.end() && instances[_id]->CanDestroyObject())
 		return;
 
 	objsToDelete.push_back(instances[_id]);

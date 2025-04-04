@@ -40,7 +40,7 @@ BattleScene::BattleScene() :
 	curExpReward(0ui32),
 	combatants(),
 	turnOrder(),
-	turnDelay(120.0f),
+	turnDelay(60.0f),
 	curState(STATE_INVALID),
 	nextState(STATE_INVALID),
 	lastState(STATE_INVALID),
@@ -231,7 +231,7 @@ bool BattleScene::StateExecuteSkill() {
 	}
 	skillToUse->ExecuteUseFunction(this, combatants[targets[curSkillTarget]]);
 
-	turnDelay = 6.0f;
+	turnDelay = 15.0f;
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
@@ -249,7 +249,7 @@ void BattleScene::UpdateHitpoints(Combatant* _combatant, int16_t _value) {
 		return;
 	}
 
-	if (_hitpoints < 0i32) {
+	if (_hitpoints <= 0i32) {
 		_combatant->curHitpoints = 0ui16;
 		RemoveCombatant(_combatant);
 		return;
@@ -264,7 +264,7 @@ void BattleScene::UpdateMagicpoints(Combatant* _combatant, int16_t _value) {
 		return;
 	}
 
-	if (_magicpoints < 0i32) {
+	if (_magicpoints <= 0i32) {
 		_combatant->curMagicpoints = 0ui16;
 		return;
 	}
@@ -289,7 +289,7 @@ bool BattleScene::StateIsRoundFinished() {
 	// If the battle should continue, increment the turn counter and then check if the value exceeds the current number 
 	// of active combatants. If so, the round counter will increment and start the turn loop once again.
 	curTurn++;
-	if (curTurn == turnOrder.size()) {
+	if (curTurn >= turnOrder.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_SET_TURN_ORDER);
 		curTurn = 0ui8;
 		curRound++;

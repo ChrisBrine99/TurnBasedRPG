@@ -161,6 +161,8 @@
     <ClCompile Include="src\struct\object\Animation.cpp" />
     <ClCompile Include="src\ui\battle\BattleUI.cpp" />
     <ClInclude Include="src\scene\LevelScene.hpp" />
+    <ClInclude Include="src\struct\level\Map.hpp" />
+    <ClInclude Include="src\struct\level\Tile.hpp" />
     <ClInclude Include="src\struct\ui\general\TextElement.hpp" />
     <ClInclude Include="src\struct\ui\menu\MenuOption.hpp" />
     <ClInclude Include="src\struct\ui\menu\MenuTitle.hpp" />

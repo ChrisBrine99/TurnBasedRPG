@@ -58,6 +58,10 @@ public: // Combatant Management Function Declarations
 	void AddEnemyCombatant(uint16_t _enemyID);
 	void RemoveCombatant(Combatant* _combatant, bool _defeatedByPlayer = false);
 
+	inline uint8_t GetTotalPlayerCombatants() const {
+		return totalPartyMembers;
+	}
+
 public: // Accessible Member Variable Declarations
 	static std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> positions;
 

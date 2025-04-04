@@ -23,19 +23,21 @@ inline void UpdateCurrentState(uint8_t _state, uint8_t& _curState, uint8_t& _las
 // Create a define that will allow this function to be called without having to place "curState" and "lastState" into the parameters.
 #define UPDATE_STATE(_state)			UpdateCurrentState(_state, curState, lastState)
 
-// 
+// Simply returns a -1 of the input type should the value be any negative integer value, and a +1 of the input type if 
+// that value happens to be a positive integer.
 template<typename T>
 inline T ValueSign(T _value) {
 	return (_value >> ((sizeof(T) * 8ui64) - 1i64)) ? T(-1) : T(1);
 }
 
-// 
+// A floating-point (Can be either a float_t or double_t) type version of the sign function. Will return a -1.0 of 
+// the input type if the value is negative, and a +1.0 of that type should the value be any positive real number.
 template<typename T>
 inline T ValueSignF(T _value) {
 	size_t _size = sizeof(T);
 	if (_size == sizeof(double_t))
-		return (*(int64_t*)&_value >> 63i32) ? -1.0f : 1.0f;
-	return (*(int32_t*)&_value >> 31i32) ? -1.0f : 1.0f;
+		return (*(int64_t*)&_value >> 63i32) ? -T(1.0) : T(1.0);
+	return (*(int32_t*)&_value >> 31i32) ? -T(1.0) : T(1.0);
 }
 
 // A simple function that will ensure a value will not be allowed to go below the supplied limit. If it does, the value in
@@ -73,14 +75,22 @@ inline void ValueSetLinear(T& _value, T _target, T _amount) {
 	}
 }
 
-// 
+// Determines the direction between two points in radians between -PI and +PI. The syntax and parameters mimic
+// how the equivalent GameMaker function works.
 inline float_t PointDirection(float_t _x1, float_t _y1, float_t _x2, float_t _y2) {
-	float_t _radians = std::atan2f(_y2 - _y1, _x2 - _x1);
-	float_t _angle = (_radians * 180.0f / 3.1415926535f);
-	if (_angle < 0.0f)
-		return -_angle;
-	_angle = (360.0f - _angle);
-	return _angle < 360.0f ? _angle : 0.0f;
+	return std::atan2(_y1 - _y2, _x2 - _x1);
+}
+
+// Functions just like how it does in GameMaker. It will take the cosine of the direction parameter and then
+// multiply that by the provided length parameter; returning the resulting value.
+inline float_t LengthDirX(float_t _length, float_t _dir) {
+	return std::cos(_dir) * _length;
+}
+
+// Functions just like how it does in GameMaker. It will take the negative sign of the direction parameter and 
+// multiply it by the provided length parameter; returning the resulting value.
+inline float_t LengthDirY(float_t _length, float_t _dir) {
+	return -(std::sin(_dir) * _length);
 }
 
 #endif

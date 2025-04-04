@@ -41,8 +41,8 @@
 //	releases the input for said direction.																								//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define MENU_CURSOR_FIRST_SHIFT_TIME	0.65f
-#define MENU_CURSOR_SHIFT_TIME			0.15f
+#define MENU_CURSOR_FIRST_SHIFT_TIME	30.0f
+#define MENU_CURSOR_SHIFT_TIME			10.0f
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines that detail what each bit within the "flags" variable for each menu represents in the context of the menu itself. The		//
