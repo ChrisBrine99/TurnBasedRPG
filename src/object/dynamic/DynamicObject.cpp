@@ -26,6 +26,13 @@ void DynamicObject::MoveAndCollide(float_t _xSpeed, float_t _ySpeed, float_t _de
 		if (_xSpeed == 0.0f)
 			goto process_vertical_movement;
 
+		// If the object isn't set to collide with the environment, their horizontal position is simply updated 
+		// and the vertical movement is processed. Collision is completely skipped.
+		if (!OBJ_CAN_COLLIDE_WITH_WORLD) {
+			x += _xSpeed;
+			goto process_vertical_movement;
+		}
+
 
 	}
 	
@@ -36,10 +43,19 @@ process_vertical_movement:
 		_ySpeed    += yFraction;
 		yFraction	= _ySpeed - (std::floor(std::abs(_ySpeed)) * ValueSignF(_ySpeed));
 		_ySpeed    -= yFraction;
-		
+
 		// Skip vertical collision for the same reason that would cause the horizontal collision to skip but
 		// with the _ySpeed value being the determining value.
 		if (_ySpeed == 0.0f)
 			return;
+
+		// If the object isn't set to collide with the environment, their vertical position is simply updated 
+		// and the function is exited from early.
+		if (!OBJ_CAN_COLLIDE_WITH_WORLD) {
+			y += _ySpeed;
+			return;
+		}
+
+
 	}
 }
