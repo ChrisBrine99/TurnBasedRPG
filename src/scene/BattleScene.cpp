@@ -20,14 +20,14 @@ std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> BattleScene::po
 	std::make_pair(224.0f, 256.0f),		//  1 -- Second party member's position.
 	std::make_pair(352.0f, 256.0f),		//  2 -- Third party member's position.
 
-	std::make_pair(256.0f,  64.0f),		//  3 -- First enemy combatant's position.
-	std::make_pair(320.0f,  64.0f),		//  4 -- Second enemy combatant's position.
-	std::make_pair(256.0f, 128.0f),		//  5 -- Third enemy combatant's position.
-	std::make_pair(320.0f, 128.0f),		//  6 -- Fourth enemy combatant's position.
-	std::make_pair(384.0f,  64.0f),		//  7 -- Fifth enemy combatant's position.
-	std::make_pair(192.0f,  64.0f),		//  8 -- Sixth enemy combatant's position.
-	std::make_pair(384.0f, 128.0f),		//  9 -- Seventh enemy combatant's position.
-	std::make_pair(192.0f, 128.0f)		// 10 -- Eighth enemy combatant's position.
+	std::make_pair(272.0f,  64.0f),		//  3 -- First enemy combatant's position.
+	std::make_pair(336.0f,  64.0f),		//  4 -- Second enemy combatant's position.
+	std::make_pair(272.0f, 128.0f),		//  5 -- Third enemy combatant's position.
+	std::make_pair(336.0f, 128.0f),		//  6 -- Fourth enemy combatant's position.
+	std::make_pair(400.0f,  64.0f),		//  7 -- Fifth enemy combatant's position.
+	std::make_pair(208.0f,  64.0f),		//  8 -- Sixth enemy combatant's position.
+	std::make_pair(400.0f, 128.0f),		//  9 -- Seventh enemy combatant's position.
+	std::make_pair(208.0f, 128.0f)		// 10 -- Eighth enemy combatant's position.
 };
 
 BattleScene::BattleScene() :
@@ -65,9 +65,15 @@ bool BattleScene::OnUserCreate() {
 	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++)
 		combatants[i] = new Combatant();
 
-	GET_SINGLETON(PartyManager)->AddPartyMember(CHR_TEST_PLAYER);
-	GET_SINGLETON(PartyManager)->AddToPartyRoster(CHR_TEST_PLAYER);
-	GET_SINGLETON(PartyManager)->AddToActiveRoster(0ui64, 0ui64);
+	PartyManager* _manager = GET_SINGLETON(PartyManager);
+	_manager->AddPartyMember(CHR_TEST_PLAYER);
+	_manager->AddPartyMember(CHR_TEST_PLAYER_2);
+
+	_manager->AddToPartyRoster(CHR_TEST_PLAYER);
+	_manager->AddToPartyRoster(CHR_TEST_PLAYER_2);
+
+	_manager->AddToActiveRoster(1ui64, 0ui64);
+	_manager->AddToActiveRoster(0ui64, 1ui64);
 
 	SetEncounterID(0ui16);
 
@@ -201,6 +207,10 @@ bool BattleScene::StateDetermineTurnOrder() {
 bool BattleScene::StateIsPlayerOrEnemyTurn() {
 	size_t _index = turnOrder[curTurn];
 	curCombatant = combatants[_index];
+	if (!curCombatant->isActive) {
+		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
+		return true;
+	}
 
 	if (_index < BATTLE_MAX_PARTY_SIZE) {
 		LOG_TRACE("Beginning player turn...");
@@ -231,12 +241,12 @@ bool BattleScene::StateExecuteSkill() {
 	}
 	skillToUse->ExecuteUseFunction(this, combatants[targets[curSkillTarget]]);
 
-	turnDelay = 15.0f;
+	turnDelay = 10.0f;
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
 		skillToUse = nullptr;
-		turnDelay = 60.0f;
+		turnDelay = 90.0f;
 		targets.clear();
 	}
 	return true;
@@ -293,6 +303,14 @@ bool BattleScene::StateIsRoundFinished() {
 		SET_NEXT_STATE(STATE_BATTLE_SET_TURN_ORDER);
 		curTurn = 0ui8;
 		curRound++;
+
+		// Make sure to remove inactive combatants from the turn order.
+		size_t _length	= turnOrder.size() - 1ui64;
+		for (size_t i = _length; i > 0ui64; --i) {
+			if (!combatants[turnOrder[i]]->isActive)
+				turnOrder.erase(turnOrder.begin() + i);
+		}
+
 		return true;
 	}
 
@@ -322,6 +340,9 @@ void BattleScene::ExecuteSkill(Skill* _skill) {
 		LOG_WARN("No skill was selected for use...");
 		return;
 	}
+
+	if (_skill->id < SKL_ID_BOUNDARY) { battleUI->CreateSkillNameText(_skill->name); }
+	else { battleUI->CreateSkillNameText("Attack"); }
 	LOG_TRACE("Executing skill...");
 
 	if (_skill->hpCost > 0ui16) { UpdateHitpoints(curCombatant, _skill->hpCost); }
@@ -459,7 +480,6 @@ void BattleScene::RemoveCombatant(Combatant* _combatant, bool _defeatedByPlayer)
 			totalPartyMembers--;
 		}
 
-		turnOrder.erase(turnOrder.begin() + i);
 		_combatant->isActive = false;
 		return;
 	}

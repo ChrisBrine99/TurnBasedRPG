@@ -73,7 +73,7 @@ bool Combatant::InflictStatusAilment(uint8_t _ailmentIndex) {
 	if (_ailmentIndex < AILMENT_NERVE_NONE) {
 		// The Combatant already has a nerve ailment inflicted upon them. Determine if this ailment is above the current
 		// in priority and then perform a coin flip to determine if the new ailment will overwrite it.
-		if (curNerveAilment != AILMENT_NERVE_NONE && (curNerveAilment <= _ailmentIndex || std::rand() % 2 == 0))
+		if (curNerveAilment != AILMENT_NERVE_NONE && (curNerveAilment <= _ailmentIndex || std::rand() % 2 == 0i32))
 			return false; // Current ailment is already higher priority (Or the same ailment) OR the coin flip failed.
 
 		curNerveAilment = _ailmentIndex;
@@ -83,7 +83,7 @@ bool Combatant::InflictStatusAilment(uint8_t _ailmentIndex) {
 	if (_ailmentIndex > AILMENT_NERVE_NONE && _ailmentIndex < AILMENT_MIND_NONE) {
 		// Perform the same coin flip as above, but for the currently inflicted mind ailment vs the new ailment that can
 		// potentially be inflicted if it's higher priority and the coin flip succeeds.
-		if (curMindAilment != AILMENT_NERVE_NONE && (curMindAilment <= _ailmentIndex || std::rand() % 2 == 0))
+		if (curMindAilment != AILMENT_NERVE_NONE && (curMindAilment <= _ailmentIndex || std::rand() % 2 == 0i32))
 			return false;
 
 		curMindAilment = _ailmentIndex;

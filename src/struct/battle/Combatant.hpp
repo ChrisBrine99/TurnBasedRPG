@@ -4,33 +4,35 @@
 #include "../character/BaseCharacter.hpp"
 
 struct Combatant {
-	uint8_t							level;
-	std::array<uint8_t, STAT_COUNT> stats;
+	uint8_t						level;
+	std::array<uint8_t, STAT_COUNT> 
+								stats;
 
-	uint16_t	curHitpoints;
-	uint16_t	maxHitpoints;
-	float_t		maxHitpointMultiplier;
+	uint16_t					curHitpoints;
+	uint16_t					maxHitpoints;
+	float_t						maxHitpointMultiplier;
 
-	uint16_t	curMagicpoints;
-	uint16_t	maxMagicpoints;
-	float_t		maxMagicpointMultiplier;
+	uint16_t					curMagicpoints;
+	uint16_t					maxMagicpoints;
+	float_t						maxMagicpointMultiplier;
 
-	std::vector<uint16_t> activeSkills;
+	std::vector<uint16_t>		activeSkills;
 
-	uint8_t		curNerveAilment;
-	uint8_t		curMindAilment;
-	uint8_t		curSpecialAilment;
+	uint8_t						curNerveAilment;
+	uint8_t						curMindAilment;
+	uint8_t						curSpecialAilment;
 
-	bool		isActive;
+	bool						isActive;
 
-	uint16_t	baseSpeed;
-	uint16_t	statModifiers;
+	uint16_t					baseSpeed;
+	uint16_t					statModifiers;
 
-	BaseCharacter*	character;
+	BaseCharacter*				character;
 
-	std::array<Affinity, MAIN_AFFINITY_COUNT> resistances;
+	std::array<Affinity, MAIN_AFFINITY_COUNT> 
+								resistances;
 
-	uint16_t	basicAttack;
+	uint16_t					basicAttack;
 
 public: // Constructor/Destructor Declarations
 	Combatant();

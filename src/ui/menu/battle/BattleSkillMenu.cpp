@@ -18,7 +18,7 @@ BattleSkillMenu::BattleSkillMenu() :
 
 bool BattleSkillMenu::OnUserCreate() {
 	InitializeParams(STATE_INVALID, 1ui8, 8ui8, 1ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
-	InitializeOptionParams(80i32, 200i32, 0i32, 10i32);
+	InitializeOptionParams(80.0f, 260.0f, 0.0f, 10.0f);
 
 	subMenu = CREATE_NEW_MENU(BattleTargetMenu);
 	
@@ -69,7 +69,7 @@ bool BattleSkillMenu::OnUserRender(EngineCore* _engine) {
 			else							{ _color = optionColor; }
 		}
 
-		_engine->DrawString(optionAnchorX + 100, optionAnchorY + (optionSpacingY * _index), sSkillCost[i], _color);
+		_engine->DrawStringDecal({ optionAnchorX + 100.0f, optionAnchorY + (optionSpacingY * float_t(_index)) }, sSkillCost[i], _color);
 	}
 
 	return true;

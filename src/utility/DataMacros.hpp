@@ -88,15 +88,20 @@
 #define CHR_ID_BOUNDARY					0xF000ui16
 // --- Master list of playable character IDs --- //
 #define CHR_TEST_PLAYER					0xF001ui16
+#define CHR_TEST_PLAYER_2				0xF002ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the unique ID values for each skill within the game.															//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
+// --- Master list of skill IDs --- //
 #define SKL_IGNIA						0x0000ui16
 #define SKL_POLIGNIA					0x0010ui16
-#define SKL_PLAYER_BASIC_ATK_0			0xF000ui16
-#define SKL_ENEMY_BASIC_ATK_0			0xF001ui16
+// --- The boundary value between what is considered a standard skill and a basic attack --- //
+#define SKL_ID_BOUNDARY					0xF000ui16
+// --- Master list of basic attack IDs --- //
+#define SKL_PLAYER_BASIC_ATK_0			0xF001ui16
+#define SKL_ENEMY_BASIC_ATK_0			0xF002ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the unique ID values for each spritesheet within the game.													//

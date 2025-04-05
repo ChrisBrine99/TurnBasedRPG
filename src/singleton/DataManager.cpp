@@ -36,6 +36,7 @@ bool DataManager::OnBeforeUserCreate() {
 	encounterData	= json::parse(std::ifstream("res/data/encounters.json"));
 
 	LOG_ASSERT(LoadCharacterData(CHR_TEST_PLAYER));
+	LOG_ASSERT(LoadCharacterData(CHR_TEST_PLAYER_2));
 	LOG_ASSERT(LoadCharacterData(CHR_GREEN_SLIME));
 	LOG_ASSERT(LoadCharacterData(CHR_RED_SLIME));
 

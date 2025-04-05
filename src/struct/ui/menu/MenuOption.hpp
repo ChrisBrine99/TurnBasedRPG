@@ -4,8 +4,8 @@
 #include <string>
 
 struct MenuOption {
-	int32_t		xPos;
-	int32_t		yPos;
+	float_t		xPos;
+	float_t		yPos;
 	std::string	text;
 	std::string	description;
 	uint32_t	flags;

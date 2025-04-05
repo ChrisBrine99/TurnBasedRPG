@@ -63,39 +63,41 @@ public: // Combatant Management Function Declarations
 	}
 
 public: // Accessible Member Variable Declarations
-	static std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> positions;
+	static std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> 
+								positions;
 
-	BattleMainMenu* actionMenu;
-	BattleUI*		battleUI;
-	Combatant*		curCombatant;
+	BattleMainMenu*				actionMenu;
+	BattleUI*					battleUI;
+	Combatant*					curCombatant;
 
-	std::vector<std::pair<uint16_t, uint8_t>> curItemRewards;
-	uint32_t	curMoneyReward;
-	uint32_t	curExpReward;
+	std::vector<std::pair<uint16_t, uint8_t>> 
+								curItemRewards;
+	uint32_t					curMoneyReward;
+	uint32_t					curExpReward;
 
-	std::array<Combatant*, BATTLE_TOTAL_COMBATANTS> combatants;
-	std::vector<size_t>	turnOrder;
-	std::vector<size_t> targets;
+	std::array<Combatant*, BATTLE_TOTAL_COMBATANTS> 
+								combatants;
+	std::vector<size_t>			turnOrder;
+	std::vector<size_t>			targets;
 
-	float_t		turnDelay;
+	float_t						turnDelay;
 
-	uint8_t		curState;
-	uint8_t		nextState;
-	uint8_t		lastState;
+	uint8_t						curState;
+	uint8_t						nextState;
+	uint8_t						lastState;
 
-	uint8_t		curSkillTarget;
+	uint8_t						curSkillTarget;
+	uint8_t						curTurn;
+	uint8_t						curRound;
 
 private: // Hidden Member Variable Declarations 
-	uint16_t	encounterID;
-	uint8_t		curTurn;
-	uint8_t		curRound;
+	uint16_t					encounterID;
+	uint32_t					flags;
 
-	uint32_t	flags;
+	Skill*						skillToUse;
 
-	Skill*		skillToUse;
-
-	uint8_t		totalPartyMembers;
-	uint8_t		totalEnemies;
+	uint8_t						totalPartyMembers;
+	uint8_t						totalEnemies;
 };
 
 #endif

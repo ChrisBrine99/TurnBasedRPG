@@ -4,8 +4,8 @@
 #include "../../singleton/MenuManager.hpp"
 
 Menu::Menu() :
-	xPos(0),
-	yPos(0),
+	xPos(0.0f),
+	yPos(0.0f),
 	upperMenu(nullptr),
 	subMenu(nullptr),
 	auxSelect(""),
@@ -29,12 +29,12 @@ Menu::Menu() :
 	columnShiftOffset(0ui8),
 	menuWidth(0ui8),
 	menuHeight(0ui8),
-	optionAnchorX(0),
-	optionAnchorY(0),
-	optionDescriptionX(0),
-	optionDescriptionY(0),
-	optionSpacingX(0),
-	optionSpacingY(0),
+	optionAnchorX(0.0f),
+	optionAnchorY(0.0f),
+	optionDescriptionX(0.0f),
+	optionDescriptionY(0.0f),
+	optionSpacingX(0.0f),
+	optionSpacingY(0.0f),
 	alpha(0ui8),
 	optionColor(COLOR_WHITE),
 	optionHoverColor(COLOR_WHITE),
@@ -95,7 +95,7 @@ bool Menu::OnAfterUserUpdate() {
 	return true;
 }
 
-void Menu::AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description, uint8_t _alpha, uint32_t _flags) {
+void Menu::AddOption(float_t _xPos, float_t _yPos, const std::string& _mainText, const std::string& _description, uint8_t _alpha, uint32_t _flags) {
 	if (!MENU_ARE_OPTIONS_ALLOWED) // Prevent menus from adding options before they've been fully initialized.
 		return;
 
@@ -147,7 +147,7 @@ void Menu::InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows
 	alpha = _alpha;
 }
 
-void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color, olc::Pixel _hoverColor, olc::Pixel _selColor, olc::Pixel _inactiveColor) {
+void Menu::InitializeOptionParams(float_t _anchorX, float_t _anchorY, float_t _spacingX, float_t _spacingY, olc::Pixel _color, olc::Pixel _hoverColor, olc::Pixel _selColor, olc::Pixel _inactiveColor) {
 	if (MENU_ARE_OPTIONS_ALLOWED)
 		return; // Don't allow initialization of menu option parameters twice.
 	flags |= FLAG_MENU_OPTIONS_ALLOWED;
@@ -169,7 +169,7 @@ void Menu::InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _s
 	optionInactiveColor = _inactiveColor;
 }
 
-void Menu::InitializeDescriptionParams(int32_t _x, int32_t _y) {
+void Menu::InitializeDescriptionParams(float_t _x, float_t _y) {
 	if (!MENU_CAN_SHOW_DESCRIPTION)
 		return;
 
@@ -338,7 +338,7 @@ void Menu::RenderVisibleOptions(EngineCore* _engine) {
 
 	// Render the highlighted option's description if the menu has been set to render option descriptions.
 	if (MENU_CAN_SHOW_DESCRIPTION)
-		_engine->DrawString(optionDescriptionX, optionDescriptionY, menuOptions[curOption].description);
+		_engine->DrawStringDecal({ optionDescriptionX, optionDescriptionY }, menuOptions[curOption].description);
 
 	// Loop through the region of currently visible menu options; rendering them all using their "DrawSelf" function. Out of
 	// bounds elements are automatically ignored on the last row if the number of menu options doesn't match the amount needed
@@ -364,8 +364,8 @@ void Menu::RenderVisibleOptions(EngineCore* _engine) {
 			if (menuOptions[_index].alpha > 0ui8) {
 				_color.a = uint16_t(alpha + menuOptions[_index].alpha) / 2ui8; // Blend the alpha level of the current option and menu itself.
 				_engine->DrawStringDecal(
-					{	float_t(optionAnchorX + (optionSpacingX * xx) + menuOptions[_index].xPos),
-						float_t(optionAnchorY + (optionSpacingY * yy) + menuOptions[_index].yPos) },
+					{	optionAnchorX + (optionSpacingX * xx) + menuOptions[_index].xPos,
+						optionAnchorY + (optionSpacingY * yy) + menuOptions[_index].yPos },
 					menuOptions[_index].text, 
 					_color
 				);

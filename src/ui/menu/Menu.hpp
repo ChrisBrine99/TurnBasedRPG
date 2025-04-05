@@ -29,7 +29,7 @@ public: // Main Engine Function Declarations
 	virtual bool OnAfterUserUpdate();
 
 public: // Publicly Accessible Utility Function Declarations
-	void AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description = "", uint8_t _alpha = 0xFFui8,
+	void AddOption(float_t _xPos, float_t _yPos, const std::string& _mainText, const std::string& _description = "", uint8_t _alpha = 0xFFui8,
 		uint32_t _flags = FLAG_MOPTION_ACTIVE_STATE | FLAG_MOPTION_SELECTABLE | FLAG_MOPTION_VISIBLE);
 	void RemoveOption(size_t _index);
 	void SetOptionFlags(size_t _index, uint32_t _flags, bool _overwrite = true);
@@ -66,9 +66,9 @@ public: // Publicly Accessible Utility Function Declarations
 protected: // Hidden (Accessible to Children Only) Utility Function Declarations
 	void InitializeParams(uint8_t _state, uint8_t _width, uint8_t _visibleRows, uint8_t _visibleColumns, uint8_t _rowShiftOffset = 0ui8, uint8_t _columnShiftOffset = 0ui8,
 		uint8_t _alpha = 0xFFui8, uint32_t _flags = FLAG_MENU_ACTIVE_STATE | FLAG_MENU_VISIBLE);
-	void InitializeOptionParams(int32_t _anchorX, int32_t _anchorY, int32_t _spacingX, int32_t _spacingY, olc::Pixel _color = COLOR_WHITE, olc::Pixel _hoverColor = COLOR_LIGHT_YELLOW,
+	void InitializeOptionParams(float_t _anchorX, float_t _anchorY, float_t _spacingX, float_t _spacingY, olc::Pixel _color = COLOR_WHITE, olc::Pixel _hoverColor = COLOR_LIGHT_YELLOW,
 		olc::Pixel _selColor = COLOR_LIGHT_GREEN, olc::Pixel _inactiveColor = COLOR_GRAY);
-	void InitializeDescriptionParams(int32_t _x, int32_t _y);
+	void InitializeDescriptionParams(float_t _x, float_t _y);
 
 	void UpdateCursor();
 	void RenderVisibleOptions(EngineCore* _engine);
@@ -82,8 +82,8 @@ protected: // Hidden (Accessible to Children Only) State Function Declarations
 	virtual bool StateProcessSelection() = 0;
 
 protected: // Hidden (Accessible to Children Only) Member Variable Declarations
-	int32_t xPos;
-	int32_t yPos;
+	float_t xPos;
+	float_t yPos;
 
 	Menu* upperMenu;
 	Menu* subMenu;
@@ -120,14 +120,14 @@ protected: // Hidden (Accessible to Children Only) Member Variable Declarations
 	uint8_t menuWidth;				// The dimensions of the menu (Width is manually set; height is dynamically calculated relative to number of options).
 	uint8_t menuHeight;
 
-	int32_t optionAnchorX;			// The coordinates to position the top-most/left-most visible option.
-	int32_t optionAnchorY;
+	float_t optionAnchorX;			// The coordinates to position the top-most/left-most visible option.
+	float_t optionAnchorY;
 	
-	int32_t optionDescriptionX;		// The position of the highlighted/selected option's description on the screen.
-	int32_t optionDescriptionY;
+	float_t optionDescriptionX;		// The position of the highlighted/selected option's description on the screen.
+	float_t optionDescriptionY;
 
-	int32_t optionSpacingX;			// Determines the gap (Excluding the dimensions of the option's contents itself) between options along the x and y axis.
-	int32_t optionSpacingY;
+	float_t optionSpacingX;			// Determines the gap (Excluding the dimensions of the option's contents itself) between options along the x and y axis.
+	float_t optionSpacingY;
 
 	olc::Pixel optionColor;			// Each stores the color of a menu option depending on if it's visible, below the cursor, selected, or inactive.
 	olc::Pixel optionHoverColor;

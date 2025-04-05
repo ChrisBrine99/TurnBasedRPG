@@ -3,6 +3,7 @@
 
 #include "../Menu.hpp"
 
+class BattleScene;
 class BattleSkillMenu;
 struct Skill;
 
@@ -29,7 +30,8 @@ private: // Hidden (Accessible to Children Only) State Function Declarations
 
 private: // Hidden Member Variable Declarations
 	std::vector<size_t> validTargets;
-	Skill* skillToUse;
+	BattleScene*		sceneRef;
+	Skill*				skillRef;
 };
 
 #endif

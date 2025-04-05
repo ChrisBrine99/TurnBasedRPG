@@ -3,6 +3,7 @@
 #include "../../scene/BattleScene.hpp"
 #include "../../ui/battle/BattleUI.hpp"
 #include "../../ui/battle/BattleUIElement.hpp"
+#include "../../utility/Logger.hpp"
 #include "Combatant.hpp"
 
 #include <cmath>
@@ -60,8 +61,10 @@ bool Skill::AccuracyCheck(BattleScene* _scene, Combatant* _target) const {
 	else if (_accuracyBuff < 0ui16) { _accuracy *= 9ui16 / (9ui16 - _accuracyBuff); }
 
 	bool _attackHit = (_accuracy >= std::rand() % 0xFFui16);
-	if (!_attackHit)
-		_scene->battleUI->CreateText("MISS", _scene->targets[_scene->curSkillTarget], COLOR_WHITE, 16.0f, 16.0f);
+	if (!_attackHit) {
+		size_t _index = _scene->targets[_scene->curSkillTarget];
+		_scene->battleUI->CreateText("MISS", 0.0f, 60.0f, COLOR_WHITE, BattleScene::positions[_index].first + 16.0f, BattleScene::positions[_index].second + 16.0f);
+	}
 	return _attackHit;
 }
 
@@ -123,35 +126,53 @@ void Skill::ResistanceEffect(BattleScene* _scene, float_t _damage, Combatant* _t
 	int16_t _finalDamage	= 0ui16;
 	BattleUI* _battleUI		= _scene->battleUI;
 	size_t _index			= _scene->targets[_scene->curSkillTarget];
+	olc::vf2d _position		= { BattleScene::positions[_index].first + 16.0f, BattleScene::positions[_index].second + 16.0f };
 	switch (_effect) { // Determine what to do to the damage value relative to how the target is affected by the skill's affinity.
 	default:
 		_finalDamage = int16_t(_damage);
 		break;
 	case EFFECT_BREAK:
 		_finalDamage = int16_t(_damage * 2.0f);
-		_battleUI->CreateText("BREAK", _index, COLOR_LIGHT_YELLOW, 16.0f, 8.0f);
+		_battleUI->CreateText("BREAK", -0.3f, 60.0f, COLOR_LIGHT_YELLOW, _position.x, _position.y - 8.0f);
 		break;
 	case EFFECT_WEAK:
 		_finalDamage = int16_t(_damage * 1.5f);
-		_battleUI->CreateText("WEAK", _index, COLOR_YELLOW, 16.0f, 8.0f);
+		_battleUI->CreateText("WEAK", -0.3f, 60.0f, COLOR_YELLOW, _position.x, _position.y - 8.0f);
 		break;
 	case EFFECT_RESIST:
 		_finalDamage = int16_t(_damage * 0.5f);
-		_battleUI->CreateText("RESIST", _index, COLOR_LIGHT_RED, 16.0f, 8.0f);
+		_battleUI->CreateText("RESIST", -0.3f, 60.0f, COLOR_LIGHT_RED, _position.x, _position.y - 8.0f);
 		break;
 	case EFFECT_NULL:
-		_battleUI->CreateText("NULL", _index, COLOR_DARK_RED, 16.0f, 8.0f);
+		_battleUI->CreateText("NULL", 0.0f, 60.0f, COLOR_DARK_RED, _position.x, _position.y - 8.0f);
 		break;
 	case EFFECT_ABSORB:
 		_finalDamage = -int16_t(_damage);
 		break;
 	case EFFECT_REFLECT:
+		if (_scene->curCombatant == _target) {
+			_battleUI->CreateText("NULL", 0.0f, 60.0f, COLOR_DARK_RED, _position.x, _position.y - 8.0f);
+			break;
+		}
+		_battleUI->CreateText("REFLECT", 0.0f, 60.0f, COLOR_DARK_RED, _position.x, _position.y - 8.0f);
+		_scene->targets.push_back(_scene->turnOrder[_scene->curTurn]);
 		break;
 	}
 
-	if (_finalDamage > 0i16) {
-		_battleUI->CreateDamageText(_finalDamage, _index, COLOR_WHITE, 16.0f, 16.0f);
-		_battleUI->uiElements[_index]->ShowElement(60.0f);
-		_scene->UpdateHitpoints(_target, _finalDamage);
+	if (_finalDamage == 0i16)
+		return; // Target takes no damage, exit the function before dealing with any hp update function calls.
+
+	if (_finalDamage > 0i16) { // Target will lose hp equal to the damage calcualted.
+		olc::Pixel _color		= COLOR_WHITE; // Color changes as the target's hp gets lower.
+		int16_t _nextHitpoints	= _target->curHitpoints - _finalDamage;
+		if (_nextHitpoints / float_t(_target->maxHitpoints) < 0.33f)		{ _color = COLOR_LIGHT_RED; }
+		else if (_nextHitpoints / float_t(_target->maxHitpoints) < 0.5f)	{ _color = COLOR_LIGHT_YELLOW; }
+
+		_battleUI->CreateText(std::to_string(_finalDamage), -0.3f, 60.0f, _color, _position.x, _position.y);
+	} else if (_finalDamage < 0i16) { // Target will be healed instead of taking damage.
+		_battleUI->CreateText(std::to_string(std::abs(_finalDamage)), 0.0f, 60.0f, COLOR_LIGHT_GREEN, _position.x, _position.y);
 	}
+
+	_battleUI->uiElements[_index]->ShowElement(60.0f);
+	_scene->UpdateHitpoints(_target, _finalDamage);
 }

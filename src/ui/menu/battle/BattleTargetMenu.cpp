@@ -4,6 +4,8 @@
 #include "../../../singleton/SceneManager.hpp"
 #include "../../../singleton/MenuManager.hpp"
 #include "../../../struct/Battle/Skill.hpp"
+#include "../../../ui/battle/BattleUI.hpp"
+#include "../../../ui/battle/BattleUIElement.hpp"
 #include "BattleSkillMenu.hpp"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
@@ -24,14 +26,21 @@
 BattleTargetMenu::BattleTargetMenu() :
 	Menu(),
 	validTargets(),
-	skillToUse(nullptr)
+	sceneRef(nullptr),
+	skillRef(nullptr)
 { // Reserve enough memory to store the maximum number of combatants in a battle at any one time.
 	validTargets.reserve(BATTLE_TOTAL_COMBATANTS);
 }
 
 bool BattleTargetMenu::OnUserCreate() {
 	InitializeParams(STATE_INVALID, 1ui8, 0ui8, 0ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
-	InitializeOptionParams(0i32, 0i32, 0i32, 0i32);
+	InitializeOptionParams(VIEWPORT_WIDTH_F / 2.0f, (VIEWPORT_HEIGHT_F / 2.0f) - 150.0f, 0.0f, 0.0f);
+
+	// At most there will be 8 unique targets to choose from, so 8 "options" are created to store the names of the targets that show during selection.
+	for (size_t i = 0ui64; i < BATTLE_MAX_ENEMY_SIZE; i++)
+		AddOption(0.0f, 0.0f, ""); // Gets populated upon menu activation instead of creation.
+
+	sceneRef = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 	return true;
 }
 
@@ -53,8 +62,8 @@ bool BattleTargetMenu::OnUserRender(EngineCore* _engine) {
 		for (size_t i = 0ui64; i < _length; i++) {
 			_positions	= BattleScene::positions[validTargets[i]];
 			_engine->DrawRectDecal(
-				{ _positions.first, _positions.second },
-				{ 32.0f, 32.0f },
+				{ _positions.first + 8.0f, _positions.second + 8.0f },
+				{ 16.0f, 16.0f },
 				COLOR_LIGHT_YELLOW
 			);
 		}
@@ -62,7 +71,8 @@ bool BattleTargetMenu::OnUserRender(EngineCore* _engine) {
 	}
 
 	_positions = BattleScene::positions[validTargets[curOption]];
-	_engine->DrawRectDecal({ _positions.first, _positions.second }, { 32.0f, 32.0f }, COLOR_LIGHT_YELLOW);
+	_engine->DrawRectDecal({ _positions.first + 8.0f, _positions.second + 8.0f }, { 16.0f, 16.0f }, COLOR_LIGHT_YELLOW);
+	_engine->DrawStringDecal({ optionAnchorX + menuOptions[curOption].xPos, optionAnchorY }, menuOptions[curOption].text, COLOR_WHITE);
 
 	return true;
 }
@@ -71,13 +81,16 @@ void BattleTargetMenu::PrepareForActivation(uint8_t _state, BattleSkillMenu* _sk
 	Menu::PrepareForActivation(_state);
 	DetermineValidTargets(_skill->targeting);
 	upperMenu	= _skillMenu;
-	skillToUse	= _skill;
+	skillRef	= _skill;
 }
 
 void BattleTargetMenu::PrepareForDeactivation() {
 	Menu::PrepareForDeactivation();
+
 	upperMenu->MenuSetNextState(STATE_MENU_DEFAULT, true);
 	upperMenu->SetFlags(upperMenu->GetFlags() & ~FLAG_MENU_BLOCK_INPUT);
+
+	sceneRef->battleUI->uiElements[validTargets[curOption]]->ShowElement(0.0f);
 	flags &= ~FLAG_TGTMENU_ONLY_CONFIRM;
 }
 
@@ -86,10 +99,10 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		return;
 	validTargets.clear();
 
-	BattleScene* _scene			= (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
-	Combatant* _curCombatant	= _scene->curCombatant;
-	auto& _combatants			= _scene->combatants;
+	Combatant* _curCombatant	= sceneRef->curCombatant;
+	auto& _combatants			= sceneRef->combatants;
 	bool _shouldSkipCaster		= false;
+	bool _onlyConfirm			= false;
 
 	switch (_targeting) {
 	case TARGET_ALL_ENEMY:			// Grab all enemy targets for the user to select from.
@@ -99,9 +112,17 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		[[fallthrough]];
 	case TARGET_SINGLE_ENEMY:
 	case TARGET_SINGLE_ENEMY_SELF:
+		_onlyConfirm = TGTMENU_CAN_ONLY_CONFIRM;
 		for (size_t i = BATTLE_MAX_PARTY_SIZE; i < BATTLE_TOTAL_COMBATANTS; i++) {
-			if (_combatants[i]->isActive)
+			if (_combatants[i]->isActive) {
+				if (!_onlyConfirm) {
+					std::string_view _name	= _combatants[i]->character->name;
+					float_t _xOffset		= -(8.0f * _name.size()) / 2.0f;
+					menuOptions[i - BATTLE_MAX_PARTY_SIZE].text = _name;
+					menuOptions[i - BATTLE_MAX_PARTY_SIZE].xPos = _xOffset;
+				}
 				validTargets.push_back(i);
+			}
 		}
 
 		if ((_targeting == TARGET_SINGLE_ENEMY_SELF || _targeting == TARGET_ALL_ENEMY_SELF)) 
@@ -114,10 +135,18 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		[[fallthrough]];
 	case TARGET_SINGLE_ALLY:
 	case TARGET_SINGLE_ALLY_SELF:
-		_shouldSkipCaster = (_targeting == TARGET_SINGLE_ALLY || _targeting == TARGET_ALL_ALLY);
+		_shouldSkipCaster	= (_targeting == TARGET_SINGLE_ALLY || _targeting == TARGET_ALL_ALLY);
+		_onlyConfirm		= TGTMENU_CAN_ONLY_CONFIRM;
 		for (size_t i = 0ui64; i < BATTLE_MAX_PARTY_SIZE; i++) {
 			if (!_combatants[i]->isActive || (_combatants[i] == _curCombatant && _shouldSkipCaster))
 				continue;
+
+			if (!_onlyConfirm) { 
+				std::string_view _name	= _combatants[i]->character->name;
+				float_t _xOffset		= -(8.0f * _name.size()) / 2.0f;
+				menuOptions[i].text		= _name;
+				menuOptions[i].xPos		= _xOffset;
+			}
 			validTargets.push_back(i);
 		}
 		break;
@@ -141,7 +170,7 @@ bool BattleTargetMenu::StateDefault() {
 
 			BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 			_scene->targets.insert(_scene->targets.begin(), validTargets.begin(), validTargets.end());
-			_scene->ExecuteSkill(skillToUse);
+			_scene->ExecuteSkill(skillRef);
 		}
 		return true;
 	}
@@ -153,8 +182,11 @@ bool BattleTargetMenu::StateDefault() {
 	}
 
 	int8_t _hMovement = int8_t(MINPUT_IS_RIGHT_PRESSED) - int8_t(MINPUT_IS_LEFT_PRESSED);
-	if (_hMovement == 0i8)
+	if (_hMovement == 0i8) {
+		sceneRef->battleUI->uiElements[validTargets[curOption]]->ShowElement(60.0f);
 		return true;
+	}
+	sceneRef->battleUI->uiElements[validTargets[curOption]]->ShowElement(0.0f);
 
 	if (_hMovement == -1i8) {
 		curOption--;
@@ -176,7 +208,7 @@ bool BattleTargetMenu::StateProcessSelection() {
 	if (TGTMENU_WILL_TARGET_SELF) { _scene->targets.push_back(_scene->GetCurCombatantIndex()); }
 	_scene->targets.push_back(validTargets[selOption]);
 
-	_scene->ExecuteSkill(skillToUse);
+	_scene->ExecuteSkill(skillRef);
 	validTargets.clear();
 	return true;
 }
