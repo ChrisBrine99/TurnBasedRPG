@@ -5,6 +5,8 @@
 //	Defines for colors that will be utilized all over the code's GUI elements.															//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
+#define COLOR_BLANK						olc::Pixel(0x00000000ui32)	// RGBA   0,   0,   0,   0
+
 #define COLOR_TRUE_WHITE				olc::Pixel(0xFFFFFFFFui32)	// RGBA 255, 255, 255, 255
 #define COLOR_WHITE						olc::Pixel(0xFFF8F8F8ui32)	// RGBA 248, 248, 248, 255
 #define COLOR_LIGHT_GRAY				olc::Pixel(0xFFBCBCBCui32)	// RGBA 188, 188, 188, 255

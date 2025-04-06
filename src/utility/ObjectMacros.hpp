@@ -16,24 +16,11 @@
 #define OBJMNGR_INVALID_INSTANCE_ID		0xFFFFFFFFFFFFFFFFui64
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
-//	A simple define that can be used to let an object know it doesn't have an animation currently set. In that event, it will simply	//
-//	stop the object from being rendered regardless of if the flags for being visible or active are toggled on or off.					//
-// ------------------------------------------------------------------------------------------------------------------------------------ //
-
-#define OBJ_INVALID_ANIMATION_INDEX		0xFFFFFFFFFFFFFFFFui64
-
-// ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines that simplify the code required to add and remove objects from the current scene.											//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
 #define CREATE_OBJECT(_index, _x, _y)	GET_SINGLETON(ObjectManager)->AddObject(_index, _x, _y)
 #define DESTROY_OBJECT(_id)				GET_SINGLETON(ObjectManager)->RemoveObject(_id)
-
-// ------------------------------------------------------------------------------------------------------------------------------------ //
-//	A define that denotes if an object is using a valid index or not. This value signifies the animation shouldn't be used.				//
-// ------------------------------------------------------------------------------------------------------------------------------------ //
-
-#define ANIM_INVALID					0xFFui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for the flags required by all standard objects. The bits not referenced here can be utilized for whatever purpose within	//

@@ -34,16 +34,8 @@ bool ObjPlayer::OnUserCreate() {
 	spritesheet = ADD_SPRITE(SPR_PLAYER, "res/graphics/test_spritesheet.png");
 	if (!spritesheet) { return false; }
 
-	AddAnimation(0ui8, 16.0f, 16.0f, 6.0f, {
-		{   0.0f,  0.0f },
-		{  16.0f,  0.0f },
-		{  32.0f,  0.0f },
-		{  48.0f,  0.0f },
-		{  64.0f,  0.0f },
-		{  96.0f,  0.0f },
-		{ 112.0f,  0.0f }
-	});
-	nextAnimID = 0ui8;
+	AddAnimation(ANMINST_TEST, ANM_TEST, 8.0f);
+	nextAnimation = ANMINST_TEST;
 
 	SET_NEXT_STATE(STATE_PLAYER_DEFAULT);
 	flags |= FLAG_OBJ_ACTIVE | FLAG_OBJ_VISIBLE | FLAG_PLYR_BLOCK_INPUT;

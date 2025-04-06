@@ -1,12 +1,11 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
-#include "../struct/object/Animation.hpp"
+#include "../struct/object/AnimationInstance.hpp"
 #include "../utility/ObjectMacros.hpp"
 #include "../../third_party/olcPixelGameEngine.hpp"
 
 class EngineCore;
-struct Animation;
 
 class Object {
 public: // Constructor/Destructor Declarations
@@ -29,35 +28,33 @@ public: // Publicly Accessible Utility Function DEclarations
 	inline bool CanDestroyObject()	const { return OBJ_IS_DESTROYED; }
 
 protected: // Hidden (Accessible to Children Only) Utility Function Declarations
-	void AddAnimation(uint8_t _id, float_t _width, float_t _height, float_t _frameLength, const std::initializer_list<olc::vf2d>& _frames, 
-			uint8_t _startFrame = 0ui8, uint8_t _loopStart = 0ui8);
-	void RemoveAnimation(uint8_t _id);
-	Animation* GetAnimation(uint8_t _id);
+	void AddAnimation(uint16_t _animInstID, uint16_t _id, float_t _animSpeed, uint16_t _loopStart = 0ui16);
+	void RemoveAnimation(uint16_t _id);
 
 public: // Publicly Accessible Member Variable Declarations
-	float_t					x;
-	float_t					y;
+	float_t						x;
+	float_t						y;
 
-	const size_t			instanceID;
-	const uint16_t			objectIndex;
+	const size_t				instanceID;
+	const uint16_t				objectIndex;
 
-	uint8_t					curState;
-	uint8_t					nextState;
-	uint8_t					lastState;
-
-	uint8_t					nextAnimID;
+	uint8_t						curState;
+	uint8_t						nextState;
+	uint8_t						lastState;
 
 protected: // Hidden (Accessible to Children Only) Member Variable Declarations
-	int32_t					flags;
+	uint16_t					curAnimation;
+	uint16_t					nextAnimation;
+	uint16_t					lastAnimation;
 
-	olc::Pixel				blendColor;
-	float_t					animTimer;
-	float_t					animSpeed;
-	size_t					animIndex;
-	Animation*				prevAnimation;
-	Animation*				curAnimation;
-	std::vector<AnimData>	animations;
-	olc::Decal*				spritesheet;
+	int32_t						flags;
+
+	olc::Sprite*				spritesheet;
+	AnimationInstance*			animationRef;
+	float_t						animTimer;
+	float_t						animSpeed;
+	std::unordered_map<uint16_t, AnimationInstance*>		
+								animations;
 };
 
 #endif

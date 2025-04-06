@@ -139,7 +139,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 
 			if (!_onlyConfirm) { 
 				std::string_view _name	= _combatants[i]->character->name;
-				int32_t _xOffset		= -8i32 * int32_t(_name.size()) / 2.0f;
+				int32_t _xOffset		= -8i32 * int32_t(_name.size()) / 2i32;
 				menuOptions[i].text		= _name;
 				menuOptions[i].xPos		= _xOffset;
 			}

@@ -153,14 +153,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\struct\object\AnimationInstance.cpp" />
     <ClCompile Include="src\ui\battle\PostBattleUI.cpp" />
     <ClCompile Include="src\scene\LevelScene.cpp" />
     <ClCompile Include="src\extension\EngineCoreExt.cpp" />
     <ClCompile Include="src\struct\battle\Combatant.cpp" />
     <ClCompile Include="src\struct\character\BaseCharacter.cpp" />
     <ClCompile Include="src\struct\character\PlayerCharacter.cpp" />
-    <ClCompile Include="src\struct\object\Animation.cpp" />
     <ClCompile Include="src\ui\battle\BattleUI.cpp" />
+    <ClInclude Include="src\struct\object\AnimationInstance.hpp" />
     <ClInclude Include="src\ui\battle\PostBattleUI.hpp" />
     <ClInclude Include="src\scene\LevelScene.hpp" />
     <ClInclude Include="src\struct\level\Map.hpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="third_party\olcPixelGameEngine.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\data\animations.json" />
     <None Include="res\data\characters.json" />
     <None Include="res\data\encounters.json" />
     <None Include="res\data\skills.json" />

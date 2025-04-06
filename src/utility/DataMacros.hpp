@@ -78,6 +78,16 @@
 #define KEY_ENCOUNTER_SPAWN_CHANCE		"spawn"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Macros that hold key values for each element found within a animation's raw JSON data.												//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define KEY_ANIM_WIDTH					"width"
+#define KEY_ANIM_HEIGHT					"height"
+#define KEY_ANIM_FRAMES					"frames"
+#define KEY_ANIM_FRAME_DATA				"data"
+#define KEY_ANIM_SPRITE_ID				"sprID"
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the unique ID values for each character/enemy within the game.												//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
@@ -109,6 +119,18 @@
 
 #define SPR_PLAYER						0x0000ui16
 
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that represent the unique ID values for each encounter table within the game.												//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define ENC_TEST						0x0000ui16
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that represent the unique ID values for each sprite animation within the game.												//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define ANM_TEST						0x0000ui16
+
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Simple default values that represents an invalid ID within the various data structures in the game. As a result, they must all be	//
 //	16-bit values ranging from 0-65534 AKA no more than 65535 unique pieces of data can exist for any one group.						//
@@ -118,5 +140,6 @@
 #define SKL_INVALID						0xFFFFui16
 #define SPR_INVALID						0xFFFFui16
 #define ENC_INVALID						0xFFFFui16
+#define ANM_INVALID						0xFFFFui16
 
 #endif

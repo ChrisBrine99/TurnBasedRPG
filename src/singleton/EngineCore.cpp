@@ -8,7 +8,6 @@ INIT_SINGLETON_CPP(EngineCore)
 #include "ObjectManager.hpp"
 #include "PartyManager.hpp"
 #include "SceneManager.hpp"
-
 #include "../utility/UtilityFunctions.hpp"
 
 uint32_t	EngineCore::s_HudLayer			= 0ui32;
@@ -17,7 +16,10 @@ uint32_t	EngineCore::s_BackgroundLayer	= 0ui32;
 float_t		EngineCore::deltaTime			= 0.0f;
 
 EngineCore::EngineCore() :
-	engineExt(new EngineCoreExt(true))
+	engineExt(new EngineCoreExt(true)),
+	sPerformanceData("fps          0\nmemory usage 0 bytes\ncur allocs   0"),
+	svPerformanceData(sPerformanceData),
+	updateTimer(0.0f)
 { // Sets the name for the application.
 	sAppName = "Turn Based RPG";
 }
@@ -51,6 +53,13 @@ bool EngineCore::OnUserUpdate(float_t _deltaTime) {
 	CALL_SINGLETON_UPDATE(ObjectManager, OnUserUpdate);
 	CALL_SINGLETON_UPDATE(SceneManager, OnUserUpdate);
 	CALL_SINGLETON_UPDATE(MenuManager, OnUserUpdate);
+
+	updateTimer += _deltaTime;
+	if (updateTimer >= 1.0f) {
+		updateTimer -= 1.0f;
+		sPerformanceData	= "fps          " + std::to_string(GetFPS()) + "\nmemory usage " + std::to_string(s_BytesAllocated) + " bytes\ncur allocs   " + std::to_string(s_Allocations);
+		svPerformanceData	= sPerformanceData;
+	}
 	return true;
 }
 
@@ -58,12 +67,12 @@ bool EngineCore::OnUserRender(float_t _deltaTime) {
 	(void)(_deltaTime);
 	EngineCore* _engine = this; // Required for singletons to work with having to add an additional argument.
 
-	Clear(olc::BLANK);
+	Clear(COLOR_BLANK);
 	SetPixelMode(olc::Pixel::ALPHA);
 	CALL_SINGLETON_RENDER(MenuManager);
 
 	SetDrawTarget(s_ObjectLayer);
-	Clear(olc::BLANK);
+	Clear(COLOR_BLANK);
 	CALL_SINGLETON_RENDER(ObjectManager);
 
 	SetDrawTarget(s_BackgroundLayer);
@@ -72,5 +81,6 @@ bool EngineCore::OnUserRender(float_t _deltaTime) {
 	CALL_SINGLETON_RENDER(SceneManager);
 
 	SetDrawTarget(s_HudLayer);
+	DrawString(5i32, 5i32, svPerformanceData.data());
 	return true;
 }

@@ -397,6 +397,9 @@ int main()
 #include <cstring>
 #pragma endregion
 
+extern size_t s_BytesAllocated;
+extern size_t s_Allocations;
+
 #define PGE_VER 223
 
 // O------------------------------------------------------------------------------O
@@ -609,20 +612,6 @@ namespace olc
 
 	Pixel PixelF(float red, float green, float blue, float alpha = 1.0f);
 	Pixel PixelLerp(const olc::Pixel& p1, const olc::Pixel& p2, float t);
-
-
-	// O------------------------------------------------------------------------------O
-	// | USEFUL CONSTANTS                                                             |
-	// O------------------------------------------------------------------------------O
-	static const Pixel
-		GREY(192, 192, 192), DARK_GREY(128, 128, 128), VERY_DARK_GREY(64, 64, 64),
-		RED(255, 0, 0), DARK_RED(128, 0, 0), VERY_DARK_RED(64, 0, 0),
-		YELLOW(255, 255, 0), DARK_YELLOW(128, 128, 0), VERY_DARK_YELLOW(64, 64, 0),
-		GREEN(0, 255, 0), DARK_GREEN(0, 128, 0), VERY_DARK_GREEN(0, 64, 0),
-		CYAN(0, 255, 255), DARK_CYAN(0, 128, 128), VERY_DARK_CYAN(0, 64, 64),
-		BLUE(0, 0, 255), DARK_BLUE(0, 0, 128), VERY_DARK_BLUE(0, 0, 64),
-		MAGENTA(255, 0, 255), DARK_MAGENTA(128, 0, 128), VERY_DARK_MAGENTA(64, 0, 64),
-		WHITE(255, 255, 255), BLACK(0, 0, 0), BLANK(0, 0, 0, 0);
 
 	// Thanks to scripticuk and others for updating the key maps
 	// NOTE: The GLUT platform will need updating, open to contributions ;)
@@ -905,7 +894,7 @@ namespace olc
 		olc::Renderable pDrawTarget;
 		uint32_t nResID = 0;
 		std::vector<DecalInstance> vecDecalInstance;
-		olc::Pixel tint = olc::WHITE;
+		olc::Pixel tint = olc::Pixel(0xFFFFFFFFui32);
 		std::function<void()> funcHook = nullptr;
 	};
 
@@ -976,11 +965,6 @@ namespace olc
 		virtual bool OnUserRender(float fElapsedTime);
 		// Called once on application termination, so you can be one clean coder
 		virtual bool OnUserDestroy();
-
-		// Called when a text entry is confirmed with "enter" key
-		virtual void OnTextEntryComplete(const std::string& sText);
-		// Called when a console command is executed
-		virtual bool OnConsoleCommand(const std::string& sCommand);
 
 
 	public: // Hardware Interfaces
@@ -1064,29 +1048,29 @@ namespace olc
 
 	public: // DRAWING ROUTINES
 		// Draws a single Pixel
-		virtual bool Draw(int32_t x, int32_t y, Pixel p = olc::WHITE);
-		bool Draw(const olc::vi2d& pos, Pixel p = olc::WHITE);
+		virtual bool Draw(int32_t x, int32_t y, Pixel p = olc::Pixel(0xFFFFFFFFui32));
+		bool Draw(const olc::vi2d& pos, Pixel p = olc::Pixel(0xFFFFFFFFui32));
 		// Draws a line from (x1,y1) to (x2,y2)
-		void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Pixel p = olc::WHITE, uint32_t pattern = 0xFFFFFFFF);
-		void DrawLine(const olc::vi2d& pos1, const olc::vi2d& pos2, Pixel p = olc::WHITE, uint32_t pattern = 0xFFFFFFFF);
+		void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, Pixel p = olc::Pixel(0xFFFFFFFFui32), uint32_t pattern = 0xFFFFFFFF);
+		void DrawLine(const olc::vi2d& pos1, const olc::vi2d& pos2, Pixel p = olc::Pixel(0xFFFFFFFFui32), uint32_t pattern = 0xFFFFFFFF);
 		// Draws a circle located at (x,y) with radius
-		void DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p = olc::WHITE, uint8_t mask = 0xFF);
-		void DrawCircle(const olc::vi2d& pos, int32_t radius, Pixel p = olc::WHITE, uint8_t mask = 0xFF);
+		void DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p = olc::Pixel(0xFFFFFFFFui32), uint8_t mask = 0xFF);
+		void DrawCircle(const olc::vi2d& pos, int32_t radius, Pixel p = olc::Pixel(0xFFFFFFFFui32), uint8_t mask = 0xFF);
 		// Fills a circle located at (x,y) with radius
-		void FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p = olc::WHITE);
-		void FillCircle(const olc::vi2d& pos, int32_t radius, Pixel p = olc::WHITE);
+		void FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p = olc::Pixel(0xFFFFFFFFui32));
+		void FillCircle(const olc::vi2d& pos, int32_t radius, Pixel p = olc::Pixel(0xFFFFFFFFui32));
 		// Draws a rectangle at (x,y) to (x+w,y+h)
-		void DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p = olc::WHITE);
-		void DrawRect(const olc::vi2d& pos, const olc::vi2d& size, Pixel p = olc::WHITE);
+		void DrawRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p = olc::Pixel(0xFFFFFFFFui32));
+		void DrawRect(const olc::vi2d& pos, const olc::vi2d& size, Pixel p = olc::Pixel(0xFFFFFFFFui32));
 		// Fills a rectangle at (x,y) to (x+w,y+h)
-		void FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p = olc::WHITE);
-		void FillRect(const olc::vi2d& pos, const olc::vi2d& size, Pixel p = olc::WHITE);
+		void FillRect(int32_t x, int32_t y, int32_t w, int32_t h, Pixel p = olc::Pixel(0xFFFFFFFFui32));
+		void FillRect(const olc::vi2d& pos, const olc::vi2d& size, Pixel p = olc::Pixel(0xFFFFFFFFui32));
 		// Draws a triangle between points (x1,y1), (x2,y2) and (x3,y3)
-		void DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p = olc::WHITE);
-		void DrawTriangle(const olc::vi2d& pos1, const olc::vi2d& pos2, const olc::vi2d& pos3, Pixel p = olc::WHITE);
+		void DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p = olc::Pixel(0xFFFFFFFFui32));
+		void DrawTriangle(const olc::vi2d& pos1, const olc::vi2d& pos2, const olc::vi2d& pos3, Pixel p = olc::Pixel(0xFFFFFFFFui32));
 		// Flat fills a triangle between points (x1,y1), (x2,y2) and (x3,y3)
-		void FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p = olc::WHITE);
-		void FillTriangle(const olc::vi2d& pos1, const olc::vi2d& pos2, const olc::vi2d& pos3, Pixel p = olc::WHITE);
+		void FillTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, Pixel p = olc::Pixel(0xFFFFFFFFui32));
+		void FillTriangle(const olc::vi2d& pos1, const olc::vi2d& pos2, const olc::vi2d& pos3, Pixel p = olc::Pixel(0xFFFFFFFFui32));
 		// Fill a textured and coloured triangle
 		void FillTexturedTriangle(const std::vector<olc::vf2d>& vPoints, std::vector<olc::vf2d> vTex, std::vector<olc::Pixel> vColour, olc::Sprite* sprTex);
 		void FillTexturedPolygon(const std::vector<olc::vf2d>& vPoints, const std::vector<olc::vf2d>& vTex, const std::vector<olc::Pixel>& vColour, olc::Sprite* sprTex, olc::DecalStructure structure = olc::DecalStructure::LIST);
@@ -1098,52 +1082,50 @@ namespace olc
 		void DrawPartialSprite(int32_t x, int32_t y, Sprite* sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale = 1, uint8_t flip = olc::Sprite::NONE);
 		void DrawPartialSprite(const olc::vi2d& pos, Sprite* sprite, const olc::vi2d& sourcepos, const olc::vi2d& size, uint32_t scale = 1, uint8_t flip = olc::Sprite::NONE);
 		// Draws a single line of text - traditional monospaced
-		void DrawString(int32_t x, int32_t y, const std::string& sText, Pixel col = olc::WHITE, uint32_t scale = 1);
-		void DrawString(const olc::vi2d& pos, const std::string& sText, Pixel col = olc::WHITE, uint32_t scale = 1);
+		void DrawString(int32_t x, int32_t y, std::string_view sText, Pixel col = olc::Pixel(0xFFFFFFFFui32), uint32_t scale = 1);
 		olc::vi2d GetTextSize(const std::string& s);
 		// Draws a single line of text - non-monospaced
-		void DrawStringProp(int32_t x, int32_t y, const std::string& sText, Pixel col = olc::WHITE, uint32_t scale = 1);
-		void DrawStringProp(const olc::vi2d& pos, const std::string& sText, Pixel col = olc::WHITE, uint32_t scale = 1);
+		void DrawStringProp(int32_t x, int32_t y, std::string_view sText, Pixel col = olc::Pixel(0xFFFFFFFFui32), uint32_t scale = 1);
 		olc::vi2d GetTextSizeProp(const std::string& s);
 
 		// Decal Quad functions
 		void SetDecalMode(const olc::DecalMode& mode);
 		void SetDecalStructure(const olc::DecalStructure& structure);
 		// Draws a whole decal, with optional scale and tinting
-		void DrawDecal(const olc::vf2d& pos, olc::Decal* decal, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::WHITE);
+		void DrawDecal(const olc::vf2d& pos, olc::Decal* decal, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
 		// Draws a region of a decal, with optional scale and tinting
-		void DrawPartialDecal(const olc::vf2d& pos, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::WHITE);
-		void DrawPartialDecal(const olc::vf2d& pos, const olc::vf2d& size, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);
+		void DrawPartialDecal(const olc::vf2d& pos, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
+		void DrawPartialDecal(const olc::vf2d& pos, const olc::vf2d& size, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
 		// Draws fully user controlled 4 vertices, pos(pixels), uv(pixels), colours
 		void DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d* uv, const olc::Pixel* col, uint32_t elements = 4);
 		// Draws a decal with 4 arbitrary points, warping the texture to look "correct"
-		void DrawWarpedDecal(olc::Decal* decal, const olc::vf2d(&pos)[4], const olc::Pixel& tint = olc::WHITE);
-		void DrawWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::Pixel& tint = olc::WHITE);
-		void DrawWarpedDecal(olc::Decal* decal, const std::array<olc::vf2d, 4>& pos, const olc::Pixel& tint = olc::WHITE);
+		void DrawWarpedDecal(olc::Decal* decal, const olc::vf2d(&pos)[4], const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
+		void DrawWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
+		void DrawWarpedDecal(olc::Decal* decal, const std::array<olc::vf2d, 4>& pos, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
 		// As above, but you can specify a region of a decal source sprite
-		void DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d(&pos)[4], const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);
-		void DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);
-		void DrawPartialWarpedDecal(olc::Decal* decal, const std::array<olc::vf2d, 4>& pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE);
+		void DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d(&pos)[4], const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
+		void DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
+		void DrawPartialWarpedDecal(olc::Decal* decal, const std::array<olc::vf2d, 4>& pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
 		// Draws a decal rotated to specified angle, wit point of rotation offset
-		void DrawRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::WHITE);
-		void DrawPartialRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale = { 1.0f, 1.0f }, const olc::Pixel& tint = olc::WHITE);
+		void DrawRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
+		void DrawPartialRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale = { 1.0f, 1.0f }, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
 		// Draws a multiline string as a decal, with tiniting and scaling
-		void DrawStringDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
-		void DrawStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
+		void DrawStringDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::Pixel(0xFFFFFFFFui32), const olc::vf2d& scale = { 1.0f, 1.0f });
+		void DrawStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::Pixel(0xFFFFFFFFui32), const olc::vf2d& scale = { 1.0f, 1.0f });
 		// Draws a single shaded filled rectangle as a decal
-		void DrawRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE);
-		void FillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE);
+		void DrawRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::Pixel(0xFFFFFFFFui32));
+		void FillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::Pixel(0xFFFFFFFFui32));
 		// Draws a corner shaded rectangle as a decal
 		void GradientFillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel colTL, const olc::Pixel colBL, const olc::Pixel colBR, const olc::Pixel colTR);
 		// Draws an arbitrary convex textured polygon using GPU
-		void DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const olc::Pixel tint = olc::WHITE);
-		void DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<float>& depth, const std::vector<olc::vf2d>& uv, const olc::Pixel tint = olc::WHITE);
+		void DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const olc::Pixel tint = olc::Pixel(0xFFFFFFFFui32));
+		void DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<float>& depth, const std::vector<olc::vf2d>& uv, const olc::Pixel tint = olc::Pixel(0xFFFFFFFFui32));
 		void DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel>& tint);
 		void DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel>& colours, const olc::Pixel tint);
 		// Draws a line in Decal Space
-		void DrawLineDecal(const olc::vf2d& pos1, const olc::vf2d& pos2, Pixel p = olc::WHITE);
-		void DrawRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
-		void DrawRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
+		void DrawLineDecal(const olc::vf2d& pos1, const olc::vf2d& pos2, Pixel p = olc::Pixel(0xFFFFFFFFui32));
+		void DrawRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::Pixel(0xFFFFFFFFui32), const olc::vf2d& scale = { 1.0f, 1.0f });
+		void DrawRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::Pixel(0xFFFFFFFFui32), const olc::vf2d& scale = { 1.0f, 1.0f });
 		// Clears entire draw target to Pixel
 		void Clear(Pixel p);
 		// Clears the rendering back buffer
@@ -1156,25 +1138,6 @@ namespace olc
 
 		// Dont allow PGE to mark layers as dirty, so pixel graphics don't update
 		void EnablePixelTransfer(const bool bEnable = true);
-
-		// Command Console Routines
-		void ConsoleShow(const olc::Key &keyExit, bool bSuspendTime = true);
-		bool IsConsoleShowing() const;
-		void ConsoleClear();
-		std::stringstream& ConsoleOut();
-		void ConsoleCaptureStdOut(const bool bCapture);
-
-		// Text Entry Routines
-		void TextEntryEnable(const bool bEnable, const std::string& sText = "");
-		std::string TextEntryGetString() const;
-		int32_t TextEntryGetCursor() const;
-		bool IsTextEntryEnabled() const;
-
-
-
-	private:
-		void UpdateTextEntry();
-		void UpdateConsole();
 
 	public:
 
@@ -1246,27 +1209,6 @@ namespace olc
 		std::vector<std::string> vDroppedFilesCache;
 		olc::vi2d vDroppedFilesPoint;
 		olc::vi2d vDroppedFilesPointCache;
-
-		// Command Console Specific
-		bool bConsoleShow = false;
-		bool bConsoleSuspendTime = false;
-		olc::Key keyConsoleExit = olc::Key::F1;
-		std::stringstream ssConsoleOutput;
-		std::streambuf* sbufOldCout = nullptr;
-		olc::vi2d vConsoleSize;
-		olc::vi2d vConsoleCursor = { 0,0 };
-		olc::vf2d vConsoleCharacterScale = { 1.0f, 2.0f };
-		std::vector<std::string> sConsoleLines;
-		std::list<std::string> sCommandHistory;
-		std::list<std::string>::iterator sCommandHistoryIt;
-
-		// Text Entry Specific
-		bool bTextEntryEnable = false;
-		std::string sTextEntryString = "";
-		int32_t nTextEntryCursor = 0;
-		std::vector<std::tuple<olc::Key, std::string, std::string>> vKeyboardMap;
-
-
 
 		// State of keyboard		
 		bool		pKeyNewState[256] = { 0 };
@@ -1986,9 +1928,9 @@ namespace olc
 			layer.bUpdate = true;
 		}
 		SetDrawTarget(nullptr);
-		renderer->ClearBuffer(olc::BLACK, true);
+		renderer->ClearBuffer(olc::Pixel(0xFF000000ui32), true);
 		renderer->DisplayFrame();
-		renderer->ClearBuffer(olc::BLACK, true);
+		renderer->ClearBuffer(olc::Pixel(0xFF000000ui32), true);
 		renderer->UpdateViewport(vViewPos, vViewSize);
 	}
 
@@ -2977,7 +2919,7 @@ namespace olc
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel>& colours, const olc::Pixel tint)
 	{
-		std::vector<olc::Pixel> newColours(colours.size(), olc::WHITE);
+		std::vector<olc::Pixel> newColours(colours.size(), olc::Pixel(0xFFFFFFFFui32));
 		std::transform(colours.begin(), colours.end(), newColours.begin(),
 			[&tint](const olc::Pixel pin) {	return pin * tint; });
 		DrawPolygonDecal(decal, pos, uv, newColours);
@@ -3325,10 +3267,7 @@ namespace olc
 		return size * 8;
 	}
 
-	void PixelGameEngine::DrawString(const olc::vi2d& pos, const std::string& sText, Pixel col, uint32_t scale)
-	{ DrawString(pos.x, pos.y, sText, col, scale); }
-
-	void PixelGameEngine::DrawString(int32_t x, int32_t y, const std::string& sText, Pixel col, uint32_t scale)
+	void PixelGameEngine::DrawString(int32_t x, int32_t y, std::string_view sText, Pixel col, uint32_t scale)
 	{
 		int32_t sx = 0;
 		int32_t sy = 0;
@@ -3393,57 +3332,6 @@ namespace olc
 		return size;
 	}
 
-	void PixelGameEngine::DrawStringProp(const olc::vi2d& pos, const std::string& sText, Pixel col, uint32_t scale)
-	{ DrawStringProp(pos.x, pos.y, sText, col, scale); }
-
-	void PixelGameEngine::DrawStringProp(int32_t x, int32_t y, const std::string& sText, Pixel col, uint32_t scale)
-	{
-		int32_t sx = 0;
-		int32_t sy = 0;
-		Pixel::Mode m = nPixelMode;
-
-		if (m != Pixel::CUSTOM)
-		{
-			if (col.a != 255)		SetPixelMode(Pixel::ALPHA);
-			else					SetPixelMode(Pixel::MASK);
-		}
-		for (auto c : sText)
-		{
-			if (c == '\n')
-			{
-				sx = 0; sy += 8 * scale;
-			}
-			else if (c == '\t')
-			{
-				sx += 8 * nTabSizeInSpaces * scale;
-			}
-			else
-			{
-				int32_t ox = (c - 32) % 16;
-				int32_t oy = (c - 32) / 16;
-
-				if (scale > 1)
-				{
-					for (int32_t i = 0; i < vFontSpacing[c - 32].y; i++)
-						for (int32_t j = 0; j < 8; j++)
-							if (fontRenderable.Sprite()->GetPixel(i + ox * 8 + vFontSpacing[c - 32].x, j + oy * 8).r > 0)
-								for (int32_t is = 0; is < int(scale); is++)
-									for (int32_t js = 0; js < int(scale); js++)
-										Draw(x + sx + (i * scale) + is, y + sy + (j * scale) + js, col);
-				}
-				else
-				{
-					for (int32_t i = 0; i < vFontSpacing[c - 32].y; i++)
-						for (int32_t j = 0; j < 8; j++)
-							if (fontRenderable.Sprite()->GetPixel(i + ox * 8 + vFontSpacing[c - 32].x, j + oy * 8).r > 0)
-								Draw(x + sx + i, y + sy + j, col);
-				}
-				sx += vFontSpacing[c - 32].y * scale;
-			}
-		}
-		SetPixelMode(m);
-	}
-
 	void PixelGameEngine::SetPixelMode(Pixel::Mode m)
 	{ nPixelMode = m; }
 
@@ -3463,209 +3351,11 @@ namespace olc
 		if (fBlendFactor > 1.0f) fBlendFactor = 1.0f;
 	}
 
-	std::stringstream& PixelGameEngine::ConsoleOut()
-	{ return ssConsoleOutput; }
-
-	bool PixelGameEngine::IsConsoleShowing() const
-	{ return bConsoleShow; }
-
-	void PixelGameEngine::ConsoleShow(const olc::Key& keyExit, bool bSuspendTime)
-	{
-		if (bConsoleShow)
-			return;
-
-		bConsoleShow = true;		
-		bConsoleSuspendTime = bSuspendTime;
-		TextEntryEnable(true);
-		keyConsoleExit = keyExit;
-		pKeyboardState[keyConsoleExit].bHeld = false;
-		pKeyboardState[keyConsoleExit].bPressed = false;
-		pKeyboardState[keyConsoleExit].bReleased = true;
-	}
-	
-	void PixelGameEngine::ConsoleClear()
-	{ sConsoleLines.clear(); }
-
-	void PixelGameEngine::ConsoleCaptureStdOut(const bool bCapture)
-	{
-		if(bCapture)
-			sbufOldCout = std::cout.rdbuf(ssConsoleOutput.rdbuf());
-		else
-			std::cout.rdbuf(sbufOldCout);
-	}
-
-	void PixelGameEngine::UpdateConsole()
-	{
-		if (GetKey(keyConsoleExit).bPressed)
-		{
-			TextEntryEnable(false);
-			bConsoleSuspendTime = false;
-			bConsoleShow = false;
-			return;
-		}
-
-		// Keep Console sizes based in real screen dimensions
-		vConsoleCharacterScale = olc::vf2d(1.0f, 2.0f) / (olc::vf2d(vViewSize) * vInvScreenSize);
-		vConsoleSize = (vViewSize / olc::vi2d(8, 16)) - olc::vi2d(2, 4);
-
-		// If console has changed size, simply reset it
-		if (vConsoleSize.y != sConsoleLines.size())
-		{
-			vConsoleCursor = { 0,0 };
-			sConsoleLines.clear();
-			sConsoleLines.resize(vConsoleSize.y);
-		}
-
-		auto TypeCharacter = [&](const char c)
-		{
-			if (c >= 32 && c < 127)
-			{
-				sConsoleLines[vConsoleCursor.y].append(1, c);
-				vConsoleCursor.x++;
-			}
-
-			if( c == '\n' || vConsoleCursor.x >= vConsoleSize.x)
-			{
-				vConsoleCursor.y++; vConsoleCursor.x = 0;				
-			}			
-
-			if (vConsoleCursor.y >= vConsoleSize.y)
-			{
-				vConsoleCursor.y = vConsoleSize.y - 1;
-				for (size_t i = 1; i < vConsoleSize.y; i++)
-					sConsoleLines[i - 1] = sConsoleLines[i];
-				sConsoleLines[vConsoleCursor.y].clear();
-			}
-		};
-
-		// Empty out "std::cout", parsing as we go
-		while (ssConsoleOutput.rdbuf()->sgetc() != -1)
-		{
-			char c = ssConsoleOutput.rdbuf()->sbumpc();
-			TypeCharacter(c);
-		}
-
-		// Draw Shadow
-		GradientFillRectDecal({ 0,0 }, olc::vf2d(vScreenSize), olc::PixelF(0, 0, 0.5f, 0.5f), olc::PixelF(0, 0, 0.25f, 0.5f), olc::PixelF(0, 0, 0.25f, 0.5f), olc::PixelF(0, 0, 0.25f, 0.5f));
-				
-		// Draw the console buffer
-		SetDecalMode(olc::DecalMode::NORMAL);
-		for (int32_t nLine = 0; nLine < vConsoleSize.y; nLine++)
-			DrawStringDecal(olc::vf2d( 1, 1 + float(nLine) ) * vConsoleCharacterScale * 8.0f, sConsoleLines[nLine], olc::WHITE, vConsoleCharacterScale);
-
-		// Draw Input State
-		FillRectDecal(olc::vf2d(1 + float((TextEntryGetCursor() + 1)), 1 + float((vConsoleSize.y - 1))) * vConsoleCharacterScale * 8.0f, olc::vf2d(8, 8) * vConsoleCharacterScale, olc::DARK_CYAN);
-		DrawStringDecal(olc::vf2d(1, 1 + float((vConsoleSize.y - 1))) * vConsoleCharacterScale * 8.0f, std::string(">") + TextEntryGetString(), olc::YELLOW, vConsoleCharacterScale);		
-	}
-
-
 	const std::vector<std::string>& PixelGameEngine::GetDroppedFiles() const
 	{ return vDroppedFiles;	}
 
 	const olc::vi2d& PixelGameEngine::GetDroppedFilesPoint() const
 	{ return vDroppedFilesPoint; }
-
-
-	void PixelGameEngine::TextEntryEnable(const bool bEnable, const std::string& sText)
-	{
-		if (bEnable)
-		{
-			nTextEntryCursor = int32_t(sText.size());
-			sTextEntryString = sText;
-			bTextEntryEnable = true;
-		}
-		else
-		{
-			bTextEntryEnable = false;
-		}
-	}
-
-	std::string PixelGameEngine::TextEntryGetString() const
-	{ return sTextEntryString; }
-
-	int32_t PixelGameEngine::TextEntryGetCursor() const
-	{ return nTextEntryCursor; }
-
-	bool PixelGameEngine::IsTextEntryEnabled() const
-	{ return bTextEntryEnable; }
-
-
-	void PixelGameEngine::UpdateTextEntry()
-	{
-		// Check for typed characters
-		for (const auto& key : vKeyboardMap)
-			if (GetKey(std::get<0>(key)).bPressed)
-			{
-				sTextEntryString.insert(nTextEntryCursor, GetKey(olc::Key::SHIFT).bHeld ? std::get<2>(key) : std::get<1>(key));
-				nTextEntryCursor++;
-			}
-
-		// Check for command characters
-		if (GetKey(olc::Key::LEFT).bPressed)
-			nTextEntryCursor = std::max(0, nTextEntryCursor - 1);
-		if (GetKey(olc::Key::RIGHT).bPressed)
-			nTextEntryCursor = std::min(int32_t(sTextEntryString.size()), nTextEntryCursor + 1);
-		if (GetKey(olc::Key::BACK).bPressed && nTextEntryCursor > 0)
-		{
-			sTextEntryString.erase(nTextEntryCursor-1, 1);
-			nTextEntryCursor = std::max(0, nTextEntryCursor - 1);
-		}
-		if (GetKey(olc::Key::DEL).bPressed && nTextEntryCursor < sTextEntryString.size())
-			sTextEntryString.erase(nTextEntryCursor, 1);	
-
-		if (GetKey(olc::Key::UP).bPressed)
-		{
-			if (!sCommandHistory.empty())
-			{
-				if (sCommandHistoryIt != sCommandHistory.begin())
-					sCommandHistoryIt--;
-
-				nTextEntryCursor = int32_t(sCommandHistoryIt->size());
-				sTextEntryString = *sCommandHistoryIt;
-			}
-		}
-
-		if (GetKey(olc::Key::DOWN).bPressed)
-		{	
-			if (!sCommandHistory.empty())
-			{
-				if (sCommandHistoryIt != sCommandHistory.end())
-				{
-					sCommandHistoryIt++;
-					if (sCommandHistoryIt != sCommandHistory.end())
-					{
-						nTextEntryCursor = int32_t(sCommandHistoryIt->size());
-						sTextEntryString = *sCommandHistoryIt;
-					}
-					else
-					{
-						nTextEntryCursor = 0;
-						sTextEntryString = "";
-					}
-				}
-			}
-		}
-
-		if (GetKey(olc::Key::ENTER).bPressed)
-		{
-			if (bConsoleShow)
-			{
-				std::cout << ">" + sTextEntryString + "\n";
-				if (OnConsoleCommand(sTextEntryString))
-				{
-					sCommandHistory.push_back(sTextEntryString);
-					sCommandHistoryIt = sCommandHistory.end();
-				}
-				sTextEntryString.clear();
-				nTextEntryCursor = 0;
-			}
-			else
-			{
-				OnTextEntryComplete(sTextEntryString);
-				TextEntryEnable(false);
-			}
-		}
-	}
 
 	// User must override these functions as required. I have not made
 	// them abstract because I do need a default behaviour to occur if
@@ -3682,9 +3372,6 @@ namespace olc
 
 	bool PixelGameEngine::OnUserDestroy()
 	{ return true; }
-
-	void PixelGameEngine::OnTextEntryComplete(const std::string& sText) { UNUSED(sText); }
-	bool PixelGameEngine::OnConsoleCommand(const std::string& sCommand) { UNUSED(sCommand); return false; }
 	
 	// Externalised API
 	void PixelGameEngine::olc_UpdateViewport()
@@ -3792,6 +3479,7 @@ namespace olc
 
 		if (bAtomActive && !OnUserCreate())
 			bAtomActive = false;
+		platform->SetWindowTitle(sAppName);
 
 		for (auto& ext : vExtensions) {
 			if (!ext->OnAfterUserCreate()) {
@@ -3846,9 +3534,6 @@ namespace olc
 		float fElapsedTime = elapsedTime.count();
 		fLastElapsed = fElapsedTime;
 
-		if (bConsoleSuspendTime)
-			fElapsedTime = 0.0f;
-
 		// Some platforms will need to check for events
 		platform->HandleSystemEvent();
 
@@ -3888,11 +3573,6 @@ namespace olc
 		vDroppedFilesPoint = vDroppedFilesPointCache;
 		vDroppedFilesCache.clear();
 
-		if (bTextEntryEnable)
-		{
-			UpdateTextEntry();
-		}
-
 		// Handle Frame Update
 		for (auto& ext : vExtensions) {
 			if (!ext->OnBeforeUserUpdate(fElapsedTime)) {
@@ -3913,18 +3593,11 @@ namespace olc
 
 		if (!OnUserRender(fElapsedTime))
 			bAtomActive = false;
-
-		if (bConsoleShow)
-		{
-			SetDrawTarget((uint8_t)0);
-			UpdateConsole();
-		}
-
 		
 
 		// Display Frame
 		renderer->UpdateViewport(vViewPos, vViewSize);
-		renderer->ClearBuffer(olc::BLACK, true);
+		renderer->ClearBuffer(olc::Pixel(0xFF000000ui32), true);
 
 		// Layer 0 must always exist
 		vLayers[0].bUpdate = true;
@@ -3972,8 +3645,6 @@ namespace olc
 		{
 			nLastFPS = nFrameCount;
 			fFrameTimer -= 1.0f;
-			std::string sTitle = "OneLoneCoder.com - Pixel Game Engine - " + sAppName + " - FPS: " + std::to_string(nFrameCount);
-			platform->SetWindowTitle(sTitle);
 			nFrameCount = 0;
 		}
 	}
@@ -4028,33 +3699,6 @@ namespace olc
 			0x17,0x17,0x17,0x17,0x07,0x17,0x17,0x18,0x18,0x17,0x17,0x07,0x33,0x07,0x08,0x00, } };
 
 		for (auto c : vSpacing) vFontSpacing.push_back({ c >> 4, c & 15 });
-
-		// UK Standard Layout
-#ifdef OLC_KEYBOARD_UK
-		vKeyboardMap =
-		{
-			{olc::Key::A, "a", "A"}, {olc::Key::B, "b", "B"}, {olc::Key::C, "c", "C"}, {olc::Key::D, "d", "D"}, {olc::Key::E, "e", "E"},
-			{olc::Key::F, "f", "F"}, {olc::Key::G, "g", "G"}, {olc::Key::H, "h", "H"}, {olc::Key::I, "i", "I"}, {olc::Key::J, "j", "J"},
-			{olc::Key::K, "k", "K"}, {olc::Key::L, "l", "L"}, {olc::Key::M, "m", "M"}, {olc::Key::N, "n", "N"}, {olc::Key::O, "o", "O"},
-			{olc::Key::P, "p", "P"}, {olc::Key::Q, "q", "Q"}, {olc::Key::R, "r", "R"}, {olc::Key::S, "s", "S"}, {olc::Key::T, "t", "T"},
-			{olc::Key::U, "u", "U"}, {olc::Key::V, "v", "V"}, {olc::Key::W, "w", "W"}, {olc::Key::X, "x", "X"}, {olc::Key::Y, "y", "Y"},
-			{olc::Key::Z, "z", "Z"},
-
-			{olc::Key::K0, "0", ")"}, {olc::Key::K1, "1", "!"}, {olc::Key::K2, "2", "\""}, {olc::Key::K3, "3", "#"},	{olc::Key::K4, "4", "$"},
-			{olc::Key::K5, "5", "%"}, {olc::Key::K6, "6", "^"}, {olc::Key::K7, "7", "&"}, {olc::Key::K8, "8", "*"},	{olc::Key::K9, "9", "("},
-
-			{olc::Key::NP0, "0", "0"}, {olc::Key::NP1, "1", "1"}, {olc::Key::NP2, "2", "2"}, {olc::Key::NP3, "3", "3"},	{olc::Key::NP4, "4", "4"},
-			{olc::Key::NP5, "5", "5"}, {olc::Key::NP6, "6", "6"}, {olc::Key::NP7, "7", "7"}, {olc::Key::NP8, "8", "8"},	{olc::Key::NP9, "9", "9"},
-			{olc::Key::NP_MUL, "*", "*"}, {olc::Key::NP_DIV, "/", "/"}, {olc::Key::NP_ADD, "+", "+"}, {olc::Key::NP_SUB, "-", "-"},	{olc::Key::NP_DECIMAL, ".", "."},
-
-			{olc::Key::PERIOD, ".", ">"}, {olc::Key::EQUALS, "=", "+"}, {olc::Key::COMMA, ",", "<"}, {olc::Key::MINUS, "-", "_"}, {olc::Key::SPACE, " ", " "},
-
-			{olc::Key::OEM_1, ";", ":"}, {olc::Key::OEM_2, "/", "?"}, {olc::Key::OEM_3, "\'", "@"}, {olc::Key::OEM_4, "[", "{"},
-			{olc::Key::OEM_5, "\\", "|"}, {olc::Key::OEM_6, "]", "}"}, {olc::Key::OEM_7, "#", "~"}, 
-			
-			// {olc::Key::TAB, "\t", "\t"}
-		};
-#endif
 	}
 
 	void PixelGameEngine::pgex_Register(olc::PGEX* pgex)
@@ -4922,7 +4566,7 @@ namespace olc
 
 			// Create blank texture for spriteless decals
 			rendBlankQuad.Create(1, 1);
-			rendBlankQuad.Sprite()->GetData()[0] = olc::WHITE;
+			rendBlankQuad.Sprite()->GetData()[0] = olc::Pixel(0xFFFFFFFFui32);
 			rendBlankQuad.Decal()->Update();
 			return olc::rcode::OK;
 		}

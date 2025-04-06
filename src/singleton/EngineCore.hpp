@@ -22,6 +22,10 @@ public: // Publicly Accessible Member Variable Declarations
 
 private: // Hidden Member Variable Declarations
 	const EngineCoreExt* engineExt;
+
+	std::string			sPerformanceData;
+	std::string_view	svPerformanceData;
+	float_t				updateTimer;
 };
 
 #endif

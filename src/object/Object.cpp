@@ -1,5 +1,6 @@
 #include "Object.hpp"
 
+#include "../singleton/DataManager.hpp"
 #include "../singleton/EngineCore.hpp"
 #include "../singleton/MenuManager.hpp"
 #include "../singleton/ObjectManager.hpp"
@@ -14,49 +15,44 @@ Object::Object(float_t _x, float_t _y, uint16_t _index, size_t _id) :
 	curState(STATE_INVALID),
 	nextState(STATE_INVALID),
 	lastState(STATE_INVALID),
-	nextAnimID(ANIM_INVALID),
+	curAnimation(ANM_INVALID),
+	nextAnimation(ANM_INVALID),
+	lastAnimation(ANM_INVALID),
 	flags(0u),
-	blendColor(COLOR_TRUE_WHITE),
+	spritesheet(nullptr),
+	animationRef(nullptr),
 	animTimer(0.0f),
 	animSpeed(1.0f),
-	curAnimation(nullptr),
-	prevAnimation(nullptr),
-	animIndex(OBJ_INVALID_ANIMATION_INDEX),
-	animations(),
-	spritesheet(nullptr)
+	animations()
 { // Reserve a small bit of memory to make room for potential animations the object may contain.
 	animations.reserve(3ui64);
 }
 
 bool Object::OnUserDestroy() {
-	prevAnimation = nullptr;
-	curAnimation = nullptr;
 	for (auto& _anim : animations)
 		delete _anim.second, _anim.second = nullptr;
 	animations.clear();
-	animations.shrink_to_fit();
 	return true;
 }
 
 bool Object::OnUserRender(EngineCore* _engine) {
-	if (!spritesheet || !OBJ_IS_VISIBLE || !curAnimation)
+	if (!spritesheet || !OBJ_IS_VISIBLE || !animationRef)
 		return true;
 
 	animTimer  += EngineCore::deltaTime * animSpeed;
 	flags	   &= ~FLAG_OBJ_ANIMATION_END; // Always clear this flag on the frame right after it is set by the above funtion returning true.
-	if (curAnimation->UpdateAnimation(animTimer))
+	if (animationRef->UpdateAnimation(animTimer))
 		flags  |= FLAG_OBJ_ANIMATION_END;
 
-	olc::vf2d _offset = curAnimation->GetCurrentFrame();
-
+	std::pair<int32_t, int32_t> _frameOffset = animationRef->GetCurFramePosition();
 	_engine->DrawPartialSprite(
 		int32_t(x),
 		int32_t(y),
-		spritesheet->sprite,
-		int32_t(_offset.x),
-		int32_t(_offset.y),
-		int32_t(curAnimation->size.x),
-		int32_t(curAnimation->size.y)
+		spritesheet,
+		_frameOffset.first,
+		_frameOffset.second,
+		animationRef->animationRef->width,
+		animationRef->animationRef->height
 	);
 
 	return true;
@@ -71,57 +67,30 @@ bool Object::OnBeforeUserUpdate() {
 bool Object::OnAfterUserUpdate() {
 	UPDATE_STATE(nextState);
 
-	if (nextAnimID == ANIM_INVALID)
+	if (curAnimation == nextAnimation)
 		return true;
 
-	Animation* _nextAnimation = GetAnimation(nextAnimID);
-	nextAnimID = ANIM_INVALID;
-
-	if (!_nextAnimation)
-		return true;
-
-	prevAnimation = curAnimation;
-	curAnimation = _nextAnimation;
+	lastAnimation	= curAnimation;
+	curAnimation	= nextAnimation;
+	animationRef	= animations[curAnimation];
 	return true;
 }
 
-void Object::AddAnimation(uint8_t _id, float_t _width, float_t _height, float_t _frameLength, const std::initializer_list<olc::vf2d>& _frames,
-		uint8_t _startFrame, uint8_t _loopStart) 
-{
-	if (_id == ANIM_INVALID) {
-		LOG_ERROR("Animation id cannot be set to 0xFFui8 (255 in decimal) !!!");
+void Object::AddAnimation(uint16_t _animInstID, uint16_t _id, float_t _animSpeed, uint16_t _loopStart) {
+	Animation* _animation = GET_SINGLETON(DataManager)->LoadAnimation(_id);
+	if (!_animation) {
+		LOG_ERROR("THIS SHOULD NOT HAPPEN!!!");
 		return;
 	}
-
-	for (auto& _anim : animations) {
-		if (_anim.first == _id) {
-			LOG_WARN("Attempted to load in an animation with an id (" + std::to_string(_id) + ") that already exists!");
-			return;
-		}
-	}
-	animations.push_back(std::make_pair(_id, Animation::CreateAnimation(_id, _width, _height, _frameLength, _frames, _startFrame, _loopStart)));
+	animations[_animInstID] = new AnimationInstance(_animation, _animSpeed, _loopStart);
 }
 
-void Object::RemoveAnimation(uint8_t _id) {
-	auto _index = animations.begin();
+void Object::RemoveAnimation(uint16_t _id) {
 	for (auto& _anim : animations) {
-		if (_anim.first == _id) {
-			if (curAnimation == _anim.second)
-				curAnimation = prevAnimation;
-			delete _anim.second, _anim.second = nullptr;
-			animations.erase(_index);
+		if (_anim.second->animationRef->id == _id) {
+			animations.erase(_id);
 			return;
 		}
-		_index++;
 	}
 	LOG_WARN("Animation with provided ID (" + std::to_string(_id) + ") does not exist for this object!");
-}
-
-Animation* Object::GetAnimation(uint8_t _id) {
-	for (auto& _anim : animations) {
-		if (_anim.first == _id)
-			return _anim.second;
-	}
-	LOG_ERROR("Attempted to set animation that doesn't exist on the current object!!!");
-	return nullptr;
 }

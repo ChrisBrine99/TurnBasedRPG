@@ -3,9 +3,10 @@ INIT_SINGLETON_CPP(DataManager)
 
 #include "../utility/BattleMacros.hpp"
 #include "../utility/CharacterMacros.hpp"
-#include "../struct/character/PlayerCharacter.hpp"
-#include "../struct/character/EnemyCharacter.hpp"
 #include "../struct/battle/Skill.hpp"
+#include "../struct/character/EnemyCharacter.hpp"
+#include "../struct/character/PlayerCharacter.hpp"
+#include "../struct/object/Animation.hpp"
 #include "../utility/Logger.hpp"
 
 DataManager::DataManager() :
@@ -26,7 +27,8 @@ bool DataManager::OnUserCreate() {
 bool DataManager::OnUserDestroy() {
 	RemoveDataFromStorage(characters);
 	RemoveDataFromStorage(skills);
-	sprites.clear();
+	RemoveDataFromStorage(sprites);
+	RemoveDataFromStorage(animations);
 	return true;
 }
 
@@ -34,11 +36,12 @@ bool DataManager::OnBeforeUserCreate() {
 	characterData	= json::parse(std::ifstream("res/data/characters.json"));
 	skillData		= json::parse(std::ifstream("res/data/skills.json"));
 	encounterData	= json::parse(std::ifstream("res/data/encounters.json"));
+	animationData	= json::parse(std::ifstream("res/data/animations.json"));
 
-	LOG_ASSERT(LoadCharacterData(CHR_TEST_PLAYER));
-	LOG_ASSERT(LoadCharacterData(CHR_TEST_PLAYER_2));
-	LOG_ASSERT(LoadCharacterData(CHR_GREEN_SLIME));
-	LOG_ASSERT(LoadCharacterData(CHR_RED_SLIME));
+	LoadCharacterData(CHR_TEST_PLAYER);
+	LoadCharacterData(CHR_TEST_PLAYER_2);
+	LoadCharacterData(CHR_GREEN_SLIME);
+	LoadCharacterData(CHR_RED_SLIME);
 
 	return true;
 }
@@ -160,24 +163,62 @@ Skill* DataManager::LoadSkillData(uint16_t _id) {
 	return _newSkill;
 }
 
-olc::Decal* DataManager::LoadSprite(uint16_t _id, const std::string& _filepath) {
+olc::Sprite* DataManager::LoadSprite(uint16_t _id, const std::string& _filepath) {
+	// Don't attempt to load in a sprite that already exists. Simply return the existing sprite's pointer.
 	if (sprites.find(_id) != sprites.end())
-		return sprites[_id].Decal();
+		return sprites[_id];
 
-	size_t _capacity = sprites.bucket_count();
-	if (sprites.size() == _capacity)
-		sprites.reserve(_capacity + DATA_RESERVE_CHUNK_SIZE);
-
-	if (sprites[_id].Load(_filepath) != olc::OK)
+	// Don't try loading in the sprite if the file provided didn't contain valid image data.
+	olc::Sprite* _newSprite = new olc::Sprite();
+	if (_newSprite->LoadFromFile(_filepath) != olc::OK) {
+		delete _newSprite, _newSprite = nullptr;
 		return nullptr;
+	}
 
-	return sprites[_id].Decal();
+	// Finally, add the sprite to the data manager's list of loaded sprites, and then return its pointer.
+	ADD_DATA(sprites, _id, _newSprite);
+	return sprites[_id];
 }
 
-void DataManager::UnloadSprite(uint16_t _id) {
-	if (sprites.find(_id) == sprites.end())
-		return;
-	sprites.erase(_id);
+Animation* DataManager::LoadAnimation(uint16_t _id) {
+	// Don't attempt to load in an animation that already exists. Simply return the existing animation's pointer.
+	if (animations.find(_id) != animations.end())
+		return animations[_id];
+
+	// Don't try loading in an animation if the relevant data couldn't be retrieved at the specified ID.
+	json& _data = animationData[std::to_string(_id)];
+	if (_data.is_null() || !GetSprite(_data[KEY_ANIM_SPRITE_ID]))
+		return nullptr;
+
+	// Create a new animation instance, and copy over the width, height, and id for the animation.
+	Animation* _newAnimation	= new Animation();
+	_newAnimation->width		= _data[KEY_ANIM_WIDTH];
+	_newAnimation->height		= _data[KEY_ANIM_HEIGHT];
+	_newAnimation->id			= _id;
+
+	// Attempt to retrieve the animation's frame data array (This array should always been an evan value size since it 
+	// requires an x and y value for each frame of the animation.
+	json& _frameData			= _data[KEY_ANIM_FRAME_DATA];
+	if (_frameData.is_null())
+		return nullptr;
+	
+	// Make sure the size is even. If it isn't, the animation data is invalid and will not be loaded. If it is, the numFrames
+	// variable will be set to the length of the frame data array divided by two.
+	size_t _size = _frameData.size();
+	if ((_size % 2ui64) != 0ui64) {
+		delete _newAnimation, _newAnimation = nullptr;
+		return nullptr;
+	}
+	_newAnimation->numFrames	= uint16_t(_size / 2ui64);
+
+	// Finally, the data is looped through and places into the animation's vector for frame position data.
+	auto& _animFrameData		= _newAnimation->frameData;
+	_animFrameData.reserve(_size);
+	for (int32_t i : _frameData)
+		_animFrameData.push_back(i);
+
+	ADD_DATA(animations, _id, _newAnimation);
+	return animations[_id];
 }
 
 inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {

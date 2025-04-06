@@ -1,38 +1,29 @@
 #ifndef ANIMATION_HPP
 #define ANIMATION_HPP
 
-#include "../../../third_party/olcPixelGameEngine.hpp"
+#include "../../utility/DataMacros.hpp"
 
-#include <initializer_list>
 #include <vector>
 
 struct Animation {
-	std::vector<olc::vf2d>	frameData;
-	olc::vf2d				size;
-	uint8_t					id;
-	uint8_t					curFrame;
-	uint8_t					numFrames;
-	uint8_t					loopStart;
-	float_t					frameLength;
+	std::vector<int32_t>	frameData;
+	int32_t					width;
+	int32_t					height;
+	uint16_t				id;
+	uint16_t				spriteID;
+	uint16_t				numFrames;
 
-private: // Constructor Declarations
-	Animation() = delete;
-	Animation(uint8_t _id, float_t _width, float_t _height, float_t _frameLength, uint8_t _numFrames, uint8_t _startFrame = 0ui8, uint8_t _loopStart = 0ui8);
+public: // Constructor/Destructor Declarations
+	Animation() : 
+		frameData(),
+		width(0i32),
+		height(0i32),
+		id(ANM_INVALID),
+		spriteID(SPR_INVALID),
+		numFrames(0ui16)
+	{};
 	Animation(const Animation& _other) = delete;
-public: // Destructor Declaration
 	~Animation() = default;
-
-public: // Publicly Accessible Utility Function Declarations/Definitions
-	static Animation* CreateAnimation(uint8_t _id, float_t _width, float_t _height, float_t _frameLength, const std::initializer_list<olc::vf2d>& _frames,
-				uint8_t _startFrame = 0ui8, uint8_t _loopStart = 0ui8);
-	bool UpdateAnimation(float_t& _animTimer);
-
-	// Simply fetches the frame the sprite's animation is at currently.
-	inline olc::vf2d GetCurrentFrame() const {
-		return frameData[curFrame];
-	}
 };
-
-typedef std::pair<uint8_t, Animation*> AnimData;
 
 #endif

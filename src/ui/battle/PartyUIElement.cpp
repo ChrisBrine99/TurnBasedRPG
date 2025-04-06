@@ -42,7 +42,7 @@ void PartyUIElement::OnUserRender(EngineCore* _engine) {
 		return;
 
 	if (combatant == sceneRef->curCombatant)
-		_engine->DrawString({ x - 16i32, y }, ">", COLOR_LIGHT_YELLOW);
+		_engine->DrawString( x - 16i32, y, ">", COLOR_LIGHT_YELLOW);
 
 	olc::Pixel _color	= COLOR_WHITE;
 	int32_t _offsetX	= x;

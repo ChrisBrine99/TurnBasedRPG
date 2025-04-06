@@ -3,6 +3,9 @@
 
 #include "DynamicObject.hpp"
 
+
+#define ANMINST_TEST					0x0000ui16
+
 class ObjPlayer : public DynamicObject {
 public: // Constructor/Destructor Declarations
 	ObjPlayer(float_t _x, float_t _y, uint16_t _index, size_t _id);

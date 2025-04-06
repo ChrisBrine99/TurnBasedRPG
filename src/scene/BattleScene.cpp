@@ -40,7 +40,7 @@ BattleScene::BattleScene() :
 	curExpReward(0ui32),
 	combatants(),
 	turnOrder(),
-	turnDelay(60.0f),
+	turnDelay(0.0f),
 	curState(STATE_INVALID),
 	nextState(STATE_INVALID),
 	lastState(STATE_INVALID),
@@ -177,6 +177,7 @@ bool BattleScene::StateInitializeBattle() {
 		AddPlayerCombatant(j);
 
 	SET_NEXT_STATE(STATE_BATTLE_SET_TURN_ORDER);
+	turnDelay = 60.0f;
 	return true;
 }
 

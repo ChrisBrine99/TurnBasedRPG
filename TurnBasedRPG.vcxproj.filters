@@ -84,9 +84,6 @@
     <ClCompile Include="src\ui\battle\PartyUIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\struct\object\Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\struct\character\BaseCharacter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -100,6 +97,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\battle\PostBattleUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\struct\object\AnimationInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -239,12 +239,16 @@
     <ClInclude Include="src\ui\battle\PostBattleUI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\struct\object\AnimationInstance.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.ini" />
     <None Include="res\data\characters.json" />
     <None Include="res\data\encounters.json" />
     <None Include="res\data\skills.json" />
+    <None Include="res\data\animations.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\graphics\test_spritesheet.png">
