@@ -63,7 +63,7 @@ public: // Combatant Management Function Declarations
 	}
 
 public: // Accessible Member Variable Declarations
-	static std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> 
+	static std::array<std::pair<int32_t, int32_t>, BATTLE_TOTAL_COMBATANTS> 
 								positions;
 
 	BattleMainMenu*				actionMenu;

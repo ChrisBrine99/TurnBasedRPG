@@ -3,7 +3,9 @@
 DynamicObject::DynamicObject(float_t _x, float_t _y, uint16_t _index, size_t _id, float_t _accel, float_t _maxSpeed) :
 	Object(_x, _y, _index, _id),
 	accel(_accel),
+	accelFactor(1.0f),
 	maxSpeed(_maxSpeed),
+	maxSpeedFactor(1.0f),
 	speed(0.0f),
 	direction(0.0f),
 	xFraction(0.0f),

@@ -46,7 +46,7 @@ bool ObjPlayer::OnUserCreate() {
 	nextAnimID = 0ui8;
 
 	SET_NEXT_STATE(STATE_PLAYER_DEFAULT);
-	flags |= FLAG_OBJ_ACTIVE | FLAG_OBJ_VISIBLE;
+	flags |= FLAG_OBJ_ACTIVE | FLAG_OBJ_VISIBLE | FLAG_PLYR_BLOCK_INPUT;
 	return true;
 }
 

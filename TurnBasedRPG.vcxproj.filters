@@ -99,6 +99,9 @@
     <ClCompile Include="src\scene\LevelScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\battle\PostBattleUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\singleton\EngineCore.hpp">
@@ -231,6 +234,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\struct\level\Map.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\battle\PostBattleUI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

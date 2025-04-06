@@ -15,22 +15,22 @@
 //	Defines for the position of the party UI within a battle and the offsets for its various elements.									//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define PARTY_UI_X						360.0f
-#define PARTY_UI_Y						280.0f
-#define PARTY_UI_HP_BAR_X				168.0f
-#define PARTY_UI_HP_BAR_Y				10.0f
-#define PARTY_UI_MP_BAR_X				216.0f
-#define PARTY_UI_MP_BAR_Y				10.0f
-#define PARTY_UI_SPACING_Y				16.0f
+#define PARTY_UI_X						360i32
+#define PARTY_UI_Y						280i32
+#define PARTY_UI_HP_BAR_X				168i32
+#define PARTY_UI_HP_BAR_Y				10i32
+#define PARTY_UI_MP_BAR_X				216i32
+#define PARTY_UI_MP_BAR_Y				10i32
+#define PARTY_UI_SPACING_Y				16i32
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines for the position of a given enemy's UI within a battle and the offsets for its various elements.							//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define ENEMY_UI_HP_BAR_X			   -4.0f
-#define ENEMY_UI_HP_BAR_Y				32.0f
-#define ENEMY_UI_MP_BAR_X			   -4.0f
-#define ENEMY_UI_MP_BAR_Y				38.0f
+#define ENEMY_UI_HP_BAR_X			   -4i32
+#define ENEMY_UI_HP_BAR_Y				32i32
+#define ENEMY_UI_MP_BAR_X			   -4i32
+#define ENEMY_UI_MP_BAR_Y				38i32
 
 BattleUI::BattleUI() :
 	uiElements(),
@@ -98,7 +98,7 @@ void BattleUI::ActivateElement(Combatant* _combatant, size_t _index) {
 		PartyUIElement* _pElement = (PartyUIElement*)uiElements[_index];
 		_pElement->ActivateElement(
 			PARTY_UI_X,
-			PARTY_UI_Y + float_t(PARTY_UI_SPACING_Y * uint32_t(_scene->GetTotalPlayerCombatants())),
+			PARTY_UI_Y + int32_t(PARTY_UI_SPACING_Y * _scene->GetTotalPlayerCombatants()),
 			PARTY_UI_HP_BAR_X,
 			PARTY_UI_HP_BAR_Y,
 			PARTY_UI_MP_BAR_X,

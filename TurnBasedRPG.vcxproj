@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ui\battle\PostBattleUI.cpp" />
     <ClCompile Include="src\scene\LevelScene.cpp" />
     <ClCompile Include="src\extension\EngineCoreExt.cpp" />
     <ClCompile Include="src\struct\battle\Combatant.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="src\struct\character\PlayerCharacter.cpp" />
     <ClCompile Include="src\struct\object\Animation.cpp" />
     <ClCompile Include="src\ui\battle\BattleUI.cpp" />
+    <ClInclude Include="src\ui\battle\PostBattleUI.hpp" />
     <ClInclude Include="src\scene\LevelScene.hpp" />
     <ClInclude Include="src\struct\level\Map.hpp" />
     <ClInclude Include="src\struct\level\Tile.hpp" />

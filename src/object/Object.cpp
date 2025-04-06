@@ -47,13 +47,16 @@ bool Object::OnUserRender(EngineCore* _engine) {
 	if (curAnimation->UpdateAnimation(animTimer))
 		flags  |= FLAG_OBJ_ANIMATION_END;
 
-	_engine->DrawPartialDecal(
-		{ std::floor(x), std::floor(y) },	// Utilize the floored versions of the object's x and y position
-		spritesheet,						// The image resource to reference
-		curAnimation->GetCurrentFrame(),	// Offset into the image resources to sample
-		curAnimation->size,					// Size of the sampled region
-		{ 1.0f, 1.0f },						// Scale of the sprite (Unused currently)
-		blendColor							// Optional blending color for the sprite
+	olc::vf2d _offset = curAnimation->GetCurrentFrame();
+
+	_engine->DrawPartialSprite(
+		int32_t(x),
+		int32_t(y),
+		spritesheet->sprite,
+		int32_t(_offset.x),
+		int32_t(_offset.y),
+		int32_t(curAnimation->size.x),
+		int32_t(curAnimation->size.y)
 	);
 
 	return true;

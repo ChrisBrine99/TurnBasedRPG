@@ -31,8 +31,8 @@
 //	Defines for the width of the ui element's HP and MP bars as both an integer and float, respectively.								//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define BATUI_ELEMENT_BAR_WIDTH				40.0f
-#define BATUI_ElEMENT_BAR_HEIGHT			2.0f
+#define BATUI_ELEMENT_BAR_WIDTH				40i32
+#define BATUI_ElEMENT_BAR_HEIGHT			2i32
 
 class EngineCore;
 
@@ -47,23 +47,23 @@ public: // Main Engine Function Declarations
 	virtual void OnUserRender(EngineCore* _engine);
 
 public: // Publicly Accessible Utility Function Declarations
-	virtual void ActivateElement(float_t _x, float_t _y, float_t _hpBarX, float_t _hpBarY, float_t _mpBarX, float_t _mpBarY, Combatant* _combatant, uint32_t _flags);
+	virtual void ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, int32_t _mpBarX, int32_t _mpBarY, Combatant* _combatant, uint32_t _flags);
 	void ShowElement(float_t _time);
 
 public: // Publicly Accessible Member Variable Declarations
 	uint32_t		flags;
-	float_t			x;
-	float_t			y;
+	int32_t			x;
+	int32_t			y;
 
 protected: // Hidden (Only Accesible To Children) Member Variable Declarations
 	uint16_t		curHitpoints;
 	uint16_t		curMagicpoints;
 	uint16_t		curHpBarWidth;
 	uint16_t		curMpBarWidth;
-	float_t			hpBarX;
-	float_t			hpBarY;
-	float_t			mpBarX;
-	float_t			mpBarY;
+	int32_t			hpBarX;
+	int32_t			hpBarY;
+	int32_t			mpBarX;
+	int32_t			mpBarY;
 	float_t			visibleTime;
 	Combatant*		combatant;
 };

@@ -43,6 +43,9 @@ public: // Publicly Accessible Utility Function Declarations
 	void ActivateCombatant(BaseCharacter* _character);
 	bool InflictStatusAilment(uint8_t _ailmentIndex);
 
+	inline uint16_t GetMaxHitpoints()	const { return uint16_t(maxHitpoints * maxHitpointMultiplier); }
+	inline uint16_t GetMaxMagicpoints() const { return uint16_t(maxMagicpoints * maxMagicpointMultiplier); }
+
 	// Isolates the bits within the "statModifiers" variable that represent the current modifier values for each of the 
 	// Combatant's battle stats. In this state they range between 0 and 7, but they will be offset by -3 to actually be
 	// within the range of -3 to +4, which is what is required by the BattleManager in order to execute the proper formulas 

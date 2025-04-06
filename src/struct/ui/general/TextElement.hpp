@@ -50,7 +50,7 @@ public: // Publicly Accessible Utility Function Definitions
 		}
 
 		if (moveSpeed != 0.0f) { y += moveSpeed * _deltaTime; }
-		_engine->DrawStringDecal({ std::floor(x), std::floor(y) }, text, color, { scale, scale });
+		_engine->DrawString({ int32_t(x), int32_t(y) }, text, color);
 		return true;
 	}
 };

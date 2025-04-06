@@ -15,19 +15,19 @@
 #include "../utility/UtilityFunctions.hpp"
 #include "../utility/Logger.hpp"
 
-std::array<std::pair<float_t, float_t>, BATTLE_TOTAL_COMBATANTS> BattleScene::positions = {
-	std::make_pair(288.0f, 256.0f),		//  0 -- First party member's position.
-	std::make_pair(224.0f, 256.0f),		//  1 -- Second party member's position.
-	std::make_pair(352.0f, 256.0f),		//  2 -- Third party member's position.
+std::array<std::pair<int32_t, int32_t>, BATTLE_TOTAL_COMBATANTS> BattleScene::positions = {
+	std::make_pair(288i32, 256i32),		//  0 -- First party member's position.
+	std::make_pair(224i32, 256i32),		//  1 -- Second party member's position.
+	std::make_pair(352i32, 256i32),		//  2 -- Third party member's position.
 
-	std::make_pair(272.0f,  64.0f),		//  3 -- First enemy combatant's position.
-	std::make_pair(336.0f,  64.0f),		//  4 -- Second enemy combatant's position.
-	std::make_pair(272.0f, 128.0f),		//  5 -- Third enemy combatant's position.
-	std::make_pair(336.0f, 128.0f),		//  6 -- Fourth enemy combatant's position.
-	std::make_pair(400.0f,  64.0f),		//  7 -- Fifth enemy combatant's position.
-	std::make_pair(208.0f,  64.0f),		//  8 -- Sixth enemy combatant's position.
-	std::make_pair(400.0f, 128.0f),		//  9 -- Seventh enemy combatant's position.
-	std::make_pair(208.0f, 128.0f)		// 10 -- Eighth enemy combatant's position.
+	std::make_pair(272i32,  64i32),		//  3 -- First enemy combatant's position.
+	std::make_pair(336i32,  64i32),		//  4 -- Second enemy combatant's position.
+	std::make_pair(272i32, 128i32),		//  5 -- Third enemy combatant's position.
+	std::make_pair(336i32, 128i32),		//  6 -- Fourth enemy combatant's position.
+	std::make_pair(400i32,  64i32),		//  7 -- Fifth enemy combatant's position.
+	std::make_pair(208i32,  64i32),		//  8 -- Sixth enemy combatant's position.
+	std::make_pair(400i32, 128i32),		//  9 -- Seventh enemy combatant's position.
+	std::make_pair(208i32, 128i32)		// 10 -- Eighth enemy combatant's position.
 };
 
 BattleScene::BattleScene() :
@@ -254,8 +254,8 @@ bool BattleScene::StateExecuteSkill() {
 
 void BattleScene::UpdateHitpoints(Combatant* _combatant, int16_t _value) {
 	int32_t _hitpoints = _combatant->curHitpoints - _value;
-	if (_hitpoints > _combatant->maxHitpoints) {
-		_combatant->curHitpoints = _combatant->maxHitpoints;
+	if (_hitpoints > _combatant->GetMaxHitpoints()) {
+		_combatant->curHitpoints = _combatant->GetMaxHitpoints();
 		return;
 	}
 
@@ -269,8 +269,8 @@ void BattleScene::UpdateHitpoints(Combatant* _combatant, int16_t _value) {
 
 void BattleScene::UpdateMagicpoints(Combatant* _combatant, int16_t _value) {
 	int32_t _magicpoints = _combatant->curMagicpoints - _value;
-	if (_magicpoints > _combatant->maxMagicpoints) {
-		_combatant->curMagicpoints = _combatant->maxMagicpoints;
+	if (_magicpoints > _combatant->GetMaxMagicpoints()) {
+		_combatant->curMagicpoints = _combatant->GetMaxMagicpoints();
 		return;
 	}
 
@@ -456,6 +456,8 @@ void BattleScene::AddEnemyCombatant(uint16_t _enemyID) {
 		_combatant = combatants[i];
 		if (_combatant->isActive)
 			continue;
+
+		CREATE_OBJECT(OBJ_PLAYER, positions[i].first + 8.0f, positions[i].second + 8.0f);
 
 		_combatant->ActivateCombatant(_enemy);
 		battleUI->ActivateElement(_combatant, i);

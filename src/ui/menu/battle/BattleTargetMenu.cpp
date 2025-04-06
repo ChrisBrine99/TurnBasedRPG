@@ -34,11 +34,11 @@ BattleTargetMenu::BattleTargetMenu() :
 
 bool BattleTargetMenu::OnUserCreate() {
 	InitializeParams(STATE_INVALID, 1ui8, 0ui8, 0ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
-	InitializeOptionParams(VIEWPORT_WIDTH_F / 2.0f, (VIEWPORT_HEIGHT_F / 2.0f) - 150.0f, 0.0f, 0.0f);
+	InitializeOptionParams(VIEWPORT_WIDTH / 2i32, (VIEWPORT_HEIGHT / 2i32) - 150i32, 0i32, 0i32);
 
 	// At most there will be 8 unique targets to choose from, so 8 "options" are created to store the names of the targets that show during selection.
 	for (size_t i = 0ui64; i < BATTLE_MAX_ENEMY_SIZE; i++)
-		AddOption(0.0f, 0.0f, ""); // Gets populated upon menu activation instead of creation.
+		AddOption(0i32, 0i32, ""); // Gets populated upon menu activation instead of creation.
 
 	sceneRef = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 	return true;
@@ -54,25 +54,21 @@ bool BattleTargetMenu::OnUserDestroy() {
 }
 
 bool BattleTargetMenu::OnUserRender(EngineCore* _engine) {
-	std::pair<float_t, float_t> _positions;
+	std::pair<int32_t, int32_t> _positions;
 	size_t _offset = 0ui64;
 
 	if (TGTMENU_CAN_ONLY_CONFIRM) {
 		size_t _length = validTargets.size();
 		for (size_t i = 0ui64; i < _length; i++) {
-			_positions	= BattleScene::positions[validTargets[i]];
-			_engine->DrawRectDecal(
-				{ _positions.first + 8.0f, _positions.second + 8.0f },
-				{ 16.0f, 16.0f },
-				COLOR_LIGHT_YELLOW
-			);
+			_positions = BattleScene::positions[validTargets[i]];
+			_engine->DrawRect(_positions.first + 8i32, _positions.second + 8i32, 16i32, 16i32, COLOR_LIGHT_YELLOW);
 		}
 		return true;
 	}
 
 	_positions = BattleScene::positions[validTargets[curOption]];
-	_engine->DrawRectDecal({ _positions.first + 8.0f, _positions.second + 8.0f }, { 16.0f, 16.0f }, COLOR_LIGHT_YELLOW);
-	_engine->DrawStringDecal({ optionAnchorX + menuOptions[curOption].xPos, optionAnchorY }, menuOptions[curOption].text, COLOR_WHITE);
+	_engine->DrawRect( _positions.first + 8i32, _positions.second + 8i32 , 16i32, 16i32, COLOR_LIGHT_YELLOW);
+	_engine->DrawString( optionAnchorX + menuOptions[curOption].xPos, optionAnchorY , menuOptions[curOption].text, COLOR_WHITE);
 
 	return true;
 }
@@ -117,7 +113,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 			if (_combatants[i]->isActive) {
 				if (!_onlyConfirm) {
 					std::string_view _name	= _combatants[i]->character->name;
-					float_t _xOffset		= -(8.0f * _name.size()) / 2.0f;
+					int32_t _xOffset		= -8i32 * int32_t(_name.size()) / 2i32;
 					menuOptions[i - BATTLE_MAX_PARTY_SIZE].text = _name;
 					menuOptions[i - BATTLE_MAX_PARTY_SIZE].xPos = _xOffset;
 				}
@@ -143,7 +139,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 
 			if (!_onlyConfirm) { 
 				std::string_view _name	= _combatants[i]->character->name;
-				float_t _xOffset		= -(8.0f * _name.size()) / 2.0f;
+				int32_t _xOffset		= -8i32 * int32_t(_name.size()) / 2.0f;
 				menuOptions[i].text		= _name;
 				menuOptions[i].xPos		= _xOffset;
 			}

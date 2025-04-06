@@ -6,10 +6,10 @@ ConfirmWindow::ConfirmWindow() :
 
 bool ConfirmWindow::OnUserCreate() {
 	InitializeParams(STATE_INVALID, 2ui8, 2ui8, 1ui8);
-	InitializeOptionParams(0, 0, 0, 10);
+	InitializeOptionParams(0i32, 0i32, 0i32, 10i32);
 
-	AddOption(0, 0, "Yes");
-	AddOption(0, 0, "No");
+	AddOption(0i32, 0i32, "Yes");
+	AddOption(0i32, 0i32, "No");
 
 	return true;
 }

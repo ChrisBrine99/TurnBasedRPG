@@ -16,7 +16,7 @@ public: // Inherited Main Engine Function Overrides
 	void OnUserRender(EngineCore* _engine) override;
 
 public:  // Inherited Publicly Accessible Utility Function Overrides
-	void ActivateElement(float_t _x, float_t _y, float_t _hpBarX, float_t _hpBarY, float_t _mpBarX, float_t _mpBarY, Combatant* _combatant, uint32_t _flags, BattleScene* _sceneRef);
+	void ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, int32_t _mpBarX, int32_t _mpBarY, Combatant* _combatant, uint32_t _flags, BattleScene* _sceneRef);
 
 private: // Hidden Member Variable Declarations
 	BattleScene*	sceneRef;
@@ -26,9 +26,9 @@ private: // Hidden Member Variable Declarations
 	std::string		sCurHitpoints;
 	std::string		sCurMagicpoints;
 
-	float_t			sLevelWidth;
-	float_t			sCurHitpointsWidth;
-	float_t			sCurMagicpointsWidth;
+	uint16_t		sLevelWidth;
+	uint16_t		sCurHitpointsWidth;
+	uint16_t		sCurMagicpointsWidth;
 };
 
 #endif

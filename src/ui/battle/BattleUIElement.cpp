@@ -5,16 +5,16 @@
 
 BattleUIElement::BattleUIElement() :
 	flags(0ui32),
-	x(0.0f),
-	y(0.0f),
+	x(0i32),
+	y(0i32),
 	curHitpoints(0ui16),
 	curMagicpoints(0ui16),
 	curHpBarWidth(0ui16),
 	curMpBarWidth(0ui16),
-	hpBarX(0.0f),
-	hpBarY(0.0f),
-	mpBarX(0.0f),
-	mpBarY(0.0f),
+	hpBarX(0i32),
+	hpBarY(0i32),
+	mpBarX(0i32),
+	mpBarY(0i32),
 	visibleTime(0.0f),
 	combatant(nullptr) 
 {}
@@ -54,25 +54,25 @@ void BattleUIElement::OnUserRender(EngineCore* _engine){
 	if (!BATUI_ELEMENT_IS_IN_USE || !BATUI_ELEMENT_IS_VISIBLE)
 		return; // Skip over elements that are currently disabled or invisible.
 
-	olc::vf2d _barPosition	= { x + hpBarX, y + hpBarY };
-	float_t _barWidth		= float_t(curHpBarWidth);
+	int32_t _barX = x + hpBarX;
+	int32_t _barY = y + hpBarY;
 	if (BATUI_ELEMENT_IS_HP_SHOWN) { // Don't bother with the hp bar rendering if the ui element doesn't need to show it.
 		if (curHitpoints < combatant->maxHitpoints)
-			_engine->FillRectDecal(_barPosition, { BATUI_ELEMENT_BAR_WIDTH, BATUI_ElEMENT_BAR_HEIGHT }, COLOR_DARK_GRAY);
-		_engine->FillRectDecal(_barPosition, { _barWidth, BATUI_ElEMENT_BAR_HEIGHT }, COLOR_DARK_RED);
+			_engine->FillRect(_barX + curHpBarWidth, _barY, BATUI_ELEMENT_BAR_WIDTH - curHpBarWidth, BATUI_ElEMENT_BAR_HEIGHT, COLOR_DARK_GRAY);
+		_engine->FillRect(_barX, _barY, curHpBarWidth, BATUI_ElEMENT_BAR_HEIGHT, COLOR_DARK_RED);
 	}
 
 	if (!BATUI_ELEMENT_IS_MP_SHOWN)
 		return; // Don't bother with the mp value/bar stuff if the ui element doesn't need to show it.
 
-	_barPosition	= { x + mpBarX, y + mpBarY };
-	_barWidth		= float_t(curMpBarWidth);
+	_barX = x + mpBarX;
+	_barY = y + mpBarY;
 	if (curMagicpoints < combatant->maxMagicpoints)
-		_engine->FillRectDecal(_barPosition, { BATUI_ELEMENT_BAR_WIDTH, BATUI_ElEMENT_BAR_HEIGHT }, COLOR_DARK_GRAY);
-	_engine->FillRectDecal(_barPosition, { _barWidth, BATUI_ElEMENT_BAR_HEIGHT }, COLOR_DARK_PURPLE);
+		_engine->FillRect(_barX + curMpBarWidth, _barY, BATUI_ELEMENT_BAR_WIDTH - curMpBarWidth, BATUI_ElEMENT_BAR_HEIGHT, COLOR_DARK_GRAY);
+	_engine->FillRect(_barX, _barY, curMpBarWidth, BATUI_ElEMENT_BAR_HEIGHT, COLOR_DARK_PURPLE);
 }
 
-void BattleUIElement::ActivateElement(float_t _x, float_t _y, float_t _hpBarX, float_t _hpBarY, float_t _mpBarX, float_t _mpBarY, Combatant* _combatant, uint32_t _flags) {
+void BattleUIElement::ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, int32_t _mpBarX, int32_t _mpBarY, Combatant* _combatant, uint32_t _flags) {
 	flags			= _flags;
 	x				= _x;
 	y				= _y;

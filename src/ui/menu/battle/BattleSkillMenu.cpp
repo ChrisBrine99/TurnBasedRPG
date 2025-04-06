@@ -18,7 +18,7 @@ BattleSkillMenu::BattleSkillMenu() :
 
 bool BattleSkillMenu::OnUserCreate() {
 	InitializeParams(STATE_INVALID, 1ui8, 8ui8, 1ui8, 0ui8, 0ui8, 0xFFui8, FLAG_MENU_BLOCK_INPUT);
-	InitializeOptionParams(80.0f, 260.0f, 0.0f, 10.0f);
+	InitializeOptionParams(80i32, 260i32, 0i32, 10i32);
 
 	subMenu = CREATE_NEW_MENU(BattleTargetMenu);
 	

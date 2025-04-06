@@ -4,8 +4,8 @@
 #include <string>
 
 struct MenuTitle {
-	float_t		xPos;
-	float_t		yPos;
+	int32_t		xPos;
+	int32_t		yPos;
 	std::string text;
 };
 
