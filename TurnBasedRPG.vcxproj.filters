@@ -102,6 +102,12 @@
     <ClCompile Include="src\struct\object\AnimationInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\object\dynamic\enemy\EnemyObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\object\dynamic\enemy\ObjTestEnemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\singleton\EngineCore.hpp">
@@ -240,6 +246,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\struct\object\AnimationInstance.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\object\dynamic\enemy\EnemyObject.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\struct\object\BoundingBox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\object\dynamic\enemy\ObjTestEnemy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

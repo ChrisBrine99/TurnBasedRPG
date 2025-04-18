@@ -1,11 +1,12 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
-#include "../struct/object/AnimationInstance.hpp"
+#include "../struct/object/BoundingBox.hpp"
 #include "../utility/ObjectMacros.hpp"
 #include "../../third_party/olcPixelGameEngine.hpp"
 
 class EngineCore;
+struct AnimationInstance;
 
 class Object {
 public: // Constructor/Destructor Declarations
@@ -24,14 +25,20 @@ public: // Main Engine Function Declarations
 
 public: // Publicly Accessible Utility Function DEclarations
 	inline bool CanUpdateObject()	const { return OBJ_IS_ACTIVE && !OBJ_IS_DESTROYED; }
-	inline bool CanRenderObject()	const { return OBJ_IS_ACTIVE && OBJ_IS_VISIBLE; }
+	inline bool CanRenderObject()	const { return OBJ_IS_VISIBLE; }
 	inline bool CanDestroyObject()	const { return OBJ_IS_DESTROYED; }
 
 protected: // Hidden (Accessible to Children Only) Utility Function Declarations
+	void InitBoundingBox(int32_t _xOffset, int32_t _yOffset, int32_t _width, int32_t _height);
+
 	void AddAnimation(uint16_t _animInstID, uint16_t _id, float_t _animSpeed, uint16_t _loopStart = 0ui16);
 	void RemoveAnimation(uint16_t _id);
 
 public: // Publicly Accessible Member Variable Declarations
+	BoundingBox					boundingBox;
+	int32_t						bBoxX;
+	int32_t						bBoxY;
+
 	float_t						x;
 	float_t						y;
 

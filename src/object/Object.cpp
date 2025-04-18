@@ -4,10 +4,14 @@
 #include "../singleton/EngineCore.hpp"
 #include "../singleton/MenuManager.hpp"
 #include "../singleton/ObjectManager.hpp"
+#include "../struct/object/AnimationInstance.hpp"
 #include "../utility/Logger.hpp"
 #include "../utility/UtilityFunctions.hpp"
 
 Object::Object(float_t _x, float_t _y, uint16_t _index, size_t _id) :
+	boundingBox(0i32, 0i32, 0i32, 0i32),
+	bBoxX(0i32),
+	bBoxY(0i32),
 	x(_x),
 	y(_y),
 	instanceID(_id),
@@ -55,6 +59,8 @@ bool Object::OnUserRender(EngineCore* _engine) {
 		animationRef->animationRef->height
 	);
 
+	_engine->DrawRect(int32_t(x), int32_t(y), boundingBox.width, boundingBox.height);
+
 	return true;
 }
 
@@ -67,6 +73,11 @@ bool Object::OnBeforeUserUpdate() {
 bool Object::OnAfterUserUpdate() {
 	UPDATE_STATE(nextState);
 
+	if (OBJ_HAS_BOUNDING_BOX) {
+		boundingBox.x = int32_t(x) + bBoxX;
+		boundingBox.y = int32_t(y) + bBoxY;
+	}
+
 	if (curAnimation == nextAnimation)
 		return true;
 
@@ -76,10 +87,20 @@ bool Object::OnAfterUserUpdate() {
 	return true;
 }
 
+void Object::InitBoundingBox(int32_t _xOffset, int32_t _yOffset, int32_t _width, int32_t _height) {
+	flags			   |= FLAG_OBJ_BOUNDING_BOX;
+	bBoxX				= _xOffset;
+	bBoxY				= _yOffset;
+	boundingBox.x		= int32_t(x) + _xOffset;
+	boundingBox.y		= int32_t(y) + _yOffset;
+	boundingBox.width	= _width;
+	boundingBox.height	= _height;
+}
+
 void Object::AddAnimation(uint16_t _animInstID, uint16_t _id, float_t _animSpeed, uint16_t _loopStart) {
 	Animation* _animation = GET_SINGLETON(DataManager)->LoadAnimation(_id);
 	if (!_animation) {
-		LOG_ERROR("THIS SHOULD NOT HAPPEN!!!");
+		LOG_ERROR("Animation with provided ID couldn't be loaded!!!");
 		return;
 	}
 	animations[_animInstID] = new AnimationInstance(_animation, _animSpeed, _loopStart);

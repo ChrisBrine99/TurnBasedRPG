@@ -1,24 +1,26 @@
 #include "LevelScene.hpp"
 
+#include "../object/Object.hpp"
 #include "../singleton/ObjectManager.hpp"
 #include "../struct/level/Map.hpp"
 #include "../utility/Logger.hpp"
 
-#include <fstream>
-
 LevelScene::LevelScene() : 
 	Scene(LEVEL_SCENE_INDEX),
 	loadedMaps(),
-	curMap(),
-	curMapID(),
-	nextMapID(),
-	lastMapID()
+	curMap(nullptr),
+	curMapID(0ui16),
+	nextMapID(0ui16),
+	lastMapID(0ui16),
+	playerID(0ui64),
+	testEnemyID(0ui64)
 { // Reserve a small bit of memory within the loaded maps unordered map in case multiple maps are loaded into memory at once.
 	loadedMaps.reserve(4ui64);
 }
 
 bool LevelScene::OnUserCreate() {
-	CREATE_OBJECT(OBJ_PLAYER, 100.0f, 100.0f);
+	playerID = CREATE_OBJECT(OBJ_PLAYER, 100.0f, 100.0f);
+	testEnemyID = CREATE_OBJECT(OBJ_TEST_ENEMY, 180.0f, 180.0f);
 	return true;
 }
 
@@ -30,6 +32,16 @@ bool LevelScene::OnUserDestroy() {
 }
 
 bool LevelScene::OnUserUpdate() {
+	Object* _player = GET_SINGLETON(ObjectManager)->GetObjectRef(playerID);
+	if (!_player) { return false; }
+
+	Object* _enemy = GET_SINGLETON(ObjectManager)->GetObjectRef(testEnemyID);
+	if (!_enemy) { return false; }
+
+	if (_player->boundingBox.BoxCollision(_enemy->boundingBox)) {
+		LOG_TRACE("COLLISION");
+	}
+
 	return true;
 }
 

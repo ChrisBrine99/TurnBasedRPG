@@ -11,8 +11,8 @@
 #define TILE_INDEX_UNDEFINED			0xFFFFFFFFui32
 
 struct Tile {
-	uint32_t index;
-	uint32_t flags;
+	uint32_t	index;
+	uint32_t	flags;
 };
 
 #endif

@@ -153,6 +153,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\object\dynamic\enemy\EnemyObject.cpp" />
+    <ClCompile Include="src\object\dynamic\enemy\ObjTestEnemy.cpp" />
     <ClCompile Include="src\struct\object\AnimationInstance.cpp" />
     <ClCompile Include="src\ui\battle\PostBattleUI.cpp" />
     <ClCompile Include="src\scene\LevelScene.cpp" />
@@ -161,7 +163,10 @@
     <ClCompile Include="src\struct\character\BaseCharacter.cpp" />
     <ClCompile Include="src\struct\character\PlayerCharacter.cpp" />
     <ClCompile Include="src\ui\battle\BattleUI.cpp" />
+    <ClInclude Include="src\object\dynamic\enemy\EnemyObject.hpp" />
+    <ClInclude Include="src\object\dynamic\enemy\ObjTestEnemy.hpp" />
     <ClInclude Include="src\struct\object\AnimationInstance.hpp" />
+    <ClInclude Include="src\struct\object\BoundingBox.hpp" />
     <ClInclude Include="src\ui\battle\PostBattleUI.hpp" />
     <ClInclude Include="src\scene\LevelScene.hpp" />
     <ClInclude Include="src\struct\level\Map.hpp" />

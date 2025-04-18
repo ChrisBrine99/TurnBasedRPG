@@ -33,8 +33,9 @@
 #define FLAG_OBJ_ACTIVE					0x00000008ui32
 #define FLAG_OBJ_VISIBLE				0x00000010ui32
 #define FLAG_OBJ_ANIMATION_END			0x00000020ui32
-#define FLAG_OBJ_SOLID					0x00000040ui32
-#define FLAG_OBJ_COLLIDE_WITH_WORLD		0x00000080ui32
+#define FLAG_OBJ_BOUNDING_BOX			0x00000040ui32
+#define FLAG_OBJ_SOLID					0x00000080ui32
+#define FLAG_OBJ_COLLIDE_WITH_WORLD		0x00000100ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for simplifying the typing required to check for an object's flag (within that object itself) bit to see if it is set to 0	//
@@ -47,6 +48,7 @@
 #define OBJ_IS_ACTIVE					(flags & FLAG_OBJ_ACTIVE)
 #define OBJ_IS_VISIBLE					(flags & FLAG_OBJ_VISIBLE) && OBJ_IS_ACTIVE
 #define OBJ_DID_ANIMATION_END			(flags & FLAG_OBJ_ANIMATION_END)
+#define OBJ_HAS_BOUNDING_BOX			(flags & FLAG_OBJ_BOUNDING_BOX)
 #define OBJ_IS_SOLID					(flags & FLAG_OBJ_SOLID)
 #define OBJ_CAN_COLLIDE_WITH_WORLD		(flags & FLAG_OBJ_COLLIDE_WITH_WORLD)
 
@@ -55,7 +57,7 @@
 //	on a per-dynamic object basis as required.																							//
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
-#define FLAG_DOBJ_HOSTILE				0x00000080ui32
+#define FLAG_DOBJ_HOSTILE				0x00000200ui32
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Defines for simplifying the typing required to check for a dynamic object's flag (within that object itself) bit to see if it is	//
@@ -95,5 +97,6 @@
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 
 #define OBJ_PLAYER						0x0000ui16
+#define OBJ_TEST_ENEMY					0x0001ui16
 
 #endif

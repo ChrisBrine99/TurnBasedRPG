@@ -23,6 +23,7 @@ public: // Main Engine/Engine Extension Function Declarations
 
 public: // Publicly Accessible Object Management Function Declarations
 	size_t AddObject(uint16_t _index, float_t _x, float_t _y);
+	Object* GetObjectRef(size_t _id);
 	void RemoveObject(size_t _id);
 
 private: // Hidden Object Management Function Declarations

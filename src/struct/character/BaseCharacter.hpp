@@ -6,6 +6,7 @@
 #include "../../utility/DataMacros.hpp"
 #include "../../utility/UtilityFunctions.hpp"
 
+#include <algorithm>
 #include <array>
 #include <string>
 #include <vector>
@@ -49,28 +50,21 @@ public: // Publicly Accessible Utility Function Definitions
 	inline uint8_t GetCurrentStatTotal(uint8_t _index) const {
 		if (_index >= STAT_COUNT) // Invalid indexes are defaulted to a stat value of one.
 			return MINIMUM_STAT_VALUE;
-
-		uint8_t _statValue = uint8_t((statBase[_index] + statBonus[_index]) * statMultiplier[_index]);
-		ValueClamp(_statValue, MINIMUM_STAT_VALUE, MAXIMUM_STAT_VALUE);
-		return _statValue;
+		return std::clamp(uint8_t((statBase[_index] + statBonus[_index]) * statMultiplier[_index]), MINIMUM_STAT_VALUE, MAXIMUM_STAT_VALUE);
 	}
 
 	// Returns the character's current maximum hitpoints; a combination of the base and bonus values added together which are 
 	// then multiplied by whatever the value within "maxHitpointsMultiplier". currently is. This value is then truncated into 
 	// a uint16_t before it is returned as a constant value. The default lowest value is 1 hitpoint for any character.
 	inline uint16_t GetMaxHitpointsTotal() const {
-		uint16_t _maxHitpoints = uint16_t((maxHitpointBase + maxHitpointBonus) * maxHitpointMultiplier);
-		ValueLowerLimit(_maxHitpoints, MINIMUM_HP_AND_MP);
-		return _maxHitpoints;
+		return std::max(uint16_t((maxHitpointBase + maxHitpointBonus) * maxHitpointMultiplier), MINIMUM_HP_AND_MP);
 	}
 
 	// Returns the character's current maximum magicpoints; a combination of the base and bonus values added together which 
 	// are then multiplied by whatever the value within "maxMagicpointsMultiplier". currently is. This value is then truncated 
 	// into a uint16_t before it is returned as a constant value. The default lowest value is 1 magicpoint for any character.
 	inline uint16_t GetMaxMagicpointsTotal() const {
-		uint16_t _maxMagicpoints = uint16_t((maxMagicpointBase + maxMagicpointBonus) * maxMagicpointMultiplier);
-		ValueLowerLimit(_maxMagicpoints, MINIMUM_HP_AND_MP);
-		return _maxMagicpoints;
+		return std::max(uint16_t((maxMagicpointBase + maxMagicpointBonus) * maxMagicpointMultiplier), MINIMUM_HP_AND_MP);
 	}
 
 	// Returns the character's resistance to a given affinity. If will first check to see if there is data found within the
@@ -82,15 +76,8 @@ public: // Publicly Accessible Utility Function Definitions
 				continue; // Skip each index until the desired affinity has been reached.
 
 			uint8_t _resistance = (_data.second & OVERWRITE_RESIST_MASK) >> 4;
-			if (_resistance) { // Clamp the value to be between the valid ranges for affinity effectiveness.
-				ValueClamp(_resistance, EFFECT_REFLECT, EFFECT_BREAK);
-			} else { // If that value happens to return false, the base resistance for the character will be parsed.
-				_resistance = _data.second & BASE_RESIST_MASK;
-				ValueClamp(_resistance, EFFECT_REFLECT, EFFECT_BREAK);
-			}
-
-			// Finally, return whichever of the two values was determined through the checks above.
-			return _resistance;
+			if (_resistance) { return std::clamp(_resistance, EFFECT_REFLECT, EFFECT_BREAK); } 
+			else { return std::clamp(uint8_t(_data.second & BASE_RESIST_MASK), EFFECT_REFLECT, EFFECT_BREAK); }
 		}
 		return EFFECT_NORMAL;
 	}

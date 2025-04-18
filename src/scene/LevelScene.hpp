@@ -32,6 +32,9 @@ private: // Hidden Member Variable Declarations
 	uint16_t	curMapID;
 	uint16_t	nextMapID;
 	uint16_t	lastMapID;
+
+	size_t playerID;
+	size_t testEnemyID;
 };
 
 #endif

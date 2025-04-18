@@ -3,7 +3,6 @@
 
 #include "DynamicObject.hpp"
 
-
 #define ANMINST_TEST					0x0000ui16
 
 class ObjPlayer : public DynamicObject {

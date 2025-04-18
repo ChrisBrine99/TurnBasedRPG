@@ -16,8 +16,8 @@ SceneManager::SceneManager() :
 {}
 
 bool SceneManager::OnUserCreate() {
-	LoadScene(new BattleScene(), BATTLE_SCENE_INDEX, true);
-	//LoadScene(new LevelScene(), LEVEL_SCENE_INDEX, true);
+	//LoadScene(new BattleScene(), BATTLE_SCENE_INDEX, true);
+	LoadScene(new LevelScene(), LEVEL_SCENE_INDEX, true);
 	return !(curScene == nullptr);
 }
 

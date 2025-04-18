@@ -1,6 +1,7 @@
 #include "ObjectManager.hpp"
 INIT_SINGLETON_CPP(ObjectManager)
 
+#include "../object/dynamic/enemy/ObjTestEnemy.hpp"
 #include "../object/dynamic/ObjPlayer.hpp"
 #include "../singleton/EngineCore.hpp"
 #include "../utility/Logger.hpp"
@@ -97,6 +98,12 @@ size_t ObjectManager::AddObject(uint16_t _index, float_t _x, float_t _y) {
 	return _objectID;
 }
 
+Object* ObjectManager::GetObjectRef(size_t _id) {
+	if (instances.find(_id) == instances.end())
+		return nullptr;
+	return instances[_id];
+}
+
 void ObjectManager::RemoveObject(size_t _id) {
 	if (instances.find(_id) == instances.end() && instances[_id]->CanDestroyObject())
 		return;
@@ -109,6 +116,7 @@ void ObjectManager::RemoveObject(size_t _id) {
 Object* ObjectManager::CreateObjectFromIndex(uint16_t _index, size_t _id, float_t _x, float_t _y) {
 	switch (_index) {
 	case OBJ_PLAYER:				return new ObjPlayer(_x, _y, _index, _id);
+	case OBJ_TEST_ENEMY:			return new ObjTestEnemy(_x, _y, _index, _id);
 	}
 
 	return nullptr;
