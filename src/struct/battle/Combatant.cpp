@@ -1,4 +1,5 @@
 #include "Combatant.hpp"
+#include "../battle/Skill.hpp"
 
 Combatant::Combatant() :
 	level(1ui8),
@@ -18,7 +19,7 @@ Combatant::Combatant() :
 	statModifiers(0ui16),
 	character(nullptr),
 	resistances(std::array<Affinity, MAIN_AFFINITY_COUNT>()),
-	basicAttack(SKL_INVALID) 
+	basicAttack(nullptr) 
 {
 	stats.fill(1ui8); // Populate the array with default values of 1 for each stat.
 	activeSkills.reserve(PLAYER_SKILL_LIMIT); // Reserve at least enough memory to store the maximum number of skills a player character can use in battle.
@@ -65,7 +66,7 @@ void Combatant::ActivateCombatant(BaseCharacter* _character) {
 		resistances[i] = std::make_pair(_affinity, _character->GetResistance(_affinity));
 	}
 
-	// Finally, copy over the ID value for the character's basic attack.
+	// Finally, copy over the pointer for the character's basic attack.
 	basicAttack = _character->basicAttack;
 }
 

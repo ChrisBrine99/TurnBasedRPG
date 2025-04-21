@@ -342,7 +342,7 @@ void BattleScene::ExecuteSkill(Skill* _skill) {
 		return;
 	}
 
-	if (_skill->id < SKL_ID_BOUNDARY) { battleUI->CreateSkillNameText(_skill->name); }
+	if (_skill->id != SKL_BASIC_ATTACK) { battleUI->CreateSkillNameText(_skill->name); }
 	else { battleUI->CreateSkillNameText("Attack"); }
 	LOG_TRACE("Executing skill...");
 

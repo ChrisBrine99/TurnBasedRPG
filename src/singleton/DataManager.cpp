@@ -33,8 +33,16 @@ bool DataManager::OnUserDestroy() {
 }
 
 bool DataManager::OnBeforeUserCreate() {
+	uint16_t _id = 0ui16;
+	json _skills = json::parse(std::ifstream("res/data/skills.json"));
+	for (auto& _skill : _skills) {
+		if (_skill.is_null())
+			continue;
+		LoadSkillData(_id++, _skill);
+	}
+	_skills.clear();
+
 	characterData	= json::parse(std::ifstream("res/data/characters.json"));
-	skillData		= json::parse(std::ifstream("res/data/skills.json"));
 	encounterData	= json::parse(std::ifstream("res/data/encounters.json"));
 	animationData	= json::parse(std::ifstream("res/data/animations.json"));
 
@@ -59,7 +67,7 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 		json& _data = characterData[KEY_FRIENDLIES][_idString];
 		if (_data.is_null())
 			return nullptr;
-		PlayerCharacter* _newPlayerChar = new PlayerCharacter();
+		PlayerCharacter* _newPlayerChar = new PlayerCharacter(_id);
 
 		// Set the proper ID value to be occupied by this new player character instance and then begin loading in the data
 		// that is shared between both enemies and players.
@@ -74,7 +82,6 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 		_newPlayerChar->knownSkills.reserve(_newPlayerChar->knownSkills.size() + _knownSkills.size());
 		for (size_t i = 0ui64; i < _knownSkills.size(); i++) {
 			_skillID = _knownSkills[i];
-			LOG_ASSERT(LoadSkillData(_skillID));
 			_newPlayerChar->knownSkills.push_back(_skillID);
 		}
 
@@ -100,7 +107,7 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 		return nullptr;
 	
 	// Do the same as above, but for an enemy character that is being added instead of a player one.
-	EnemyCharacter* _newEnemyChar = new EnemyCharacter();
+	EnemyCharacter* _newEnemyChar = new EnemyCharacter(_id);
 	ADD_DATA(characters, _id, _newEnemyChar);
 	LoadSharedCharacterData(_id, _data);
 
@@ -113,10 +120,6 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 	_newEnemyChar->curHitpoints			= _newEnemyChar->GetMaxHitpointsTotal();
 	_newEnemyChar->maxMagicpointBase	= uint16_t(_data[KEY_MAXIMUM_MP]);
 	_newEnemyChar->curMagicpoints		= _newEnemyChar->GetMaxMagicpointsTotal();
-
-	// Another element unique to an enemy is a dedicated basic attack, which is set in the same way the above elements were.
-	_newEnemyChar->basicAttack			= uint16_t(_data[KEY_BASIC_ATTACK]);
-	LOG_ASSERT(LoadSkillData(_newEnemyChar->basicAttack)); // Make sure to load in the skill so it actually exists within the data structure.
 
 	// Copy over the experience and money rewards upon the defeat of the enemy in battle.
 	_newEnemyChar->expReward			= uint16_t(_data[KEY_EXP_REWARD]);
@@ -134,33 +137,36 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 	return _newEnemyChar;
 }
 
-Skill* DataManager::LoadSkillData(uint16_t _id) {
-	// Don't attempt to load in a skill that already exists. Simply return the existing skill's pointer.
-	if (skills.find(_id) != skills.end())
-		return skills[_id];
-
-	// Don't try loading in a skill if the relevant data couldn't be retrieved at the specified ID.
-	json& _data = skillData[std::to_string(_id)];
-	if (_data.is_null())
-		return nullptr;
-
-	Skill* _newSkill		= new Skill();
-	_newSkill->name			= _data[KEY_SKILL_NAME];
-	_newSkill->description	= _data[KEY_SKILL_INFO];
-	_newSkill->id			= _id;
-	_newSkill->basePower	= _data[KEY_SKILL_POWER];
-	_newSkill->affinity		= _data[KEY_SKILL_TYPE];
-	_newSkill->accuracy		= _data[KEY_SKILL_ACCURACY];
-	_newSkill->hpCost		= _data[KEY_SKILL_HP_COST];
-	_newSkill->mpCost		= _data[KEY_SKILL_MP_COST];
-	_newSkill->targeting	= _data[KEY_SKILL_TARGET];
-	_newSkill->hitCount		= _data[KEY_SKILL_MINIMUM_HITS] | (_data[KEY_SKILL_MAXIMUM_HITS] << 4);
-	_newSkill->addedEffects = _data[KEY_SKILL_EFFECTS];
-	_newSkill->effectChance = _data[KEY_SKILL_EFFECT_CHANCE];
-	SetSkillUseFunction(_newSkill, _data[KEY_SKILL_USE_FUNCTION]);
+void DataManager::LoadSkillData(uint16_t _id, const json& _data) {
+	Skill* _newSkill			= new Skill();
+	_newSkill->name				= _data[SKILL_NAME];
+	_newSkill->id				= _id;
+	_newSkill->affinity			= _data[SKILL_AFFINITY];
+	_newSkill->targeting		= _data[SKILL_TARGET];
+	_newSkill->hpCost			= _data[SKILL_HPCOST];
+	_newSkill->mpCost			= _data[SKILL_MPCOST];
+	_newSkill->basePower		= _data[SKILL_POWER];
+	_newSkill->accuracy			= _data[SKILL_ACCURACY];
+	_newSkill->hitCount			= _data[SKILL_NUMHITS];
+	_newSkill->critChance		= _data[SKILL_CRIT_CHANCE];
+	_newSkill->critBonus		= _data[SKILL_CRIT_BONUS];
+	// TODO -- Add recoil power section to skills.json for each skill
+	_newSkill->addedEffects		= { 
+		_data[SKILL_EFFECT1], 
+		_data[SKILL_EFFECT2], 
+		_data[SKILL_EFFECT3], 
+		_data[SKILL_EFFECT4] 
+	};
+	_newSkill->effectChance		= _data[SKILL_EFFECT_CHANCE];
+	_newSkill->flags			= _data[SKILL_FLAGS];
+	_newSkill->buffAmount		= _data[SKILL_BUFF_AMOUNT];
+	_newSkill->buffDuration		= _data[SKILL_BUFF_DURATION];
+	_newSkill->dmgMultiplier	= _data[SKILL_DAMAGE_MULT];
+	_newSkill->healPower		= _data[SKILL_HEAL_POWER];
+	_newSkill->healFlags		= _data[SKILL_HEAL_FLAGS];
+	SetSkillUseFunction(_newSkill, _data[SKILL_USE_ID]);
 
 	ADD_DATA(skills, _id, _newSkill);
-	return _newSkill;
 }
 
 olc::Sprite* DataManager::LoadSprite(uint16_t _id, const std::string& _filepath) {
@@ -246,7 +252,6 @@ inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
 	uint16_t _skillID	= CHR_INVALID;
 	for (size_t i = 0ui64; i < _length; i++) {
 		_skillID = _innerData[i];
-		LOG_ASSERT(LoadSkillData(_skillID));
 		_character->activeSkills.push_back(_skillID);
 	}
 
@@ -274,6 +279,7 @@ inline void DataManager::SetSkillUseFunction(Skill* _skill, uint16_t _id) {
 	case SKILL_MAGICAL_GENERIC:			_skill->useFunction = &Skill::UseMagicSkillGeneric;		return;
 	case SKILL_MAGICAL_PLUS_EFFECT:		_skill->useFunction = &Skill::UseMagicSkillPlusEffect;	return;
 	case SKILL_PHYSMAG_GENERIC:			_skill->useFunction = &Skill::UseVoidSkillGeneric;		return;
+	case SKILL_HEALING_GENERIC:			_skill->useFunction = &Skill::UseHealingSkillGeneric;	return;
 	}
 }
 

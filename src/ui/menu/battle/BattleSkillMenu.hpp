@@ -41,12 +41,12 @@ private: // Hidden Utility Function Declarations
 
 	// Returns if the combatant has enough hitpoints to cast the skill in question. The value has to be GREATER than their
 	// current hitpoints since a skill cannot leave the caster with less than one hitpoints after using the skill.
-	inline bool SkillHpCostCheck(Combatant* _curCombatant, uint8_t _cost) {
+	inline bool SkillHpCostCheck(Combatant* _curCombatant, uint16_t _cost) {
 		return (_curCombatant->curHitpoints > _cost);
 	}
 
 	// Returns if the combatant has the same amount of or more magicpoints than the skill's required magicpoints or not.
-	inline bool SkillMpCostCheck(Combatant* _curCombatant, uint8_t _cost) {
+	inline bool SkillMpCostCheck(Combatant* _curCombatant, uint16_t _cost) {
 		return (_curCombatant->curMagicpoints >= _cost);
 	}
 

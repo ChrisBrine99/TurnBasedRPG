@@ -2,14 +2,15 @@
 
 #include "../../singleton/DataManager.hpp"
 
-PlayerCharacter::PlayerCharacter() :
-	BaseCharacter(),
+PlayerCharacter::PlayerCharacter(uint16_t _id) :
+	BaseCharacter(_id),
 	curExperience(0ui32),
 	nextLevelExperience(0Ui32),
 	knownSkills() 
-{ // By default, all player characters will utilize the same basic attack, which will then be altered by their equipped weapon.
-	GET_SINGLETON(DataManager)->LoadSkillData(SKL_PLAYER_BASIC_ATK_0);
-	basicAttack = SKL_PLAYER_BASIC_ATK_0;
+{}
+
+PlayerCharacter::~PlayerCharacter() {
+	knownSkills.clear();
 }
 
 void PlayerCharacter::RewardExperience(uint32_t _amount) {

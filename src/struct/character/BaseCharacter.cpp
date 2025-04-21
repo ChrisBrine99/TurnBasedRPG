@@ -1,4 +1,5 @@
 #include "BaseCharacter.hpp"
+#include "../battle/Skill.hpp"
 
 std::array<uint8_t, MAIN_AFFINITY_COUNT> BaseCharacter::resistIndex = {
 	AFFINITY_PHYSICAL,
@@ -18,7 +19,7 @@ std::array<uint8_t, MAIN_AFFINITY_COUNT> BaseCharacter::resistIndex = {
 	AFFINITY_CONFUSION
 };
 
-BaseCharacter::BaseCharacter() :
+BaseCharacter::BaseCharacter(uint16_t _id) :
 	level(0ui8),
 	statBase({ 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8 }),
 	statBonus({ 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8 }),
@@ -32,9 +33,38 @@ BaseCharacter::BaseCharacter() :
 	maxMagicpointBonus(0i16),
 	maxMagicpointMultiplier(1.0f),
 	activeSkills(),
-	basicAttack(SKL_INVALID)
-{ // Initialize default resistance values and also reserve a small chunk of memory for the character's pool of usable skills.
+	id(_id),
+	basicAttack(nullptr)
+{ // Initialize default resistance values and also reserve a small chunk of memory for the character's pool of usable skills. Also create basic attack skill if it doesn't exist.
 	for (size_t i = 0ui64; i < MAIN_AFFINITY_COUNT; i++)
 		resistances[i] = std::make_pair(resistIndex[i], EFFECT_NORMAL);
+
 	activeSkills.reserve(PLAYER_SKILL_LIMIT);
+	SetBasicAttackAttributes(_id);
+}
+
+BaseCharacter::~BaseCharacter() {
+	name.clear();
+	activeSkills.clear();
+
+	if (basicAttack) { delete basicAttack, basicAttack = nullptr; }
+}
+
+void BaseCharacter::SetBasicAttackAttributes(uint16_t _id) {
+	if (basicAttack)
+		return;
+	basicAttack = new Skill();
+
+	switch (_id) {
+	default: // General basic attack for all characters.
+		basicAttack->id				= SKL_BASIC_ATTACK;
+		basicAttack->affinity		= AFFINITY_PHYSICAL;
+		basicAttack->targeting		= TARGET_SINGLE_ENEMY;
+		basicAttack->basePower		= 20ui8;
+		basicAttack->accuracy		= 240ui8;	// ~ 94.12%
+		basicAttack->critChance		= 16ui8;	// ~  6.27%
+		basicAttack->hitCount		= 17ui8;	// 00010001 in binary AKA a single hit
+		basicAttack->useFunction	= &Skill::UsePhysicalSkillGeneric;
+		break;
+	}
 }

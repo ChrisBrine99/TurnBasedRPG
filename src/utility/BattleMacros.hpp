@@ -176,8 +176,9 @@
 
 #define SKILL_PHYSICAL_GENERIC			0x0000ui16
 #define SKILL_MAGICAL_GENERIC			0x0100ui16
-#define SKILL_MAGICAL_PLUS_EFFECT		0x0200ui16
-#define SKILL_PHYSMAG_GENERIC			0x0300ui16
+#define SKILL_MAGICAL_PLUS_EFFECT		0x0101ui16
+#define SKILL_PHYSMAG_GENERIC			0x0200ui16
+#define SKILL_HEALING_GENERIC			0x0300ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that determine the function that an enemy will use during its turn in a given battle.										//

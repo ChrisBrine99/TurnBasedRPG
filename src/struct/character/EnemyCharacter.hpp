@@ -15,9 +15,10 @@ struct EnemyCharacter : public BaseCharacter {
 	void (EnemyCharacter::*battleAI)(BattleScene*);
 
 public: // Constructor/Destructor Declarations
-	EnemyCharacter();
+	EnemyCharacter() = delete;
+	EnemyCharacter(uint16_t _id);
 	EnemyCharacter(const EnemyCharacter& _other) = delete;
-	~EnemyCharacter() = default;
+	~EnemyCharacter();
 
 public: // Utility Function Definitions
 

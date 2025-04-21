@@ -32,7 +32,7 @@ struct Combatant {
 	std::array<Affinity, MAIN_AFFINITY_COUNT> 
 								resistances;
 
-	uint16_t					basicAttack;
+	Skill*						basicAttack;
 
 public: // Constructor/Destructor Declarations
 	Combatant();

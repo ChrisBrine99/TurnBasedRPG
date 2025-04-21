@@ -10,23 +10,28 @@
 #include <iostream>
 
 Skill::Skill() :
-	name("Unknown"),
-	description("N/A"),
+	name(""),
 	id(SKL_INVALID),
-	basePower(0ui16),
 	affinity(AFFINITY_INVALID),
-	accuracy(0ui8),
-	hpCost(0ui8),
-	mpCost(0ui8),
-	hitCount(0ui8),
 	targeting(TARGET_INVALID),
-	addedEffects(),
-	effectChance(),
-	useFunction(nullptr) 
-{ // Simply populates both arrays with default values of 255 and 0, respectively.
-	addedEffects.fill(AILMENT_INVALID);
-	effectChance.fill(0ui8);
-}
+	basePower(0ui16),
+	accuracy(0ui8),
+	hpCost(0ui16),
+	mpCost(0ui16),
+	hitCount(0ui8),
+	critChance(0ui8),
+	critBonus(0ui8),
+	recoilPower(0ui8),
+	addedEffects({ AILMENT_INVALID, AILMENT_INVALID, AILMENT_INVALID, AILMENT_INVALID }),
+	effectChance(0ui8),
+	flags(0ui16),
+	buffAmount(0x36DBui16),
+	buffDuration(0ui8),
+	dmgMultiplier(0ui8),
+	healPower(0ui16),
+	healFlags(0ui16),
+	useFunction(nullptr)
+{}
 
 void Skill::UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target) {
 	if (!AccuracyCheck(_scene, _target))
@@ -46,14 +51,22 @@ void Skill::UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target) {
 	VoidDamageCalculation(_scene, _target);
 }
 
+void Skill::UseHealingSkillGeneric(BattleScene* _scene, Combatant* _target) {
+	float_t _healAmount = float_t(healPower);
+	HealingEffect(_scene, (_healAmount * 0.5f) + (_healAmount * _scene->curCombatant->stats[STAT_MAGIC] * 0.25f), _target);
+}
+
 void Skill::UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target) {
 	if (!AccuracyCheck(_scene, _target))
 		return;
-	AdditionalEffectCheck(_target); // Attempt to apply one of the skill's possible status ailment on top of damaging the target.
+	AdditionalEffectCheck(_target); // Attempt to apply one of the skill's possible status ailments on top of damaging the target.
 	MagicDamageCalculation(_scene, _target);
 }
 
 bool Skill::AccuracyCheck(BattleScene* _scene, Combatant* _target) const {
+	if (_scene->curCombatant == _target)
+		return true; // Skills used on self (Or recoiled back to self) ignore accuracy checks.
+
 	uint16_t _accuracyBuff	= uint16_t(_scene->curCombatant->GetCurrentStatModifier(ACCURACY_MODIFIER) - _target->GetCurrentStatModifier(EVASION_MODIFIER));
 	uint16_t _accuracy		= accuracy;
 
@@ -68,16 +81,20 @@ bool Skill::AccuracyCheck(BattleScene* _scene, Combatant* _target) const {
 	return _attackHit;
 }
 
-void Skill::AdditionalEffectCheck(Combatant* _target) {
-	for (size_t i = 0ui64; i < SKILL_MAX_UNIQUE_EFFECTS; i++) {
-		if (addedEffects[i] == AILMENT_INVALID)
-			continue;
+bool Skill::CriticalCheck(BattleScene* _scene, Combatant* _target) const {
+	
+}
 
-		// The earlier effects in the list will always have higher priority than the effects at the end. However, the later effects
-		// will always be considered if the higher priority effects fail to successfully affect the target(s).
-		if (effectChance[i] >= uint8_t(std::rand() % 0xFFui8) && _target->InflictStatusAilment(addedEffects[i]))
-			return;
-	}
+void Skill::AdditionalEffectCheck(Combatant* _target) {
+	//for (size_t i = 0ui64; i < SKILL_MAX_UNIQUE_EFFECTS; i++) {
+	//	if (addedEffects[i] == AILMENT_INVALID)
+	//		continue;
+	//
+	//	// The earlier effects in the list will always have higher priority than the effects at the end. However, the later effects
+	//	// will always be considered if the higher priority effects fail to successfully affect the target(s).
+	//	if (effectChance[i] >= uint8_t(std::rand() % 0xFFui8) && _target->InflictStatusAilment(addedEffects[i]))
+	//		return;
+	//}
 }
 
 void Skill::PhysicalDamageCalculation(BattleScene* _scene, Combatant* _target) {
@@ -175,4 +192,14 @@ void Skill::ResistanceEffect(BattleScene* _scene, float_t _damage, Combatant* _t
 
 	_battleUI->uiElements[_index]->ShowElement(60.0f);
 	_scene->UpdateHitpoints(_target, _finalDamage);
+}
+
+void Skill::HealingEffect(BattleScene* _scene, float_t _healAmount, Combatant* _target) const {
+	int16_t _finalHeal		= int16_t(_healAmount);
+	BattleUI* _battleUI		= _scene->battleUI;
+	size_t _index			= _scene->targets[_scene->curSkillTarget];
+	olc::vf2d _position		= { BattleScene::positions[_index].first + 16.0f, BattleScene::positions[_index].second + 16.0f };
+
+	_battleUI->CreateText(std::to_string(_finalHeal), 0.0f, 60.0f, COLOR_LIGHT_GREEN, _position.x, _position.y);
+	_scene->UpdateHitpoints(_target, -_healAmount);
 }

@@ -88,34 +88,28 @@ void BattleSkillMenu::GenerateMenuOptions(Combatant* _curCombatant) {
 	DataManager* _manager = GET_SINGLETON(DataManager);
 	Skill* _skill = nullptr;
 
-	_skill = _manager->GetSkill(_curCombatant->basicAttack);
-	if (_skill) { // Add the character's basic attack as an option to use.
-		AddOption(0, 0, "Attack", _skill->description);
-		skillIDs.push_back(_curCombatant->basicAttack);
-	}
+	// Add the character's basic attack as an option to use.
+	AddOption(0, 0, "Attack");
 
 	for (uint16_t _id : _curCombatant->activeSkills) {
 		_skill = _manager->GetSkill(_id);
-		AddOption(0, 0, _skill->name, _skill->description);
+		AddOption(0, 0, _skill->name);
 		skillIDs.push_back(_id);
 
-		// Indexes 0x00 to 0x0F are all considered physical-type affinities and will display their HP costs.
-		if (_skill->affinity < AFFINITY_FIRE) {
+		if (_skill->hpCost > 0ui16 && _skill->mpCost == 0ui16) {
 			sSkillCost.push_back("HP " + std::to_string(_skill->hpCost));
 			continue; // Skip over the remaining check
 		}
 
-		// Indexes 0x10 to 0x2F are all considered magic-type affinities and will display their MP costs.
-		if (_skill->affinity < AFFINITY_VOID) {
+		if (_skill->hpCost == 0ui16 && _skill->mpCost > 0ui16) {
 			sSkillCost.push_back("MP " + std::to_string(_skill->mpCost));
 			continue;
 		}
 
-		// All indexes above and including 0x80 are considered equivalent to "void" type skills and will display both HP and MP costs.
 		sSkillCost.push_back("HP " + std::to_string(_skill->hpCost) + " MP " + std::to_string(_skill->mpCost));
 	}
 
-	AddOption(0, 0, "Back", "Close the skill selection menu.");
+	AddOption(0, 0, "Back");
 }
 
 void BattleSkillMenu::PrepareForActivation(uint8_t _state, BattleMainMenu* _bMainMenu) {
@@ -147,7 +141,13 @@ bool BattleSkillMenu::StateProcessSelection() {
 		return true;
 	}
 
-	Skill* _skill = GET_SINGLETON(DataManager)->GetSkill(skillIDs[size_t(selOption)]);
+	Skill* _skill = nullptr;
+	if (selOption != OPTION_SKLMENU_ATTACK) { // Get the skill from the provided ID.
+		_skill = GET_SINGLETON(DataManager)->GetSkill(skillIDs[size_t(selOption) - 1ui64]);
+	} else { // Isn't a normal skill; copy pointer from combatant instead of checking the data manager.
+		_skill = curCombatant->basicAttack;
+	}
+
 	if (_skill == nullptr) { // Atempted to use a non-existent skill; deactive menu and return false.
 		PrepareForDeactivation();
 		return false;

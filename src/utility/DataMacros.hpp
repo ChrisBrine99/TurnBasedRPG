@@ -52,22 +52,31 @@
 #define KEY_KNOWN_SKILLS				"kSkills"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Macros that hold key values for each element found within a skill's raw JSON data.													//
+//	Macros that hold key values for each element found within a skill's data.															//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define KEY_SKILL_NAME					"name"
-#define KEY_SKILL_INFO					"info"
-#define KEY_SKILL_TYPE					"type"
-#define KEY_SKILL_TARGET				"target"
-#define KEY_SKILL_HP_COST				"hCost"
-#define KEY_SKILL_MP_COST				"mCost"
-#define KEY_SKILL_POWER					"power"
-#define KEY_SKILL_ACCURACY				"acc"
-#define KEY_SKILL_MINIMUM_HITS			"minHit"
-#define KEY_SKILL_MAXIMUM_HITS			"maxHit"
-#define KEY_SKILL_EFFECTS				"effects"
-#define KEY_SKILL_EFFECT_CHANCE			"chance"
-#define KEY_SKILL_USE_FUNCTION			"use"
+#define SKILL_NAME						"name"
+#define SKILL_AFFINITY					"affinity"
+#define SKILL_TARGET					"target"
+#define SKILL_HPCOST					"hp cost"
+#define SKILL_MPCOST					"mp cost"
+#define SKILL_POWER						"power"
+#define SKILL_ACCURACY					"accuracy"
+#define SKILL_NUMHITS					"no. hits"
+#define SKILL_CRIT_CHANCE				"crit chance"
+#define SKILL_CRIT_BONUS				"crit bonus"
+#define SKILL_EFFECT1					"effect 1"
+#define SKILL_EFFECT2					"effect 2"
+#define SKILL_EFFECT3					"effect 3"
+#define SKILL_EFFECT4					"effect 4"
+#define SKILL_EFFECT_CHANCE				"eff chance"
+#define SKILL_FLAGS						"flags"
+#define SKILL_BUFF_AMOUNT				"buff amount"
+#define SKILL_BUFF_DURATION				"buff duration"
+#define SKILL_HEAL_POWER				"heal power"
+#define SKILL_HEAL_FLAGS				"heal flags"
+#define SKILL_DAMAGE_MULT				"dmg multiplier"
+#define SKILL_USE_ID					"use ID"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Macros that hold key values for each element found within an encounter's raw JSON data.												//
@@ -101,19 +110,6 @@
 #define CHR_TEST_PLAYER_2				0xF002ui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Defines that represent the unique ID values for each skill within the game.															//
-// ------------------------------------------------------------------------------------------------------------------------------------	//
-
-// --- Master list of skill IDs --- //
-#define SKL_IGNIA						0x0000ui16
-#define SKL_POLIGNIA					0x0010ui16
-// --- The boundary value between what is considered a standard skill and a basic attack --- //
-#define SKL_ID_BOUNDARY					0xF000ui16
-// --- Master list of basic attack IDs --- //
-#define SKL_PLAYER_BASIC_ATK_0			0xF001ui16
-#define SKL_ENEMY_BASIC_ATK_0			0xF002ui16
-
-// ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Defines that represent the unique ID values for each spritesheet within the game.													//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
@@ -130,6 +126,12 @@
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
 #define ANM_TEST						0x0000ui16
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Define that is the value for the IDs of ALL basic attacks within the game, since they aren't stored/managed by the DataManager.		//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define SKL_BASIC_ATTACK				0xFFFEui16
 
 // ------------------------------------------------------------------------------------------------------------------------------------ //
 //	Simple default values that represents an invalid ID within the various data structures in the game. As a result, they must all be	//

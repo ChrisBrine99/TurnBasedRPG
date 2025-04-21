@@ -27,13 +27,14 @@ public: // Main Engine Function Declarations
 
 public: // Accessible Utility Function Declarations
 	BaseCharacter* LoadCharacterData(uint16_t _id);
-	Skill* LoadSkillData(uint16_t _id);
 	olc::Sprite* LoadSprite(uint16_t _id, const std::string& _filepath);
 	Animation* LoadAnimation(uint16_t _id);
 
 private: // Hidden Utility Function Declarations
 	inline void LoadSharedCharacterData(uint16_t _id, json& _data);
 	inline void SetEnemyAIFunction(EnemyCharacter* _enemy, uint16_t _id);
+
+	void LoadSkillData(uint16_t _id, const json& _data);
 	inline void SetSkillUseFunction(Skill* _skill, uint16_t _id);
 
 	template<class T>
@@ -74,7 +75,7 @@ private: // Hidden Member Variable Declarations
 	std::unordered_map<uint16_t, Animation*>		animations;
 
 	json characterData;
-	json skillData;
+	//json skillData;
 	json encounterData;
 	json animationData;
 };

@@ -59,7 +59,7 @@ bool Object::OnUserRender(EngineCore* _engine) {
 		animationRef->animationRef->height
 	);
 
-	_engine->DrawRect(int32_t(x), int32_t(y), boundingBox.width, boundingBox.height);
+	//_engine->DrawRect(int32_t(x), int32_t(y), boundingBox.width, boundingBox.height);
 
 	return true;
 }

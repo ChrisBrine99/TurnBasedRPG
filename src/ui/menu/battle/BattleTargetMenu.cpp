@@ -57,18 +57,22 @@ bool BattleTargetMenu::OnUserRender(EngineCore* _engine) {
 	std::pair<int32_t, int32_t> _positions;
 	size_t _offset = 0ui64;
 
-	if (TGTMENU_CAN_ONLY_CONFIRM) {
+	if (TGTMENU_CAN_ONLY_CONFIRM) { // Display rectangles around all targets since they're all going to be affected.
+		olc::Pixel _color;
 		size_t _length = validTargets.size();
 		for (size_t i = 0ui64; i < _length; i++) {
 			_positions = BattleScene::positions[validTargets[i]];
-			_engine->DrawRect(_positions.first + 8i32, _positions.second + 8i32, 16i32, 16i32, COLOR_LIGHT_YELLOW);
-		}
-		return true;
-	}
 
-	_positions = BattleScene::positions[validTargets[curOption]];
-	_engine->DrawRect( _positions.first + 8i32, _positions.second + 8i32 , 16i32, 16i32, COLOR_LIGHT_YELLOW);
-	_engine->DrawString( optionAnchorX + menuOptions[curOption].xPos, optionAnchorY , menuOptions[curOption].text, COLOR_WHITE);
+			if (i == curOption) { _color = COLOR_LIGHT_YELLOW; }
+			else				{ _color = COLOR_WHITE; }
+
+			_engine->DrawRect(_positions.first + 8i32, _positions.second + 8i32, 16i32, 16i32, _color);
+		}
+	} else { // Only display a rectangle around the highlighted target
+		_positions = BattleScene::positions[validTargets[curOption]];
+		_engine->DrawRect(_positions.first + 8i32, _positions.second + 8i32, 16i32, 16i32, COLOR_LIGHT_YELLOW);
+	}
+	_engine->DrawString(optionAnchorX + menuOptions[curOption].xPos, optionAnchorY, menuOptions[curOption].text, COLOR_WHITE);
 
 	return true;
 }
@@ -91,14 +95,14 @@ void BattleTargetMenu::PrepareForDeactivation() {
 }
 
 void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
-	if (_targeting == TARGET_INVALID && validTargets.size())
+	if (_targeting == TARGET_INVALID)
 		return;
 	validTargets.clear();
 
 	Combatant* _curCombatant	= sceneRef->curCombatant;
 	auto& _combatants			= sceneRef->combatants;
 	bool _shouldSkipCaster		= false;
-	bool _onlyConfirm			= false;
+	size_t _indexOffset			= 0ui64;
 
 	switch (_targeting) {
 	case TARGET_ALL_ENEMY:			// Grab all enemy targets for the user to select from.
@@ -108,17 +112,13 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		[[fallthrough]];
 	case TARGET_SINGLE_ENEMY:
 	case TARGET_SINGLE_ENEMY_SELF:
-		_onlyConfirm = TGTMENU_CAN_ONLY_CONFIRM;
+		_indexOffset = BATTLE_MAX_PARTY_SIZE;
 		for (size_t i = BATTLE_MAX_PARTY_SIZE; i < BATTLE_TOTAL_COMBATANTS; i++) {
-			if (_combatants[i]->isActive) {
-				if (!_onlyConfirm) {
-					std::string_view _name	= _combatants[i]->character->name;
-					int32_t _xOffset		= -8i32 * int32_t(_name.size()) / 2i32;
-					menuOptions[i - BATTLE_MAX_PARTY_SIZE].text = _name;
-					menuOptions[i - BATTLE_MAX_PARTY_SIZE].xPos = _xOffset;
-				}
-				validTargets.push_back(i);
-			}
+			if (!_combatants[i]->isActive)
+				continue;
+			UpdateDisplayedTargetName(i - BATTLE_MAX_PARTY_SIZE, _combatants[_indexOffset]->character->name);
+			validTargets.push_back(i);
+			_indexOffset++;
 		}
 
 		if ((_targeting == TARGET_SINGLE_ENEMY_SELF || _targeting == TARGET_ALL_ENEMY_SELF)) 
@@ -131,19 +131,13 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		[[fallthrough]];
 	case TARGET_SINGLE_ALLY:
 	case TARGET_SINGLE_ALLY_SELF:
-		_shouldSkipCaster	= (_targeting == TARGET_SINGLE_ALLY || _targeting == TARGET_ALL_ALLY);
-		_onlyConfirm		= TGTMENU_CAN_ONLY_CONFIRM;
+		_shouldSkipCaster = (_targeting == TARGET_SINGLE_ALLY || _targeting == TARGET_ALL_ALLY);
 		for (size_t i = 0ui64; i < BATTLE_MAX_PARTY_SIZE; i++) {
 			if (!_combatants[i]->isActive || (_combatants[i] == _curCombatant && _shouldSkipCaster))
 				continue;
-
-			if (!_onlyConfirm) { 
-				std::string_view _name	= _combatants[i]->character->name;
-				int32_t _xOffset		= -8i32 * int32_t(_name.size()) / 2i32;
-				menuOptions[i].text		= _name;
-				menuOptions[i].xPos		= _xOffset;
-			}
+			UpdateDisplayedTargetName(_indexOffset, _combatants[_indexOffset]->character->name);
 			validTargets.push_back(i);
+			_indexOffset++;
 		}
 		break;
 	case TARGET_EVERYONE:			// Skill hits everyone; copy over the entire contents of the turn order.
@@ -151,27 +145,32 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++) {
 			if (!_combatants[i]->isActive || (_combatants[i] == _curCombatant && _targeting != TARGET_EVERYONE_SELF))
 				continue;
+			UpdateDisplayedTargetName(_indexOffset, _combatants[_indexOffset]->character->name);
 			validTargets.push_back(i);
+			_indexOffset++;
 		}
 		flags |= FLAG_TGTMENU_ONLY_CONFIRM;
 		break;
 	}
 }
 
+inline void BattleTargetMenu::UpdateDisplayedTargetName(size_t _index, std::string_view _name) {
+	menuOptions[_index].text = _name;
+	menuOptions[_index].xPos = -8i32 * int32_t(_name.size()) / 2i32;
+}
+
 bool BattleTargetMenu::StateDefault() {
-	if (TGTMENU_CAN_ONLY_CONFIRM) {
-		if (MINPUT_IS_SELECT_PRESSED) {
+	if (MINPUT_IS_SELECT_PRESSED) {
+		if (TGTMENU_CAN_ONLY_CONFIRM) {
 			GET_SINGLETON(MenuManager)->DeactivateAllMenus();
 			flags &= ~FLAG_TGTMENU_ONLY_CONFIRM;
 
 			BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 			_scene->targets.insert(_scene->targets.begin(), validTargets.begin(), validTargets.end());
 			_scene->ExecuteSkill(skillRef);
+			return true;
 		}
-		return true;
-	}
 
-	if (MINPUT_IS_SELECT_PRESSED) {
 		SET_NEXT_STATE(STATE_MENU_PROCESS_SELECTION);
 		selOption = curOption;
 		return true;

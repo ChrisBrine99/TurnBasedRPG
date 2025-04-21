@@ -10,9 +10,10 @@ struct PlayerCharacter : public BaseCharacter {
 	std::vector<uint16_t>			knownSkills;
 
 public: // Constructor/Destructor Declarations
-	PlayerCharacter();
+	PlayerCharacter() = delete;
+	PlayerCharacter(uint16_t _id);
 	PlayerCharacter(const PlayerCharacter& _other) = delete;
-	~PlayerCharacter() = default;
+	~PlayerCharacter();
 
 public: // Publicly Accessible Utilty Function Definitions
 	void RewardExperience(uint32_t _amount);

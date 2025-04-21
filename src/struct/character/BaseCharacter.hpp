@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+struct Skill;
+
 typedef std::pair<uint8_t, uint8_t> Affinity;
 struct BaseCharacter {
 	std::string	name;
@@ -36,12 +38,14 @@ struct BaseCharacter {
 	std::array<Affinity, MAIN_AFFINITY_COUNT>		resistances;
 	static std::array<uint8_t, MAIN_AFFINITY_COUNT> resistIndex;
 
-	uint16_t basicAttack;
+	uint16_t	id;
+	Skill*		basicAttack;
 
 public: // Constructor/Destructor Declarations
-	BaseCharacter();
+	BaseCharacter() = delete;
+	BaseCharacter(uint16_t _id);
 	BaseCharacter(BaseCharacter& _other) = delete;
-	~BaseCharacter() = default;
+	~BaseCharacter();
 
 public: // Publicly Accessible Utility Function Definitions
 
@@ -81,6 +85,9 @@ public: // Publicly Accessible Utility Function Definitions
 		}
 		return EFFECT_NORMAL;
 	}
+
+private: // Hidden Utility Function Declarations
+	void SetBasicAttackAttributes(uint16_t _id);
 };
 
 #endif

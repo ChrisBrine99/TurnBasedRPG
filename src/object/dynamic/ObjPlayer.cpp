@@ -39,7 +39,7 @@ bool ObjPlayer::OnUserCreate() {
 
 	InitBoundingBox(0i32, 0i32, 16i32, 16i32);
 
-	SET_NEXT_STATE(STATE_PLAYER_DEFAULT);
+	//SET_NEXT_STATE(STATE_PLAYER_DEFAULT);
 	flags |= FLAG_OBJ_ACTIVE | FLAG_OBJ_VISIBLE;
 	return true;
 }
