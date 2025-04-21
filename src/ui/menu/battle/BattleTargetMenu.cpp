@@ -3,7 +3,7 @@
 #include "../../../scene/BattleScene.hpp"
 #include "../../../singleton/SceneManager.hpp"
 #include "../../../singleton/MenuManager.hpp"
-#include "../../../struct/Battle/Skill.hpp"
+#include "../../../struct/Battle/ActiveSkill.hpp"
 #include "../../../ui/battle/BattleUI.hpp"
 #include "../../../ui/battle/BattleUIElement.hpp"
 #include "BattleSkillMenu.hpp"
@@ -27,7 +27,7 @@ BattleTargetMenu::BattleTargetMenu() :
 	Menu(),
 	validTargets(),
 	sceneRef(nullptr),
-	skillRef(nullptr)
+	activeSkillRef(nullptr)
 { // Reserve enough memory to store the maximum number of combatants in a battle at any one time.
 	validTargets.reserve(BATTLE_TOTAL_COMBATANTS);
 }
@@ -77,11 +77,11 @@ bool BattleTargetMenu::OnUserRender(EngineCore* _engine) {
 	return true;
 }
 
-void BattleTargetMenu::PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, Skill* _skill) {
+void BattleTargetMenu::PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, ActiveSkill* _skill) {
 	Menu::PrepareForActivation(_state);
 	DetermineValidTargets(_skill->targeting);
-	upperMenu	= _skillMenu;
-	skillRef	= _skill;
+	upperMenu		= _skillMenu;
+	activeSkillRef = _skill;
 }
 
 void BattleTargetMenu::PrepareForDeactivation() {
@@ -167,7 +167,7 @@ bool BattleTargetMenu::StateDefault() {
 
 			BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 			_scene->targets.insert(_scene->targets.begin(), validTargets.begin(), validTargets.end());
-			_scene->ExecuteSkill(skillRef);
+			_scene->ExecuteActiveSkill(activeSkillRef);
 			return true;
 		}
 
@@ -203,7 +203,7 @@ bool BattleTargetMenu::StateProcessSelection() {
 	if (TGTMENU_WILL_TARGET_SELF) { _scene->targets.push_back(_scene->GetCurCombatantIndex()); }
 	_scene->targets.push_back(validTargets[selOption]);
 
-	_scene->ExecuteSkill(skillRef);
+	_scene->ExecuteActiveSkill(activeSkillRef);
 	validTargets.clear();
 	return true;
 }

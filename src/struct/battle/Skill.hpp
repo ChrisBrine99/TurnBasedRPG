@@ -16,27 +16,10 @@ struct Skill {
 	uint16_t			id;				// Unique identifier between 0 and 65,535 that can be used to reference the skill's data outside this struct.
 	uint8_t				affinity;		// Unique identifier that determines what the skill will do when used against an enemy or on an ally.
 	uint8_t				targeting;		// Determines how the skill will affect combatants on the casters side of the field and on the opposite side.
-	uint16_t			hpCost;			// Determines how much HP a skill will consume upon its use.
-	uint16_t			mpCost;			// Determines how much MP a skill will consume upon its use.
-	uint16_t			basePower;		// Value that is put into the damage formula to determine how much damage it will do to a given target.
-	uint8_t				accuracy;		// The value from 0-255 will represent the accracy of the attack, which determines the percentage out of 100 to hit a target.
-	uint8_t				hitCount;		// Top 4 bits hold the maximum number of hits from 0-15; bottom holds the minimum amount from 0-15.
-	uint8_t				critChance;		// The percentage chance out of 255 that a skill has to inflict a critial hit on the target(s).
-	uint8_t				critBonus;		// Percentage bonus to apply on top of the standard 75% bonus critical hits have to a skill's damage.
-	uint8_t				recoilPower;	// The amount of hp the caster will lost when using this skill (The value is between 0 and 255; 255 being the target's total maximum hp).
-	std::array<uint8_t, SKILL_MAX_UNIQUE_EFFECTS>
-						addedEffects;	// Stores up to four 8-bit integers that are equal to various status ailments that a skill can apply onto a target when used.
-	uint8_t				effectChance;	// Stores a value between 0 and 255 that simply determines the percentage chance of an added effect occurring.
-	uint16_t			flags;			// Additional paramaters that can be toggled on or off to enable/disable certain properties for the skill.
-	uint16_t			buffAmount;		// Much like how buffs are stored within the Combatant struct, this stores how much to debuff/buff a character by when hit by the skill.
-	//	NOTE --- The final bit in "buffAmount" will toggle an override that will completely replace the target's current buff value with the skill's.
-	uint8_t				buffDuration;	// Determines the number of turns that the buff/debuff will be active for on the target(s).
-	uint8_t				dmgMultiplier;	// A multiplicative value between 0 and 255 that determines how much of a percentage relative to the skill's calculated damage to apply as a bonus. Maxes out at a 2x bonus to damage.
-	uint16_t			healPower;		// Similar to "basePower" but will exclusively be used to heal the target(s) when using the skill (Or caster in certain contexts).
-	uint16_t			healFlags;
+	uint32_t			flags;			// Additional paramaters that can be toggled on or off to enable/disable certain properties for the skill.
 
 	// The function that will be called upon the skill's use in battle.
-	void (Skill::*useFunction)(BattleScene*, Combatant*);
+	void (Skill::*useFunction)(BattleScene*, Combatant*, Skill*);
 
 public: // Constructor/Destructor Declarations
 	Skill();
@@ -44,29 +27,25 @@ public: // Constructor/Destructor Declarations
 	~Skill() = default;
 
 public: // Skill Use Function Declarations
-	void UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target);
-	void UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target);
-	void UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target);
-	void UseHealingSkillGeneric(BattleScene* _scene, Combatant* _target);
+	void ExecuteUseFunction(BattleScene* _scene, Combatant* _target, Skill* _skill);
 
-	void UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target);
+	// --- General Active Skill Use Functions --- //
+	void UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target, Skill* _skill);
+	void UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target, Skill* _skill);
+	void UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target, Skill* _skill);
+	void UseHealingSkillGeneric(BattleScene* _scene, Combatant* _target, Skill* _skill);
 
-	// A simple function that is responsible for calling the skill's use function through the pointer stored to the function 
-	// it requires. Does nothing if "useFunction" isn't set to a proper funciton pointer.
-	inline void ExecuteUseFunction(BattleScene* _scene, Combatant* _target) {
-		if (useFunction == nullptr)
-			return;
-		((*this).*(this->useFunction))(_scene, _target);
-	}
+	// --- Special Case Magic Skill Use Functions --- //
+	void UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target, Skill* _skill);
 
-private: // Skill Utility Function Declarations (Defined within Skill.cpp)
-	bool AccuracyCheck(BattleScene* _scene, Combatant* _target) const;
+private: // Skill Utility Function Declarations
+	bool AccuracyCheck(BattleScene* _scene, Combatant* _target, int8_t _baseAccuracy) const;
 	bool CriticalCheck(BattleScene* _scene, Combatant* _target) const;
 	void AdditionalEffectCheck(Combatant* _target);
 
-	void PhysicalDamageCalculation(BattleScene* _scene, Combatant* _target);
-	void MagicDamageCalculation(BattleScene* _scene, Combatant* _target);
-	void VoidDamageCalculation(BattleScene* _scene, Combatant* _target);
+	void PhysicalDamageCalculation(BattleScene* _scene, Combatant* _target, int16_t _basePower);
+	void MagicDamageCalculation(BattleScene* _scene, Combatant* _target, int16_t _basePower);
+	void VoidDamageCalculation(BattleScene* _scene, Combatant* _target, int16_t _basePower);
 
 	void ResistanceEffect(BattleScene* _scene, float_t _damage, Combatant* _target) const;
 	void HealingEffect(BattleScene* _scene, float_t _healAmount, Combatant* _target) const;

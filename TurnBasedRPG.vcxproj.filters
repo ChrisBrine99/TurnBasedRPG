@@ -108,6 +108,12 @@
     <ClCompile Include="src\object\dynamic\enemy\ObjTestEnemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\struct\battle\ActiveSkill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\struct\battle\PassiveSkill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\singleton\EngineCore.hpp">
@@ -255,6 +261,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\object\dynamic\enemy\ObjTestEnemy.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\struct\battle\ActiveSkill.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\struct\battle\PassiveSkill.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -153,6 +153,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\struct\battle\PassiveSkill.cpp" />
+    <ClCompile Include="src\struct\battle\ActiveSkill.cpp" />
     <ClCompile Include="src\object\dynamic\enemy\EnemyObject.cpp" />
     <ClCompile Include="src\object\dynamic\enemy\ObjTestEnemy.cpp" />
     <ClCompile Include="src\struct\object\AnimationInstance.cpp" />
@@ -163,6 +165,8 @@
     <ClCompile Include="src\struct\character\BaseCharacter.cpp" />
     <ClCompile Include="src\struct\character\PlayerCharacter.cpp" />
     <ClCompile Include="src\ui\battle\BattleUI.cpp" />
+    <ClInclude Include="src\struct\battle\PassiveSkill.hpp" />
+    <ClInclude Include="src\struct\battle\ActiveSkill.hpp" />
     <ClInclude Include="src\object\dynamic\enemy\EnemyObject.hpp" />
     <ClInclude Include="src\object\dynamic\enemy\ObjTestEnemy.hpp" />
     <ClInclude Include="src\struct\object\AnimationInstance.hpp" />

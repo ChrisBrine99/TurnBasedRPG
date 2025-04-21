@@ -3,6 +3,8 @@
 
 #include "../character/BaseCharacter.hpp"
 
+struct ActiveSkill;
+
 struct Combatant {
 	uint8_t						level;
 	std::array<uint8_t, STAT_COUNT> 
@@ -32,7 +34,7 @@ struct Combatant {
 	std::array<Affinity, MAIN_AFFINITY_COUNT> 
 								resistances;
 
-	Skill*						basicAttack;
+	ActiveSkill*				basicAttack;
 
 public: // Constructor/Destructor Declarations
 	Combatant();

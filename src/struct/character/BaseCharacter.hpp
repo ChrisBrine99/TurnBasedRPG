@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-struct Skill;
+struct ActiveSkill;
 
 typedef std::pair<uint8_t, uint8_t> Affinity;
 struct BaseCharacter {
@@ -38,8 +38,8 @@ struct BaseCharacter {
 	std::array<Affinity, MAIN_AFFINITY_COUNT>		resistances;
 	static std::array<uint8_t, MAIN_AFFINITY_COUNT> resistIndex;
 
-	uint16_t	id;
-	Skill*		basicAttack;
+	uint16_t		id;
+	ActiveSkill*	basicAttack;
 
 public: // Constructor/Destructor Declarations
 	BaseCharacter() = delete;

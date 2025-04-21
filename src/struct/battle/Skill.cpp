@@ -3,7 +3,7 @@
 #include "../../scene/BattleScene.hpp"
 #include "../../ui/battle/BattleUI.hpp"
 #include "../../ui/battle/BattleUIElement.hpp"
-#include "../../utility/Logger.hpp"
+#include "ActiveSkill.hpp"
 #include "Combatant.hpp"
 
 #include <cmath>
@@ -14,61 +14,57 @@ Skill::Skill() :
 	id(SKL_INVALID),
 	affinity(AFFINITY_INVALID),
 	targeting(TARGET_INVALID),
-	basePower(0ui16),
-	accuracy(0ui8),
-	hpCost(0ui16),
-	mpCost(0ui16),
-	hitCount(0ui8),
-	critChance(0ui8),
-	critBonus(0ui8),
-	recoilPower(0ui8),
-	addedEffects({ AILMENT_INVALID, AILMENT_INVALID, AILMENT_INVALID, AILMENT_INVALID }),
-	effectChance(0ui8),
 	flags(0ui16),
-	buffAmount(0x36DBui16),
-	buffDuration(0ui8),
-	dmgMultiplier(0ui8),
-	healPower(0ui16),
-	healFlags(0ui16),
 	useFunction(nullptr)
 {}
 
-void Skill::UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene, _target))
+void Skill::ExecuteUseFunction(BattleScene* _scene, Combatant* _target, Skill* _skill) {
+	if (useFunction == nullptr)
 		return;
-	PhysicalDamageCalculation(_scene, _target);
+	((*this).*(this->useFunction))(_scene, _target, _skill);
 }
 
-void Skill::UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene, _target))
+void Skill::UsePhysicalSkillGeneric(BattleScene* _scene, Combatant* _target, Skill* _skill) {
+	ActiveSkill* _aSkill = (ActiveSkill*)_skill;
+	if (!AccuracyCheck(_scene, _target, _aSkill->accuracy))
 		return;
-	MagicDamageCalculation(_scene, _target);
+	PhysicalDamageCalculation(_scene, _target, _aSkill->basePower);
 }
 
-void Skill::UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene, _target))
+void Skill::UseMagicSkillGeneric(BattleScene* _scene, Combatant* _target, Skill* _skill) {
+	ActiveSkill* _aSkill = (ActiveSkill*)_skill;
+	if (!AccuracyCheck(_scene, _target, _aSkill->accuracy))
 		return;
-	VoidDamageCalculation(_scene, _target);
+	MagicDamageCalculation(_scene, _target, _aSkill->basePower);
 }
 
-void Skill::UseHealingSkillGeneric(BattleScene* _scene, Combatant* _target) {
-	float_t _healAmount = float_t(healPower);
+void Skill::UseVoidSkillGeneric(BattleScene* _scene, Combatant* _target, Skill* _skill) {
+	ActiveSkill* _aSkill = (ActiveSkill*)_skill;
+	if (!AccuracyCheck(_scene, _target, _aSkill->accuracy))
+		return;
+	VoidDamageCalculation(_scene, _target, _aSkill->basePower);
+}
+
+void Skill::UseHealingSkillGeneric(BattleScene* _scene, Combatant* _target, Skill* _skill) {
+	ActiveSkill* _aSkill	= (ActiveSkill*)_skill;
+	float_t _healAmount		= float_t(_aSkill->healPower);
 	HealingEffect(_scene, (_healAmount * 0.5f) + (_healAmount * _scene->curCombatant->stats[STAT_MAGIC] * 0.25f), _target);
 }
 
-void Skill::UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target) {
-	if (!AccuracyCheck(_scene, _target))
+void Skill::UseMagicSkillPlusEffect(BattleScene* _scene, Combatant* _target, Skill* _skill) {
+	ActiveSkill* _aSkill = (ActiveSkill*)_skill;
+	if (!AccuracyCheck(_scene, _target, _aSkill->accuracy))
 		return;
 	AdditionalEffectCheck(_target); // Attempt to apply one of the skill's possible status ailments on top of damaging the target.
-	MagicDamageCalculation(_scene, _target);
+	MagicDamageCalculation(_scene, _target, _aSkill->basePower);
 }
 
-bool Skill::AccuracyCheck(BattleScene* _scene, Combatant* _target) const {
+bool Skill::AccuracyCheck(BattleScene* _scene, Combatant* _target, int8_t _baseAccuracy) const {
 	if (_scene->curCombatant == _target)
 		return true; // Skills used on self (Or recoiled back to self) ignore accuracy checks.
 
 	uint16_t _accuracyBuff	= uint16_t(_scene->curCombatant->GetCurrentStatModifier(ACCURACY_MODIFIER) - _target->GetCurrentStatModifier(EVASION_MODIFIER));
-	uint16_t _accuracy		= accuracy;
+	uint16_t _accuracy		= _baseAccuracy;
 
 	if (_accuracyBuff > 0ui16)		{ _accuracy *= (9ui16 + _accuracyBuff) / 9ui16; }
 	else if (_accuracyBuff < 0ui16) { _accuracy *= 9ui16 / (9ui16 - _accuracyBuff); }
@@ -97,9 +93,9 @@ void Skill::AdditionalEffectCheck(Combatant* _target) {
 	//}
 }
 
-void Skill::PhysicalDamageCalculation(BattleScene* _scene, Combatant* _target) {
+void Skill::PhysicalDamageCalculation(BattleScene* _scene, Combatant* _target, int16_t _basePower) {
 	Combatant* _caster	= _scene->curCombatant;
-	float_t _damage		= float_t(basePower);
+	float_t _damage		= float_t(_basePower);
 	_damage				= (_damage / 2.0f) + (_damage * float_t(_caster->stats[STAT_STRENGTH]) / 15.0f);
 	_damage				= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
 	_damage				= _damage / std::pow(float_t(_target->stats[STAT_ENDURANCE]), 0.2f);
@@ -107,9 +103,9 @@ void Skill::PhysicalDamageCalculation(BattleScene* _scene, Combatant* _target) {
 	ResistanceEffect(_scene, _damage, _target);
 }
 
-void Skill::MagicDamageCalculation(BattleScene* _scene, Combatant* _target) {
+void Skill::MagicDamageCalculation(BattleScene* _scene, Combatant* _target, int16_t _basePower) {
 	Combatant* _caster	= _scene->curCombatant;
-	float_t _damage		= float_t(basePower);
+	float_t _damage		= float_t(_basePower);
 	_damage				= _damage + (_damage * float_t(_caster->stats[STAT_MAGIC]) / 25.0f);
 	_damage				= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
 	_damage				= _damage / std::pow(float_t(_target->stats[STAT_INTELLIGENCE]), 0.2f);
@@ -117,9 +113,9 @@ void Skill::MagicDamageCalculation(BattleScene* _scene, Combatant* _target) {
 	ResistanceEffect(_scene, _damage, _target);
 }
 
-void Skill::VoidDamageCalculation(BattleScene* _scene, Combatant* _target) {
+void Skill::VoidDamageCalculation(BattleScene* _scene, Combatant* _target, int16_t _basePower) {
 	Combatant* _caster	= _scene->curCombatant;
-	float_t _damage		= float_t(basePower);
+	float_t _damage		= float_t(_basePower);
 	_damage				= _damage + (_damage * std::sqrt(float_t(_caster->stats[STAT_STRENGTH] + _caster->stats[STAT_MAGIC]) / 3.0f));
 	_damage				= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
 	_damage				= _damage / std::pow(float_t(_target->stats[STAT_ENDURANCE] + _target->stats[STAT_INTELLIGENCE]), 0.1f);

@@ -1,5 +1,5 @@
 #include "BaseCharacter.hpp"
-#include "../battle/Skill.hpp"
+#include "../battle/ActiveSkill.hpp"
 
 std::array<uint8_t, MAIN_AFFINITY_COUNT> BaseCharacter::resistIndex = {
 	AFFINITY_PHYSICAL,
@@ -53,7 +53,7 @@ BaseCharacter::~BaseCharacter() {
 void BaseCharacter::SetBasicAttackAttributes(uint16_t _id) {
 	if (basicAttack)
 		return;
-	basicAttack = new Skill();
+	basicAttack = new ActiveSkill();
 
 	switch (_id) {
 	default: // General basic attack for all characters.

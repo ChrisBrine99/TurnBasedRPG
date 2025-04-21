@@ -3,6 +3,8 @@ INIT_SINGLETON_CPP(DataManager)
 
 #include "../utility/BattleMacros.hpp"
 #include "../utility/CharacterMacros.hpp"
+#include "../struct/battle/ActiveSkill.hpp"
+#include "../struct/battle/PassiveSkill.hpp"
 #include "../struct/battle/Skill.hpp"
 #include "../struct/character/EnemyCharacter.hpp"
 #include "../struct/character/PlayerCharacter.hpp"
@@ -35,10 +37,11 @@ bool DataManager::OnUserDestroy() {
 bool DataManager::OnBeforeUserCreate() {
 	uint16_t _id = 0ui16;
 	json _skills = json::parse(std::ifstream("res/data/skills.json"));
-	for (auto& _skill : _skills) {
-		if (_skill.is_null())
-			continue;
-		LoadSkillData(_id++, _skill);
+	for (auto& _aSkill : _skills[KEY_ACTIVE_SKILL_LIST]) {
+		if (!_aSkill.is_null()) { LoadSkillData(_id++, _aSkill); }
+	}
+	for (auto& _pSkill : _skills[KEY_PASSIVE_SKILL_LIST]) {
+		if (!_pSkill.is_null()) { LoadSkillData(_id++, _pSkill, true); }
 	}
 	_skills.clear();
 
@@ -137,36 +140,59 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 	return _newEnemyChar;
 }
 
-void DataManager::LoadSkillData(uint16_t _id, const json& _data) {
-	Skill* _newSkill			= new Skill();
-	_newSkill->name				= _data[SKILL_NAME];
-	_newSkill->id				= _id;
-	_newSkill->affinity			= _data[SKILL_AFFINITY];
-	_newSkill->targeting		= _data[SKILL_TARGET];
-	_newSkill->hpCost			= _data[SKILL_HPCOST];
-	_newSkill->mpCost			= _data[SKILL_MPCOST];
-	_newSkill->basePower		= _data[SKILL_POWER];
-	_newSkill->accuracy			= _data[SKILL_ACCURACY];
-	_newSkill->hitCount			= _data[SKILL_NUMHITS];
-	_newSkill->critChance		= _data[SKILL_CRIT_CHANCE];
-	_newSkill->critBonus		= _data[SKILL_CRIT_BONUS];
-	// TODO -- Add recoil power section to skills.json for each skill
-	_newSkill->addedEffects		= { 
-		_data[SKILL_EFFECT1], 
-		_data[SKILL_EFFECT2], 
-		_data[SKILL_EFFECT3], 
-		_data[SKILL_EFFECT4] 
-	};
-	_newSkill->effectChance		= _data[SKILL_EFFECT_CHANCE];
-	_newSkill->flags			= _data[SKILL_FLAGS];
-	_newSkill->buffAmount		= _data[SKILL_BUFF_AMOUNT];
-	_newSkill->buffDuration		= _data[SKILL_BUFF_DURATION];
-	_newSkill->dmgMultiplier	= _data[SKILL_DAMAGE_MULT];
-	_newSkill->healPower		= _data[SKILL_HEAL_POWER];
-	_newSkill->healFlags		= _data[SKILL_HEAL_FLAGS];
-	SetSkillUseFunction(_newSkill, _data[SKILL_USE_ID]);
+void DataManager::LoadSkillData(uint16_t _id, const json& _data, bool _isPassive) {
+	if (_isPassive) {
+		PassiveSkill* _newPassiveSkill		= new PassiveSkill();
+		ADD_DATA(skills, _id, _newPassiveSkill);
+		LoadSharedSkillData(_id, _data);
 
-	ADD_DATA(skills, _id, _newSkill);
+		_newPassiveSkill->maxHpBonus		= int16_t(_data[KEY_PSKILL_HPBONUS]);
+		_newPassiveSkill->maxMpBonus		= int16_t(_data[KEY_PSKILL_MPBONUS]);
+		_newPassiveSkill->maxHpMultiplier	= uint8_t(_data[KEY_PSKILL_HPMULTIPLIER]);
+		_newPassiveSkill->maxMpMultiplier	= uint8_t(_data[KEY_PSKILL_MPMULTIPLIER]);
+		_newPassiveSkill->affinityFlags		= uint16_t(_data[KEY_PSKILL_AFFINITY_FLAGS]);
+		_newPassiveSkill->affinityModifier	= uint8_t(_data[KEY_PSKILL_AFFINITY_MOD]);
+		_newPassiveSkill->buffDurationBonus = uint8_t(_data[KEY_PSKILL_BUFF_DURATION_BONUS]);
+		_newPassiveSkill->critChanceBonus	= uint8_t(_data[KEY_PSKILL_CRIT_CHANCE_BONUS]);
+		_newPassiveSkill->critDamageBonus	= uint8_t(_data[KEY_PSKILL_CRIT_DAMAGE_BONUS]);
+		_newPassiveSkill->resistOverwrite	= uint8_t(_data[KEY_PSKILL_RESIST_VALUE]);
+		_newPassiveSkill->useSkillID		= uint16_t(_data[KEY_PSKILL_ASKILL_ID]);
+		return;
+	}
+
+	ActiveSkill* _newActiveSkill	= new ActiveSkill();
+	ADD_DATA(skills, _id, _newActiveSkill);
+	LoadSharedSkillData(_id, _data);
+
+	_newActiveSkill->hpCost			= uint16_t(_data[KEY_ASKILL_HPCOST]);
+	_newActiveSkill->mpCost			= uint16_t(_data[KEY_ASKILL_MPCOST]);
+	_newActiveSkill->basePower		= uint16_t(_data[KEY_ASKILL_POWER]);
+	_newActiveSkill->accuracy		= uint8_t(_data[KEY_ASKILL_ACCURACY]);
+	_newActiveSkill->hitCount		= uint8_t(_data[KEY_ASKILL_NUMHITS]);
+	_newActiveSkill->critChance		= uint8_t(_data[KEY_ASKILL_CRIT_CHANCE]);
+	_newActiveSkill->critBonus		= uint8_t(_data[KEY_ASKILL_CRIT_BONUS]);
+	// TODO -- Add recoil power section to skills.json for each skill
+	_newActiveSkill->addedEffects		= {
+		uint8_t(_data[KEY_ASKILL_EFFECT1]),
+		uint8_t(_data[KEY_ASKILL_EFFECT2]),
+		uint8_t(_data[KEY_ASKILL_EFFECT3]),
+		uint8_t(_data[KEY_ASKILL_EFFECT4])
+	};
+	_newActiveSkill->effectChance	= uint8_t(_data[KEY_ASKILL_EFFECT_CHANCE]);
+	_newActiveSkill->flags			= uint32_t(_data[KEY_ASKILL_FLAGS]);
+	_newActiveSkill->buffAmount		= uint16_t(_data[KEY_ASKILL_BUFF_AMOUNT]);
+	_newActiveSkill->buffDuration	= uint8_t(_data[KEY_ASKILL_BUFF_DURATION]);
+	_newActiveSkill->dmgMultiplier	= uint8_t(_data[KEY_ASKILL_DAMAGE_MULT]);
+	_newActiveSkill->healPower		= uint16_t(_data[KEY_ASKILL_HEAL_POWER]);
+}
+
+void DataManager::LoadSharedSkillData(uint16_t _id, const json& _data) {
+	Skill* _skill		= skills[_id];
+	_skill->name		= _data[KEY_SKILL_NAME];
+	_skill->id			= _id;
+	_skill->affinity	= _data[KEY_SKILL_AFFINITY];
+	_skill->targeting	= _data[KEY_SKILL_TARGET];
+	SetSkillUseFunction(_skill, _data[KEY_SKILL_USE_ID]);
 }
 
 olc::Sprite* DataManager::LoadSprite(uint16_t _id, const std::string& _filepath) {
@@ -274,7 +300,7 @@ inline void DataManager::SetEnemyAIFunction(EnemyCharacter* _enemy, uint16_t _id
 
 inline void DataManager::SetSkillUseFunction(Skill* _skill, uint16_t _id) {
 	switch (_id) {
-	default:
+	default:							_skill->useFunction = nullptr;							return;
 	case SKILL_PHYSICAL_GENERIC:		_skill->useFunction = &Skill::UsePhysicalSkillGeneric;	return;
 	case SKILL_MAGICAL_GENERIC:			_skill->useFunction = &Skill::UseMagicSkillGeneric;		return;
 	case SKILL_MAGICAL_PLUS_EFFECT:		_skill->useFunction = &Skill::UseMagicSkillPlusEffect;	return;

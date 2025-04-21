@@ -11,6 +11,7 @@
 class BattleMainMenu;
 class BattleUI;
 class EngineCore;
+struct ActiveSkill;
 struct Combatant;
 struct Skill;
 
@@ -41,7 +42,7 @@ private: // State Function Declarations
 	bool StatePostBattle();
 
 public: // Publicly Accessible Utility Function Declarations
-	void ExecuteSkill(Skill* _skill);
+	void ExecuteActiveSkill(ActiveSkill* _skill);
 	void UpdateHitpoints(Combatant* _combatant, int16_t _value);
 	void UpdateMagicpoints(Combatant* _combatant, int16_t _value);
 
@@ -94,7 +95,7 @@ private: // Hidden Member Variable Declarations
 	uint16_t					encounterID;
 	uint32_t					flags;
 
-	Skill*						skillToUse;
+	ActiveSkill*				activeSkillToUse;
 
 	uint8_t						totalPartyMembers;
 	uint8_t						totalEnemies;

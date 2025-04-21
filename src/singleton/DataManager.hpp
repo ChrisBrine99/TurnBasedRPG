@@ -34,7 +34,8 @@ private: // Hidden Utility Function Declarations
 	inline void LoadSharedCharacterData(uint16_t _id, json& _data);
 	inline void SetEnemyAIFunction(EnemyCharacter* _enemy, uint16_t _id);
 
-	void LoadSkillData(uint16_t _id, const json& _data);
+	void LoadSkillData(uint16_t _id, const json& _data, bool _isPassive = false);
+	void LoadSharedSkillData(uint16_t _id, const json& _data);
 	inline void SetSkillUseFunction(Skill* _skill, uint16_t _id);
 
 	template<class T>

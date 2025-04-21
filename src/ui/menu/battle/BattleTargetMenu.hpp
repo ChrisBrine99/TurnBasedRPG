@@ -5,7 +5,7 @@
 
 class BattleScene;
 class BattleSkillMenu;
-struct Skill;
+struct ActiveSkill;
 
 class BattleTargetMenu : public Menu {
 public: // Constructor/Destructor Declaration
@@ -18,7 +18,7 @@ public: // Inherited Function Declarations
 	bool OnUserRender(EngineCore* _engine) override;
 
 public: // Publicly Accessibly Utility Function Declarations
-	void PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, Skill* _skill);
+	void PrepareForActivation(uint8_t _state, BattleSkillMenu* _skillMenu, ActiveSkill* _skill);
 	void PrepareForDeactivation();
 
 private: // Hidden Utility Function Declarations
@@ -32,7 +32,7 @@ private: // Hidden (Accessible to Children Only) State Function Declarations
 private: // Hidden Member Variable Declarations
 	std::vector<size_t> validTargets;
 	BattleScene*		sceneRef;
-	Skill*				skillRef;
+	ActiveSkill*		activeSkillRef;
 };
 
 #endif

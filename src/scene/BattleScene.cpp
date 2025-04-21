@@ -6,7 +6,7 @@
 #include "../singleton/ObjectManager.hpp"
 #include "../singleton/PartyManager.hpp"
 #include "../struct/battle/Combatant.hpp"
-#include "../struct/battle/Skill.hpp"
+#include "../struct/battle/ActiveSkill.hpp"
 #include "../struct/character/PlayerCharacter.hpp"
 #include "../struct/character/EnemyCharacter.hpp"
 #include "../ui/menu/battle/BattleMainMenu.hpp"
@@ -49,7 +49,7 @@ BattleScene::BattleScene() :
 	curRound(0ui8),
 	curSkillTarget(0ui8),
 	flags(0u),
-	skillToUse(nullptr),
+	activeSkillToUse(nullptr),
 	totalPartyMembers(0ui8),
 	totalEnemies(0ui8)
 {
@@ -236,17 +236,17 @@ bool BattleScene::StateEnemyTurn() {
 }
 
 bool BattleScene::StateExecuteSkill() {
-	if (skillToUse == nullptr || curSkillTarget >= targets.size()) {
+	if (activeSkillToUse == nullptr || curSkillTarget >= targets.size()) {
 		LOG_ERROR("No skill provided before executing state OR \"curSkillTarget\" was set to an out-of-bounds value!!!");
 		return false;
 	}
-	skillToUse->ExecuteUseFunction(this, combatants[targets[curSkillTarget]]);
+	activeSkillToUse->ExecuteUseFunction(this, combatants[targets[curSkillTarget]], activeSkillToUse);
 
 	turnDelay = 10.0f;
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
-		skillToUse = nullptr;
+		activeSkillToUse = nullptr;
 		turnDelay = 90.0f;
 		targets.clear();
 	}
@@ -336,8 +336,8 @@ bool BattleScene::StatePostBattle() {
 	return true;
 }
 
-void BattleScene::ExecuteSkill(Skill* _skill) {
-	if (skillToUse) {
+void BattleScene::ExecuteActiveSkill(ActiveSkill* _skill) {
+	if (activeSkillToUse) {
 		LOG_WARN("No skill was selected for use...");
 		return;
 	}
@@ -349,7 +349,7 @@ void BattleScene::ExecuteSkill(Skill* _skill) {
 	if (_skill->hpCost > 0ui16) { UpdateHitpoints(curCombatant, _skill->hpCost); }
 	if (_skill->mpCost > 0ui16) { UpdateMagicpoints(curCombatant, _skill->mpCost); }
 
-	skillToUse = _skill;
+	activeSkillToUse = _skill;
 	curSkillTarget = 0ui8;
 	SET_NEXT_STATE(STATE_BATTLE_EXECUTE_SKILL);
 }

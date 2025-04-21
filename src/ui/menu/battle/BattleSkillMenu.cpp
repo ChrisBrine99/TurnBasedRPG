@@ -2,7 +2,7 @@
 
 #include "../../../singleton/DataManager.hpp"
 #include "../../../singleton/MenuManager.hpp"
-#include "../../../struct/battle/Skill.hpp"
+#include "../../../struct/battle/ActiveSkill.hpp"
 #include "BattleMainMenu.hpp"
 #include "BattleTargetMenu.hpp"
 
@@ -85,28 +85,33 @@ void BattleSkillMenu::GenerateMenuOptions(Combatant* _curCombatant) {
 	}
 	curCombatant = _curCombatant;
 
-	DataManager* _manager = GET_SINGLETON(DataManager);
-	Skill* _skill = nullptr;
+	DataManager* _manager	= GET_SINGLETON(DataManager);
+	ActiveSkill* _aSkill	= nullptr;
+	Skill* _skill			= nullptr;
 
 	// Add the character's basic attack as an option to use.
 	AddOption(0, 0, "Attack");
 
 	for (uint16_t _id : _curCombatant->activeSkills) {
 		_skill = _manager->GetSkill(_id);
-		AddOption(0, 0, _skill->name);
+		if (_skill->affinity == AFFINITY_PASSIVE)
+			continue;
+		_aSkill = (ActiveSkill*)_skill;
+
+		AddOption(0, 0, _aSkill->name);
 		skillIDs.push_back(_id);
 
-		if (_skill->hpCost > 0ui16 && _skill->mpCost == 0ui16) {
-			sSkillCost.push_back("HP " + std::to_string(_skill->hpCost));
+		if (_aSkill->hpCost > 0ui16 && _aSkill->mpCost == 0ui16) {
+			sSkillCost.push_back("HP " + std::to_string(_aSkill->hpCost));
 			continue; // Skip over the remaining check
 		}
 
-		if (_skill->hpCost == 0ui16 && _skill->mpCost > 0ui16) {
-			sSkillCost.push_back("MP " + std::to_string(_skill->mpCost));
+		if (_aSkill->hpCost == 0ui16 && _aSkill->mpCost > 0ui16) {
+			sSkillCost.push_back("MP " + std::to_string(_aSkill->mpCost));
 			continue;
 		}
 
-		sSkillCost.push_back("HP " + std::to_string(_skill->hpCost) + " MP " + std::to_string(_skill->mpCost));
+		sSkillCost.push_back("HP " + std::to_string(_aSkill->hpCost) + " MP " + std::to_string(_aSkill->mpCost));
 	}
 
 	AddOption(0, 0, "Back");
@@ -116,11 +121,11 @@ void BattleSkillMenu::PrepareForActivation(uint8_t _state, BattleMainMenu* _bMai
 	Menu::PrepareForActivation(_state);
 	upperMenu = _bMainMenu;
 
-	DataManager* _manager = GET_SINGLETON(DataManager);
-	Skill* _skill = nullptr;
+	DataManager* _manager	= GET_SINGLETON(DataManager);
+	ActiveSkill* _aSkill	= nullptr;
 	for (size_t i = 0ui64; i < skillIDs.size(); i++){
-		_skill = _manager->GetSkill(skillIDs[i]);
-		if (!SkillHpCostCheck(curCombatant, _skill->hpCost) || !SkillMpCostCheck(curCombatant, _skill->mpCost)) {
+		_aSkill = (ActiveSkill*)_manager->GetSkill(skillIDs[i]);
+		if (!SkillHpCostCheck(curCombatant, _aSkill->hpCost) || !SkillMpCostCheck(curCombatant, _aSkill->mpCost)) {
 			menuOptions[i + 1ui64].flags &= ~FLAG_MOPTION_ACTIVE_STATE;
 			continue; // Deactivate the menu option since the party member doesn't meet the requirements to cast it.
 		}
@@ -141,9 +146,9 @@ bool BattleSkillMenu::StateProcessSelection() {
 		return true;
 	}
 
-	Skill* _skill = nullptr;
+	ActiveSkill* _skill = nullptr;
 	if (selOption != OPTION_SKLMENU_ATTACK) { // Get the skill from the provided ID.
-		_skill = GET_SINGLETON(DataManager)->GetSkill(skillIDs[size_t(selOption) - 1ui64]);
+		_skill = (ActiveSkill*)GET_SINGLETON(DataManager)->GetSkill(skillIDs[size_t(selOption) - 1ui64]);
 	} else { // Isn't a normal skill; copy pointer from combatant instead of checking the data manager.
 		_skill = curCombatant->basicAttack;
 	}
