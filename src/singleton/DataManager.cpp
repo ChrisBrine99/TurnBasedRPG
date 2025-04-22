@@ -140,6 +140,40 @@ BaseCharacter* DataManager::LoadCharacterData(uint16_t _id) {
 	return _newEnemyChar;
 }
 
+inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
+	BaseCharacter* _character		= characters[_id];
+	std::string_view _name			= std::string_view(_data[KEY_NAME]).substr(0ui64, CHR_EFFECTIVE_NAME_SIZE);
+	_name.copy(&_character->name[0ui64], CHR_EFFECTIVE_NAME_SIZE);
+	_character->level				= uint8_t(_data[KEY_LEVEL]);
+
+	// Load in each of the character's seven major stats from where they're stored in the JSON data.
+	auto& _stats					= _character->statBase;
+	_stats[CHR_STAT_STRENGTH]		= uint8_t(_data[KEY_STRENGTH]);
+	_stats[CHR_STAT_MAGIC]			= uint8_t(_data[KEY_MAGIC]);
+	_stats[CHR_STAT_ENDURANCE]		= uint8_t(_data[KEY_ENDURANCE]);
+	_stats[CHR_STAT_INTELLIGENCE]	= uint8_t(_data[KEY_INTELLIGENCE]);
+	_stats[CHR_STAT_AGILITY]		= uint8_t(_data[KEY_AGILITY]);
+	_stats[CHR_STAT_CONCENTRATION]	= uint8_t(_data[KEY_CONCENTRATION]);
+	_stats[CHR_STAT_LUCK]			= uint8_t(_data[KEY_LUCK]);
+
+	// Load in the character's active skills. This is automatically limited to 6 skills for playable characters.
+	json& _innerData	= _data[KEY_ACTIVE_SKILLS];
+	size_t _length		= (_id > CHR_ID_BOUNDARY) ? std::min(_innerData.size(), PCHR_SKILL_LIMIT) : _innerData.size();
+	uint16_t _skillID	= CHR_INVALID;
+	for (size_t i = 0ui64; i < _length; i++) {
+		_skillID = _innerData[i];
+		_character->activeSkills.push_back(_skillID);
+	}
+
+	// Load in the character's base resistances into the "resistances" array as a pair containing the internal id value 
+	// for the affinity alongside the effect that affinity will have on the character.
+	_innerData		= _data[KEY_RESISTANCES];
+	_length			= _innerData.size();
+	auto& _resists	= _character->resistances;
+	for (size_t j = 0ui64; j < _length; j++)
+		_resists[j] = std::make_pair(BaseCharacter::resistIndex[j], _innerData[j]);
+}
+
 void DataManager::LoadSkillData(uint16_t _id, const json& _data, bool _isPassive) {
 	if (_isPassive) {
 		PassiveSkill* _newPassiveSkill		= new PassiveSkill();
@@ -184,15 +218,24 @@ void DataManager::LoadSkillData(uint16_t _id, const json& _data, bool _isPassive
 	_newActiveSkill->buffDuration	= uint8_t(_data[KEY_ASKILL_BUFF_DURATION]);
 	_newActiveSkill->dmgMultiplier	= uint8_t(_data[KEY_ASKILL_DAMAGE_MULT]);
 	_newActiveSkill->healPower		= uint16_t(_data[KEY_ASKILL_HEAL_POWER]);
+	
+	switch (uint16_t(_data[KEY_SKILL_USE_ID])) {
+	default:							_newActiveSkill->useFunction = nullptr;									return;
+	case SKILL_PHYSICAL_GENERIC:		_newActiveSkill->useFunction = &ActiveSkill::UsePhysicalSkillGeneric;	return;
+	case SKILL_MAGICAL_GENERIC:			_newActiveSkill->useFunction = &ActiveSkill::UseMagicSkillGeneric;		return;
+	case SKILL_MAGICAL_PLUS_EFFECT:		_newActiveSkill->useFunction = &ActiveSkill::UseMagicSkillPlusEffect;	return;
+	case SKILL_PHYSMAG_GENERIC:			_newActiveSkill->useFunction = &ActiveSkill::UseVoidSkillGeneric;		return;
+	case SKILL_HEALING_GENERIC:			_newActiveSkill->useFunction = &ActiveSkill::UseHealingSkillGeneric;	return;
+	}
 }
 
 void DataManager::LoadSharedSkillData(uint16_t _id, const json& _data) {
-	Skill* _skill		= skills[_id];
-	_skill->name		= _data[KEY_SKILL_NAME];
-	_skill->id			= _id;
-	_skill->affinity	= _data[KEY_SKILL_AFFINITY];
-	_skill->targeting	= _data[KEY_SKILL_TARGET];
-	SetSkillUseFunction(_skill, _data[KEY_SKILL_USE_ID]);
+	Skill* _skill			= skills[_id];
+	std::string_view _name	= std::string_view(_data[KEY_SKILL_NAME]).substr(0ui64, SKILL_EFFECTIVE_NAME_SIZE);
+	_name.copy(&_skill->name[0ui64], SKILL_EFFECTIVE_NAME_SIZE); // Max is one character less since the 16th element IS ALWAYS a null-termination character.
+	_skill->id				= _id;
+	_skill->affinity		= _data[KEY_SKILL_AFFINITY];
+	_skill->targeting		= _data[KEY_SKILL_TARGET];
 }
 
 olc::Sprite* DataManager::LoadSprite(uint16_t _id, const std::string& _filepath) {
@@ -253,59 +296,10 @@ Animation* DataManager::LoadAnimation(uint16_t _id) {
 	return animations[_id];
 }
 
-inline void DataManager::LoadSharedCharacterData(uint16_t _id, json& _data) {
-	// It's assumed that the supplied ID is valid since this function is only ever called by the Data Manager when it
-	// is reading its data from the JSON format into the actual Class that can be referenced/manipulated in the code.
-	BaseCharacter* _character	= characters[_id];
-
-	// Loads in the character's given name (This can be changed for playable characters) as well as their level.
-	_character->name	= _data[KEY_NAME];
-	_character->level	= uint8_t(_data[KEY_LEVEL]);
-
-	// Load in each of the character's seven major stats from where they're stored in the JSON data.
-	auto& _stats				= _character->statBase;
-	_stats[STAT_STRENGTH]		= uint8_t(_data[KEY_STRENGTH]);
-	_stats[STAT_MAGIC]			= uint8_t(_data[KEY_MAGIC]);
-	_stats[STAT_ENDURANCE]		= uint8_t(_data[KEY_ENDURANCE]);
-	_stats[STAT_INTELLIGENCE]	= uint8_t(_data[KEY_INTELLIGENCE]);
-	_stats[STAT_AGILITY]		= uint8_t(_data[KEY_AGILITY]);
-	_stats[STAT_CONCENTRATION]	= uint8_t(_data[KEY_CONCENTRATION]);
-	_stats[STAT_LUCK]			= uint8_t(_data[KEY_LUCK]);
-
-	// Load in the character's active skills. This is automatically limited to 6 skills for playable characters.
-	json& _innerData	= _data[KEY_ACTIVE_SKILLS];
-	size_t _length		= (_id > CHR_ID_BOUNDARY) ? std::min(_innerData.size(), PLAYER_SKILL_LIMIT) : _innerData.size();
-	uint16_t _skillID	= CHR_INVALID;
-	for (size_t i = 0ui64; i < _length; i++) {
-		_skillID = _innerData[i];
-		_character->activeSkills.push_back(_skillID);
-	}
-
-	// Finally, load in the character's base resistances into the "resistances" array as a pair containing the internal
-	// id value for the affinity alongside the effect that affinity will have on the character. This is required since the
-	// affinity indexes aren't sequential.
-	_innerData		= _data[KEY_RESISTANCES];
-	_length			= _innerData.size();
-	auto& _resists	= _character->resistances;
-	for (size_t j = 0ui64; j < _length; j++)
-		_resists[j] = std::make_pair(BaseCharacter::resistIndex[j], _innerData[j]);
-}
-
 inline void DataManager::SetEnemyAIFunction(EnemyCharacter* _enemy, uint16_t _id) {
 	switch (_id) {
 	default:
 	case ENEMY_AI_SIMPLE:				_enemy->battleAI = &EnemyCharacter::EnemySimpleAI;		return;
-	}
-}
-
-inline void DataManager::SetSkillUseFunction(Skill* _skill, uint16_t _id) {
-	switch (_id) {
-	default:							_skill->useFunction = nullptr;							return;
-	case SKILL_PHYSICAL_GENERIC:		_skill->useFunction = &Skill::UsePhysicalSkillGeneric;	return;
-	case SKILL_MAGICAL_GENERIC:			_skill->useFunction = &Skill::UseMagicSkillGeneric;		return;
-	case SKILL_MAGICAL_PLUS_EFFECT:		_skill->useFunction = &Skill::UseMagicSkillPlusEffect;	return;
-	case SKILL_PHYSMAG_GENERIC:			_skill->useFunction = &Skill::UseVoidSkillGeneric;		return;
-	case SKILL_HEALING_GENERIC:			_skill->useFunction = &Skill::UseHealingSkillGeneric;	return;
 	}
 }
 

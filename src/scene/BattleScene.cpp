@@ -49,7 +49,7 @@ BattleScene::BattleScene() :
 	curRound(0ui8),
 	curSkillTarget(0ui8),
 	flags(0u),
-	activeSkillToUse(nullptr),
+	skillToUse(nullptr),
 	totalPartyMembers(0ui8),
 	totalEnemies(0ui8)
 {
@@ -236,17 +236,17 @@ bool BattleScene::StateEnemyTurn() {
 }
 
 bool BattleScene::StateExecuteSkill() {
-	if (activeSkillToUse == nullptr || curSkillTarget >= targets.size()) {
+	if (skillToUse == nullptr || curSkillTarget >= targets.size()) {
 		LOG_ERROR("No skill provided before executing state OR \"curSkillTarget\" was set to an out-of-bounds value!!!");
 		return false;
 	}
-	activeSkillToUse->ExecuteUseFunction(this, combatants[targets[curSkillTarget]], activeSkillToUse);
+	skillToUse->ExecuteUseFunction(this, combatants[targets[curSkillTarget]]);
 
 	turnDelay = 10.0f;
 	curSkillTarget++;
 	if (curSkillTarget == targets.size()) {
 		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
-		activeSkillToUse = nullptr;
+		skillToUse = nullptr;
 		turnDelay = 90.0f;
 		targets.clear();
 	}
@@ -336,21 +336,20 @@ bool BattleScene::StatePostBattle() {
 	return true;
 }
 
-void BattleScene::ExecuteActiveSkill(ActiveSkill* _skill) {
-	if (activeSkillToUse) {
+void BattleScene::ExecuteSkill(ActiveSkill* _skill) {
+	if (skillToUse) {
 		LOG_WARN("No skill was selected for use...");
 		return;
 	}
 
-	if (_skill->id != SKL_BASIC_ATTACK) { battleUI->CreateSkillNameText(_skill->name); }
-	else { battleUI->CreateSkillNameText("Attack"); }
-	LOG_TRACE("Executing skill...");
+	if (_skill->id != SKL_BASIC_ATTACK) { battleUI->CreateSkillNameText(&_skill->name[0]); }
+	else								{ battleUI->CreateSkillNameText("Attack"); }
 
 	if (_skill->hpCost > 0ui16) { UpdateHitpoints(curCombatant, _skill->hpCost); }
 	if (_skill->mpCost > 0ui16) { UpdateMagicpoints(curCombatant, _skill->mpCost); }
 
-	activeSkillToUse = _skill;
-	curSkillTarget = 0ui8;
+	skillToUse		= _skill;
+	curSkillTarget	= 0ui8;
 	SET_NEXT_STATE(STATE_BATTLE_EXECUTE_SKILL);
 }
 

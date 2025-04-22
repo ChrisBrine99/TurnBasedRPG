@@ -7,7 +7,7 @@ struct ActiveSkill;
 
 struct Combatant {
 	uint8_t						level;
-	std::array<uint8_t, STAT_COUNT> 
+	std::array<uint8_t, CHR_STAT_COUNT> 
 								stats;
 
 	uint16_t					curHitpoints;

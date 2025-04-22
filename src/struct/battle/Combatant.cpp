@@ -3,7 +3,7 @@
 
 Combatant::Combatant() :
 	level(1ui8),
-	stats(std::array<uint8_t, STAT_COUNT>()),
+	stats(std::array<uint8_t, CHR_STAT_COUNT>()),
 	curHitpoints(0ui16),
 	maxHitpoints(0ui16),
 	maxHitpointMultiplier(1.0f),
@@ -22,14 +22,14 @@ Combatant::Combatant() :
 	basicAttack(nullptr) 
 {
 	stats.fill(1ui8); // Populate the array with default values of 1 for each stat.
-	activeSkills.reserve(PLAYER_SKILL_LIMIT); // Reserve at least enough memory to store the maximum number of skills a player character can use in battle.
+	activeSkills.reserve(PCHR_SKILL_LIMIT); // Reserve at least enough memory to store the maximum number of skills a player character can use in battle.
 	resistances.fill(std::make_pair(AFFINITY_INVALID, EFFECT_NORMAL));
 }
 
 void Combatant::ActivateCombatant(BaseCharacter* _character) {
 	level = _character->level; // Make sure the level is copied over.
 
-	for (size_t i = 0ui64; i < STAT_COUNT; i++) // Copy over the seven main stat values.
+	for (size_t i = 0ui64; i < CHR_STAT_COUNT; i++) // Copy over the seven main stat values.
 		stats[i] = _character->GetCurrentStatTotal(uint8_t(i));
 
 	// Get the character's current and maximum hitpoints.
@@ -46,7 +46,7 @@ void Combatant::ActivateCombatant(BaseCharacter* _character) {
 	activeSkills = _character->activeSkills;
 
 	// Calculate/recalculate speed based on the character's level and agility stats.
-	baseSpeed = uint16_t(level) + (uint16_t(stats[STAT_AGILITY]) * 2ui16) + 10ui16;
+	baseSpeed = uint16_t(level) + (uint16_t(stats[CHR_STAT_AGILITY]) * 2ui16) + 10ui16;
 
 	// Stores the bits 0011 0110 1101 1011 which equates to each modifier being set to +3 which is actually
 	// considered 0 by the BattleManager since it offsets the values by -3 during calculations.

@@ -123,8 +123,11 @@ void BattleUI::ActivateElement(Combatant* _combatant, size_t _index) {
 	);
 }
 
-void BattleUI::CreateText(const std::string& _string, float_t _moveSpeed, float_t _lifetime, olc::Pixel _color, float_t _xOffset, float_t _yOffset, float_t _scale) {
-	size_t _length		= _string.size();
+void BattleUI::CreateText(const char* _string, float_t _moveSpeed, float_t _lifetime, olc::Pixel _color, float_t _xOffset, float_t _yOffset, float_t _scale) {
+	size_t _length = 0ui64;
+	while (_string[_length] != '\0' && _length <= SKILL_EFFECTIVE_NAME_SIZE)
+		_length++;
+
 	float_t _strOffsetX	= 8.0f * _length / 2.0f;
 	if (activeTextElementCount < textElements.size()) {
 		for (TextElement* _text : textElements) {
@@ -142,6 +145,6 @@ void BattleUI::CreateText(const std::string& _string, float_t _moveSpeed, float_
 	activeTextElementCount++;
 }
 
-void BattleUI::CreateSkillNameText(const std::string& _name) {
-	CreateText(_name, 0.0f, 60.0f, COLOR_WHITE, VIEWPORT_WIDTH_F / 2.0f, (VIEWPORT_HEIGHT_F / 2.0f) - 150.0f);
+void BattleUI::CreateSkillNameText(const char* _name) {
+	CreateText(_name, 0.0f, 60.0f, COLOR_WHITE, VIEWPORT_WIDTH / 2.0f, (VIEWPORT_HEIGHT / 2.0f) - 150.0f);
 }

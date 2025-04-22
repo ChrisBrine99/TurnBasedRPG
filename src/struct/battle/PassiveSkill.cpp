@@ -10,5 +10,7 @@ PassiveSkill::PassiveSkill() :
 	affinityModifier(AFFINITY_INVALID),
 	buffDurationBonus(0ui8),
 	critChanceBonus(0ui8),
-	resistOverwrite(EFFECT_NORMAL)
+	critDamageBonus(0ui8),
+	resistOverwrite(EFFECT_NORMAL),
+	useSkillID(SKL_INVALID)
 {}

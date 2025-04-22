@@ -23,7 +23,7 @@ void EnemyCharacter::EnemySimpleAI(BattleScene* _scene) {
 	for (size_t i = 0ui64; i < BATTLE_MAX_PARTY_SIZE; i++) {
 		if (_combatants[i]->isActive && (std::rand() % 2 == 0)) {
 			_scene->targets.push_back(i);
-			_scene->ExecuteActiveSkill(basicAttack);
+			_scene->ExecuteSkill(basicAttack);
 			return;
 		}
 	}

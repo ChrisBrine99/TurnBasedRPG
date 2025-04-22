@@ -15,12 +15,12 @@ PlayerCharacter::~PlayerCharacter() {
 
 void PlayerCharacter::RewardExperience(uint32_t _amount) {
 	curExperience += _amount;
-	if (level >= MAXIMUM_LEVEL || curExperience < nextLevelExperience)
+	if (level >= CHR_MAX_LEVEL || curExperience < nextLevelExperience)
 		return;
 
 	while (curExperience >= nextLevelExperience) {
 		level++;
-		if (level == MAXIMUM_LEVEL) {
+		if (level == CHR_MAX_LEVEL) {
 			nextLevelExperience = 0Ui32;
 			break;
 		}

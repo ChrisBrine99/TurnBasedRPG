@@ -14,6 +14,7 @@ using json = nlohmann::json;
 struct Animation;
 struct BaseCharacter;
 struct EnemyCharacter;
+struct ActiveSkill;
 struct Skill;
 
 class DataManager {
@@ -36,7 +37,6 @@ private: // Hidden Utility Function Declarations
 
 	void LoadSkillData(uint16_t _id, const json& _data, bool _isPassive = false);
 	void LoadSharedSkillData(uint16_t _id, const json& _data);
-	inline void SetSkillUseFunction(Skill* _skill, uint16_t _id);
 
 	template<class T>
 	inline void RemoveDataFromStorage(std::unordered_map<uint16_t, T>& _storage);

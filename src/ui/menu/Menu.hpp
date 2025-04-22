@@ -29,7 +29,7 @@ public: // Main Engine Function Declarations
 	virtual bool OnAfterUserUpdate();
 
 public: // Publicly Accessible Utility Function Declarations
-	void AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description = "", uint8_t _alpha = 0xFFui8,
+	void AddOption(int32_t _xPos, int32_t _yPos, const char* _mainText, const char* _description = nullptr, uint8_t _alpha = 0xFFui8,
 		uint32_t _flags = FLAG_MOPTION_ACTIVE_STATE | FLAG_MOPTION_SELECTABLE | FLAG_MOPTION_VISIBLE);
 	void RemoveOption(size_t _index);
 	void SetOptionFlags(size_t _index, uint32_t _flags, bool _overwrite = true);

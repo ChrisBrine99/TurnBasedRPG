@@ -116,7 +116,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		for (size_t i = BATTLE_MAX_PARTY_SIZE; i < BATTLE_TOTAL_COMBATANTS; i++) {
 			if (!_combatants[i]->isActive)
 				continue;
-			UpdateDisplayedTargetName(i - BATTLE_MAX_PARTY_SIZE, _combatants[_indexOffset]->character->name);
+			UpdateDisplayedTargetName(i - BATTLE_MAX_PARTY_SIZE, &_combatants[_indexOffset]->character->name[0ui64]);
 			validTargets.push_back(i);
 			_indexOffset++;
 		}
@@ -135,7 +135,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		for (size_t i = 0ui64; i < BATTLE_MAX_PARTY_SIZE; i++) {
 			if (!_combatants[i]->isActive || (_combatants[i] == _curCombatant && _shouldSkipCaster))
 				continue;
-			UpdateDisplayedTargetName(_indexOffset, _combatants[_indexOffset]->character->name);
+			UpdateDisplayedTargetName(_indexOffset, &_combatants[_indexOffset]->character->name[0ui64]);
 			validTargets.push_back(i);
 			_indexOffset++;
 		}
@@ -145,7 +145,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++) {
 			if (!_combatants[i]->isActive || (_combatants[i] == _curCombatant && _targeting != TARGET_EVERYONE_SELF))
 				continue;
-			UpdateDisplayedTargetName(_indexOffset, _combatants[_indexOffset]->character->name);
+			UpdateDisplayedTargetName(_indexOffset, &_combatants[_indexOffset]->character->name[0ui64]);
 			validTargets.push_back(i);
 			_indexOffset++;
 		}
@@ -154,8 +154,8 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 	}
 }
 
-inline void BattleTargetMenu::UpdateDisplayedTargetName(size_t _index, std::string_view _name) {
-	menuOptions[_index].text = _name;
+inline void BattleTargetMenu::UpdateDisplayedTargetName(size_t _index, const std::string_view& _name) {
+	menuOptions[_index].text = _name.data();
 	menuOptions[_index].xPos = -8i32 * int32_t(_name.size()) / 2i32;
 }
 
@@ -167,7 +167,7 @@ bool BattleTargetMenu::StateDefault() {
 
 			BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
 			_scene->targets.insert(_scene->targets.begin(), validTargets.begin(), validTargets.end());
-			_scene->ExecuteActiveSkill(activeSkillRef);
+			_scene->ExecuteSkill(activeSkillRef);
 			return true;
 		}
 
@@ -200,10 +200,11 @@ bool BattleTargetMenu::StateProcessSelection() {
 	GET_SINGLETON(MenuManager)->DeactivateAllMenus();
 
 	BattleScene* _scene = (BattleScene*)GET_SINGLETON(SceneManager)->curScene;
-	if (TGTMENU_WILL_TARGET_SELF) { _scene->targets.push_back(_scene->GetCurCombatantIndex()); }
+	if (TGTMENU_WILL_TARGET_SELF) 
+		_scene->targets.push_back(_scene->GetCurCombatantIndex());
 	_scene->targets.push_back(validTargets[selOption]);
 
-	_scene->ExecuteActiveSkill(activeSkillRef);
+	_scene->ExecuteSkill(activeSkillRef);
 	validTargets.clear();
 	return true;
 }

@@ -15,12 +15,13 @@ struct ActiveSkill;
 
 typedef std::pair<uint8_t, uint8_t> Affinity;
 struct BaseCharacter {
-	std::string	name;
+	std::array<char, CHR_EFFECTIVE_NAME_SIZE>
+				name;
 	uint8_t		level;
 
-	std::array<uint8_t, STAT_COUNT> statBase;
-	std::array<int8_t,  STAT_COUNT>	statBonus;
-	std::array<float_t, STAT_COUNT> statMultiplier;
+	std::array<uint8_t, CHR_STAT_COUNT> statBase;
+	std::array<int8_t,  CHR_STAT_COUNT>	statBonus;
+	std::array<float_t, CHR_STAT_COUNT> statMultiplier;
 
 	uint16_t curHitpoints;
 	uint16_t curMagicpoints;
@@ -52,23 +53,23 @@ public: // Publicly Accessible Utility Function Definitions
 	// Returns the character's current total for a given stat. It will clamp the value to be between 1 and 100 should the
 	// calculation output a value outside of that range.
 	inline uint8_t GetCurrentStatTotal(uint8_t _index) const {
-		if (_index >= STAT_COUNT) // Invalid indexes are defaulted to a stat value of one.
-			return MINIMUM_STAT_VALUE;
-		return std::clamp(uint8_t((statBase[_index] + statBonus[_index]) * statMultiplier[_index]), MINIMUM_STAT_VALUE, MAXIMUM_STAT_VALUE);
+		if (_index >= CHR_STAT_COUNT) // Invalid indexes are defaulted to a stat value of one.
+			return CHR_MIN_STAT_VALUE;
+		return std::clamp(uint8_t((statBase[_index] + statBonus[_index]) * statMultiplier[_index]), CHR_MIN_STAT_VALUE, CHR_MAX_STAT_VALUE);
 	}
 
 	// Returns the character's current maximum hitpoints; a combination of the base and bonus values added together which are 
 	// then multiplied by whatever the value within "maxHitpointsMultiplier". currently is. This value is then truncated into 
 	// a uint16_t before it is returned as a constant value. The default lowest value is 1 hitpoint for any character.
 	inline uint16_t GetMaxHitpointsTotal() const {
-		return std::max(uint16_t((maxHitpointBase + maxHitpointBonus) * maxHitpointMultiplier), MINIMUM_HP_AND_MP);
+		return std::max(uint16_t((maxHitpointBase + maxHitpointBonus) * maxHitpointMultiplier), CHR_MIN_HP_AND_MP);
 	}
 
 	// Returns the character's current maximum magicpoints; a combination of the base and bonus values added together which 
 	// are then multiplied by whatever the value within "maxMagicpointsMultiplier". currently is. This value is then truncated 
 	// into a uint16_t before it is returned as a constant value. The default lowest value is 1 magicpoint for any character.
 	inline uint16_t GetMaxMagicpointsTotal() const {
-		return std::max(uint16_t((maxMagicpointBase + maxMagicpointBonus) * maxMagicpointMultiplier), MINIMUM_HP_AND_MP);
+		return std::max(uint16_t((maxMagicpointBase + maxMagicpointBonus) * maxMagicpointMultiplier), CHR_MIN_HP_AND_MP);
 	}
 
 	// Returns the character's resistance to a given affinity. If will first check to see if there is data found within the

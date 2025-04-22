@@ -70,11 +70,11 @@ void PartyUIElement::OnUserRender(EngineCore* _engine) {
 void PartyUIElement::ActivateElement(int32_t _x, int32_t _y, int32_t _hpBarX, int32_t _hpBarY, int32_t _mpBarX, int32_t _mpBarY, Combatant* _combatant, uint32_t _flags, BattleScene* _sceneRef) {
 	BattleUIElement::ActivateElement(_x, _y, _hpBarX, _hpBarY, _mpBarX, _mpBarY, _combatant, _flags);
 	sceneRef				= _sceneRef;
-	sName					= _combatant->character->name;
+	sName					= &_combatant->character->name[0ui64];
 	sLevel					= std::to_string(_combatant->level);
+	sLevelWidth				= uint16_t(sLevel.size() * 8ui16);
 	sCurHitpoints			= std::to_string(_combatant->curHitpoints);
+	sCurHitpointsWidth		= uint16_t(sCurHitpoints.size() * 8ui16);
 	sCurMagicpoints			= std::to_string(_combatant->curMagicpoints);
-	sLevelWidth				= uint16_t(sLevel.size() * 8i32);
-	sCurHitpointsWidth		= uint16_t(sCurHitpoints.size() * 8i32);
-	sCurMagicpointsWidth	= uint16_t(sCurMagicpoints.size() * 8i32);
+	sCurMagicpointsWidth	= uint16_t(sCurMagicpoints.size() * 8ui16);
 }

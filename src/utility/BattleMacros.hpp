@@ -152,10 +152,12 @@
 #define AILMENT_INVALID					0xFFui8
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
-//	Value that determines how many unique status conditions a skill may possibly inflict upon the target(s) when used.					//
+//	Values that determine maximums for various data structures/arrays within the Skill struct and its children.							//
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 
-#define SKILL_MAX_UNIQUE_EFFECTS		4ui64
+#define SKILL_INTERNAL_NAME_SIZE		16ui64
+#define SKILL_EFFECTIVE_NAME_SIZE		15ui64
+#define ASKILL_MAX_UNIQUE_EFFECTS		4ui64
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Since all modifier values are packed into a single 16-bit value, the unique values can be grabbed/modified through each of these	//

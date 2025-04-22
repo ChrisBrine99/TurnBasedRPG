@@ -21,7 +21,7 @@ public:  // Inherited Publicly Accessible Utility Function Overrides
 private: // Hidden Member Variable Declarations
 	BattleScene*	sceneRef;
 
-	std::string		sName;
+	const char*		sName;
 	std::string		sLevel;
 	std::string		sCurHitpoints;
 	std::string		sCurMagicpoints;

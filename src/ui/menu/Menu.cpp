@@ -95,7 +95,7 @@ bool Menu::OnAfterUserUpdate() {
 	return true;
 }
 
-void Menu::AddOption(int32_t _xPos, int32_t _yPos, const std::string& _mainText, const std::string& _description, uint8_t _alpha, uint32_t _flags) {
+void Menu::AddOption(int32_t _xPos, int32_t _yPos, const char* _mainText, const char* _description, uint8_t _alpha, uint32_t _flags) {
 	if (!MENU_ARE_OPTIONS_ALLOWED) // Prevent menus from adding options before they've been fully initialized.
 		return;
 

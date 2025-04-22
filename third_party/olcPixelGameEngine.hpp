@@ -1082,11 +1082,8 @@ namespace olc
 		void DrawPartialSprite(int32_t x, int32_t y, Sprite* sprite, int32_t ox, int32_t oy, int32_t w, int32_t h, uint32_t scale = 1, uint8_t flip = olc::Sprite::NONE);
 		void DrawPartialSprite(const olc::vi2d& pos, Sprite* sprite, const olc::vi2d& sourcepos, const olc::vi2d& size, uint32_t scale = 1, uint8_t flip = olc::Sprite::NONE);
 		// Draws a single line of text - traditional monospaced
-		void DrawString(int32_t x, int32_t y, std::string_view sText, Pixel col = olc::Pixel(0xFFFFFFFFui32), uint32_t scale = 1);
+		void DrawString(int32_t x, int32_t y, const std::string_view& sText, Pixel col = olc::Pixel(0xFFFFFFFFui32), uint32_t scale = 1);
 		olc::vi2d GetTextSize(const std::string& s);
-		// Draws a single line of text - non-monospaced
-		void DrawStringProp(int32_t x, int32_t y, std::string_view sText, Pixel col = olc::Pixel(0xFFFFFFFFui32), uint32_t scale = 1);
-		olc::vi2d GetTextSizeProp(const std::string& s);
 
 		// Decal Quad functions
 		void SetDecalMode(const olc::DecalMode& mode);
@@ -1111,7 +1108,6 @@ namespace olc
 		void DrawPartialRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale = { 1.0f, 1.0f }, const olc::Pixel& tint = olc::Pixel(0xFFFFFFFFui32));
 		// Draws a multiline string as a decal, with tiniting and scaling
 		void DrawStringDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::Pixel(0xFFFFFFFFui32), const olc::vf2d& scale = { 1.0f, 1.0f });
-		void DrawStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::Pixel(0xFFFFFFFFui32), const olc::vf2d& scale = { 1.0f, 1.0f });
 		// Draws a single shaded filled rectangle as a decal
 		void DrawRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::Pixel(0xFFFFFFFFui32));
 		void FillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::Pixel(0xFFFFFFFFui32));
@@ -3183,28 +3179,6 @@ namespace olc
 		}
 	}
 
-	void PixelGameEngine::DrawStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col, const olc::vf2d& scale)
-	{
-		olc::vf2d spos = { 0.0f, 0.0f };
-		for (auto c : sText)
-		{
-			if (c == '\n')
-			{
-				spos.x = 0; spos.y += 8.0f * scale.y;
-			}
-			else if (c == '\t')
-			{
-				spos.x += 8.0f * float(nTabSizeInSpaces) * scale.x;
-			}
-			else
-			{
-				int32_t ox = (c - 32) % 16;
-				int32_t oy = (c - 32) / 16;
-				DrawPartialDecal(pos + spos, fontRenderable.Decal(), { float(ox) * 8.0f + float(vFontSpacing[c - 32].x), float(oy) * 8.0f }, { float(vFontSpacing[c - 32].y), 8.0f }, scale, col);
-				spos.x += float(vFontSpacing[c - 32].y) * scale.x;
-			}
-		}
-	}
 	// Thanks Oso-Grande/Sopadeoso For these awesom and stupidly clever Text Rotation routines... duh XD
 	void PixelGameEngine::DrawRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center, const Pixel col, const olc::vf2d& scale)
 	{
@@ -3267,7 +3241,7 @@ namespace olc
 		return size * 8;
 	}
 
-	void PixelGameEngine::DrawString(int32_t x, int32_t y, std::string_view sText, Pixel col, uint32_t scale)
+	void PixelGameEngine::DrawString(int32_t x, int32_t y, const std::string_view& sText, Pixel col, uint32_t scale)
 	{
 		int32_t sx = 0;
 		int32_t sy = 0;
@@ -3313,23 +3287,6 @@ namespace olc
 			}
 		}
 		SetPixelMode(m);
-	}
-
-	olc::vi2d PixelGameEngine::GetTextSizeProp(const std::string& s)
-	{
-		olc::vi2d size = { 0,1 };
-		olc::vi2d pos = { 0,1 };
-		for (auto c : s)
-		{
-			if (c == '\n') { pos.y += 1;  pos.x = 0; }
-			else if (c == '\t') { pos.x += nTabSizeInSpaces * 8; }
-			else pos.x += vFontSpacing[c - 32].y;
-			size.x = std::max(size.x, pos.x);
-			size.y = std::max(size.y, pos.y);
-		}
-
-		size.y *= 8;
-		return size;
 	}
 
 	void PixelGameEngine::SetPixelMode(Pixel::Mode m)

@@ -23,7 +23,7 @@ public: // Publicly Accessibly Utility Function Declarations
 
 private: // Hidden Utility Function Declarations
 	void DetermineValidTargets(uint8_t _targeting);
-	inline void UpdateDisplayedTargetName(size_t _index, std::string_view _name);
+	inline void UpdateDisplayedTargetName(size_t _index, const std::string_view& _name);
 
 private: // Hidden (Accessible to Children Only) State Function Declarations
 	bool StateDefault() override;

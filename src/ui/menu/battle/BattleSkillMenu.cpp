@@ -12,8 +12,8 @@ BattleSkillMenu::BattleSkillMenu() :
 	skillIDs(),
 	curCombatant(nullptr)
 { // Reserve enough memory to store the skill costs strings AND their actualy numerical values for all 6 possible active skills.
-	sSkillCost.reserve(PLAYER_SKILL_LIMIT);
-	skillIDs.reserve(PLAYER_SKILL_LIMIT);
+	sSkillCost.reserve(PCHR_SKILL_LIMIT);
+	skillIDs.reserve(PCHR_SKILL_LIMIT);
 }
 
 bool BattleSkillMenu::OnUserCreate() {
@@ -98,7 +98,7 @@ void BattleSkillMenu::GenerateMenuOptions(Combatant* _curCombatant) {
 			continue;
 		_aSkill = (ActiveSkill*)_skill;
 
-		AddOption(0, 0, _aSkill->name);
+		AddOption(0, 0, &_aSkill->name[0]);
 		skillIDs.push_back(_id);
 
 		if (_aSkill->hpCost > 0ui16 && _aSkill->mpCost == 0ui16) {

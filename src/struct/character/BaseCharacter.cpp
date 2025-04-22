@@ -20,6 +20,7 @@ std::array<uint8_t, MAIN_AFFINITY_COUNT> BaseCharacter::resistIndex = {
 };
 
 BaseCharacter::BaseCharacter(uint16_t _id) :
+	name(""),
 	level(0ui8),
 	statBase({ 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8 }),
 	statBonus({ 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8 }),
@@ -39,12 +40,11 @@ BaseCharacter::BaseCharacter(uint16_t _id) :
 	for (size_t i = 0ui64; i < MAIN_AFFINITY_COUNT; i++)
 		resistances[i] = std::make_pair(resistIndex[i], EFFECT_NORMAL);
 
-	activeSkills.reserve(PLAYER_SKILL_LIMIT);
+	activeSkills.reserve(PCHR_SKILL_LIMIT);
 	SetBasicAttackAttributes(_id);
 }
 
 BaseCharacter::~BaseCharacter() {
-	name.clear();
 	activeSkills.clear();
 
 	if (basicAttack) { delete basicAttack, basicAttack = nullptr; }
@@ -64,7 +64,7 @@ void BaseCharacter::SetBasicAttackAttributes(uint16_t _id) {
 		basicAttack->accuracy		= 240ui8;	// ~ 94.12%
 		basicAttack->critChance		= 16ui8;	// ~  6.27%
 		basicAttack->hitCount		= 17ui8;	// 00010001 in binary AKA a single hit
-		basicAttack->useFunction	= &Skill::UsePhysicalSkillGeneric;
+		basicAttack->useFunction	= &ActiveSkill::UsePhysicalSkillGeneric;
 		break;
 	}
 }
