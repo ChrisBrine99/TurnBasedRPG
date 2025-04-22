@@ -1,5 +1,5 @@
 #include "BaseCharacter.hpp"
-#include "../battle/ActiveSkill.hpp"
+#include "../skill/ActiveSkill.hpp"
 
 std::array<uint8_t, MAIN_AFFINITY_COUNT> BaseCharacter::resistIndex = {
 	AFFINITY_PHYSICAL,
@@ -20,7 +20,7 @@ std::array<uint8_t, MAIN_AFFINITY_COUNT> BaseCharacter::resistIndex = {
 };
 
 BaseCharacter::BaseCharacter(uint16_t _id) :
-	name(""),
+	name('\0'),
 	level(0ui8),
 	statBase({ 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8, 1ui8 }),
 	statBonus({ 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8 }),
@@ -46,7 +46,6 @@ BaseCharacter::BaseCharacter(uint16_t _id) :
 
 BaseCharacter::~BaseCharacter() {
 	activeSkills.clear();
-
 	if (basicAttack) { delete basicAttack, basicAttack = nullptr; }
 }
 

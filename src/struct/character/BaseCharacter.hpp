@@ -16,31 +16,30 @@ struct ActiveSkill;
 typedef std::pair<uint8_t, uint8_t> Affinity;
 struct BaseCharacter {
 	std::array<char, CHR_EFFECTIVE_NAME_SIZE>
-				name;
-	uint8_t		level;
+							name;						// Stores a 17-character string (16 empty slots and 1 null-terminator at max capacity) for the character's name.
+	uint8_t					level;						// The character's current level; ranging between 1 and 100.
+	std::array<uint8_t, CHR_STAT_COUNT>					// The base values for the character's seven main stats. These are the values that can be increased when a player character levels up. 
+							statBase;					
+	std::array<int8_t,  CHR_STAT_COUNT>					// A bonus value that is applied on top of the character's base stat value. It can increase or decrease relative to the base depending on the sum of bonuses for a given stat.
+							statBonus;					
+	std::array<float_t, CHR_STAT_COUNT>					// A multiplicative value that is applied to the sum of a stat's base and bonus value.
+							statMultiplier;				
+	uint16_t				curHitpoints;				// The character's current remaining hitpoints.
+	uint16_t				curMagicpoints;				// The character's current remaining magicpoints.
+	uint16_t				maxHitpointBase;			// The base value for the character's maximum hitpoints. A player character has this value set through a formula involving their level and endurance stat.
+	int16_t					maxHitpointBonus;			// A bonus value that is applied on top of the character's base maximum hitpoints. It can increase or decrease the value depending on the sum of bonuses.
+	float_t					maxHitpointMultiplier;		// A multiplicative value that is applied to the sum of the character's base and bonus maximum hitpoint values.
+	uint16_t				maxMagicpointBase;			// The base value for the character's maximum magicpoints. A player character has this value set through a formula involving their level and magic stat.
+	int16_t					maxMagicpointBonus;			// A bonus valud that is applied on top of the character's base maximum magicpoints. It can increase or decrease the value depending on the sum of bonuses.
+	float_t					maxMagicpointMultiplier;	// A multiplicative value that is applied to the sum of the character' base and bonus maximum magicpoint values.
+	std::vector<uint16_t>	activeSkills;				// The list of skills available to the character during battle; capped to a maximum of 6 for player characters.
+	std::array<Affinity, MAIN_AFFINITY_COUNT>			// Stores two values: the affinity's unique id value, and the effect that affinity has on the character.
+							resistances;				
+	uint16_t				id;							// The id value for the character which should match the value found within "characters.json".
+	ActiveSkill*			basicAttack;				// TODO -- replace this with an ID value eventually.
 
-	std::array<uint8_t, CHR_STAT_COUNT> statBase;
-	std::array<int8_t,  CHR_STAT_COUNT>	statBonus;
-	std::array<float_t, CHR_STAT_COUNT> statMultiplier;
-
-	uint16_t curHitpoints;
-	uint16_t curMagicpoints;
-
-	uint16_t maxHitpointBase;
-	int16_t	 maxHitpointBonus;
-	float_t	 maxHitpointMultiplier;
-
-	uint16_t maxMagicpointBase;
-	int16_t	 maxMagicpointBonus;
-	float_t	 maxMagicpointMultiplier;
-	
-	std::vector<uint16_t> activeSkills;
-
-	std::array<Affinity, MAIN_AFFINITY_COUNT>		resistances;
-	static std::array<uint8_t, MAIN_AFFINITY_COUNT> resistIndex;
-
-	uint16_t		id;
-	ActiveSkill*	basicAttack;
+	static std::array<uint8_t, MAIN_AFFINITY_COUNT>
+							resistIndex;				
 
 public: // Constructor/Destructor Declarations
 	BaseCharacter() = delete;

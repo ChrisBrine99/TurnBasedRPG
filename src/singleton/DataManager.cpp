@@ -3,19 +3,19 @@ INIT_SINGLETON_CPP(DataManager)
 
 #include "../utility/BattleMacros.hpp"
 #include "../utility/CharacterMacros.hpp"
-#include "../struct/battle/ActiveSkill.hpp"
-#include "../struct/battle/PassiveSkill.hpp"
-#include "../struct/battle/Skill.hpp"
+#include "../struct/skill/ActiveSkill.hpp"
+#include "../struct/skill/PassiveSkill.hpp"
+#include "../struct/skill/Skill.hpp"
 #include "../struct/character/EnemyCharacter.hpp"
 #include "../struct/character/PlayerCharacter.hpp"
 #include "../struct/object/Animation.hpp"
 #include "../utility/Logger.hpp"
 
 DataManager::DataManager() :
-	characterData(),
-	characters(),
 	skills(),
-	sprites()
+	characters(),
+	sprites(),
+	animations()
 {
 	characters.reserve(DATA_CHAR_RESERVE_SIZE);
 	skills.reserve(DATA_SKILL_RESERVE_SIZE);
@@ -35,24 +35,30 @@ bool DataManager::OnUserDestroy() {
 }
 
 bool DataManager::OnBeforeUserCreate() {
-	uint16_t _id = 0ui16;
+	uint16_t _id = 0ui16; // THis valud is used for loading in all ID-based data. Resets back to 0 after each group has loaded.
 	json _skills = json::parse(std::ifstream("res/data/skills.json"));
+
+	// Load in all active skills first. Skipping over malformed data within the JSON object.
 	for (auto& _aSkill : _skills[KEY_ACTIVE_SKILL_LIST]) {
 		if (!_aSkill.is_null()) { LoadSkillData(_id++, _aSkill); }
 	}
+
+	// Load in all passive skills once active skills have all loaded. This means all IDs for passive skills will be
+	// higher than ANY active skill's id if that distinction should ever be required.
 	for (auto& _pSkill : _skills[KEY_PASSIVE_SKILL_LIST]) {
 		if (!_pSkill.is_null()) { LoadSkillData(_id++, _pSkill, true); }
 	}
+
+	// Unload the JSON data now that it isn't required.
 	_skills.clear();
 
-	characterData	= json::parse(std::ifstream("res/data/characters.json"));
+	_id				= 0ui16; // Reset to 0 and load in the character data.
+	json _character = json::parse(std::ifstream("res/data/characters.json"));
+
+
+
 	encounterData	= json::parse(std::ifstream("res/data/encounters.json"));
 	animationData	= json::parse(std::ifstream("res/data/animations.json"));
-
-	LoadCharacterData(CHR_TEST_PLAYER);
-	LoadCharacterData(CHR_TEST_PLAYER_2);
-	LoadCharacterData(CHR_GREEN_SLIME);
-	LoadCharacterData(CHR_RED_SLIME);
 
 	return true;
 }

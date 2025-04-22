@@ -8,7 +8,6 @@ INIT_SINGLETON_CPP(EngineCore)
 #include "ObjectManager.hpp"
 #include "PartyManager.hpp"
 #include "SceneManager.hpp"
-#include "../utility/UtilityFunctions.hpp"
 
 uint32_t	EngineCore::s_HudLayer			= 0ui32;
 uint32_t	EngineCore::s_ObjectLayer		= 0ui32;
@@ -57,8 +56,10 @@ bool EngineCore::OnUserUpdate(float_t _deltaTime) {
 	updateTimer += _deltaTime;
 	if (updateTimer >= 1.0f) {
 		updateTimer -= 1.0f;
-		sPerformanceData	= "fps          " + std::to_string(GetFPS()) + "\nmemory usage " + std::to_string(s_BytesAllocated) + " bytes\ncur allocs   " + std::to_string(s_Allocations);
-		svPerformanceData	= sPerformanceData;
+		sPerformanceData = 
+			"fps          " + std::to_string(GetFPS()) + '\n' +
+			"memory usage " + std::to_string(s_BytesAllocated) + " bytes\n" +
+			"cur allocs   " + std::to_string(s_Allocations);
 	}
 	return true;
 }
@@ -81,6 +82,6 @@ bool EngineCore::OnUserRender(float_t _deltaTime) {
 	CALL_SINGLETON_RENDER(SceneManager);
 
 	SetDrawTarget(s_HudLayer);
-	DrawString(5i32, 5i32, svPerformanceData.data());
+	DrawString(5i32, 5i32, sPerformanceData);
 	return true;
 }

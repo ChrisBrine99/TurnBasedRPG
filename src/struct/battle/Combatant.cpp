@@ -1,5 +1,5 @@
 #include "Combatant.hpp"
-#include "../battle/Skill.hpp"
+#include "../skill/Skill.hpp"
 
 Combatant::Combatant() :
 	level(1ui8),

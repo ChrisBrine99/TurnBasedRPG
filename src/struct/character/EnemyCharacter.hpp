@@ -6,10 +6,11 @@
 class BattleScene;
 
 struct EnemyCharacter : public BaseCharacter {
-	uint16_t moneyReward;
-	uint16_t expReward;
+	uint16_t				moneyReward;
+	uint16_t				expReward;
 
-	std::vector<std::pair<uint16_t, uint8_t>>	itemRewards;
+	std::vector<std::pair<uint16_t, uint8_t>>	
+							itemRewards;
 
 	// The function that will be called during the enemy's turn in battle.
 	void (EnemyCharacter::*battleAI)(BattleScene*);

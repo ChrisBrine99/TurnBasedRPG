@@ -2,7 +2,7 @@
 
 #include "../../../singleton/DataManager.hpp"
 #include "../../../singleton/MenuManager.hpp"
-#include "../../../struct/battle/ActiveSkill.hpp"
+#include "../../../struct/skill/ActiveSkill.hpp"
 #include "BattleMainMenu.hpp"
 #include "BattleTargetMenu.hpp"
 

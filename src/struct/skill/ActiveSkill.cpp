@@ -6,7 +6,7 @@
 #include "../../scene/BattleScene.hpp"
 #include "../../ui/battle/BattleUI.hpp"
 #include "../../ui/battle/BattleUIElement.hpp"
-#include "Combatant.hpp"
+#include "../battle/Combatant.hpp"
 
 ActiveSkill::ActiveSkill() : 
 	Skill(),

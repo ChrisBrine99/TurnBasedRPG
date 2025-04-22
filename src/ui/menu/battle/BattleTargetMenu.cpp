@@ -3,7 +3,7 @@
 #include "../../../scene/BattleScene.hpp"
 #include "../../../singleton/SceneManager.hpp"
 #include "../../../singleton/MenuManager.hpp"
-#include "../../../struct/Battle/ActiveSkill.hpp"
+#include "../../../struct/skill/ActiveSkill.hpp"
 #include "../../../ui/battle/BattleUI.hpp"
 #include "../../../ui/battle/BattleUIElement.hpp"
 #include "BattleSkillMenu.hpp"

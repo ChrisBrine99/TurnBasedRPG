@@ -4,10 +4,13 @@
 #include "BaseCharacter.hpp"
 
 struct PlayerCharacter : public BaseCharacter {
-	uint32_t						curExperience;
-	uint32_t						nextLevelExperience;
+	uint32_t				curExperience;			// Stores the sum of all experience earned by the character.
+	uint32_t				nextLevelExperience;	// Stores the value that the player character's experience needs to exceeds before they can advance to the next level.
 
-	std::vector<uint16_t>			knownSkills;
+	std::vector<uint16_t>	knownSkills;			// A complete list of IDs for every skill the character has unlocked and available to place into their active skill list.
+
+	std::array<uint16_t, PCHR_TOTAL_EQUIP_SLOTS>
+							equipment;				// Stores the item IDs for the equipment the character currently has equipped. The slots are: head, body, legs, weapon, and accessory.
 
 public: // Constructor/Destructor Declarations
 	PlayerCharacter() = delete;

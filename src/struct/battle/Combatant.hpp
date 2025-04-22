@@ -6,35 +6,26 @@
 struct ActiveSkill;
 
 struct Combatant {
-	uint8_t						level;
-	std::array<uint8_t, CHR_STAT_COUNT> 
-								stats;
-
-	uint16_t					curHitpoints;
-	uint16_t					maxHitpoints;
-	float_t						maxHitpointMultiplier;
-
-	uint16_t					curMagicpoints;
-	uint16_t					maxMagicpoints;
-	float_t						maxMagicpointMultiplier;
-
-	std::vector<uint16_t>		activeSkills;
-
-	uint8_t						curNerveAilment;
-	uint8_t						curMindAilment;
-	uint8_t						curSpecialAilment;
-
-	bool						isActive;
-
-	uint16_t					baseSpeed;
-	uint16_t					statModifiers;
-
-	BaseCharacter*				character;
-
-	std::array<Affinity, MAIN_AFFINITY_COUNT> 
-								resistances;
-
-	ActiveSkill*				basicAttack;
+	uint8_t					level;						// Simply stores a copy of the character's level at the time the battle began; ranging from 1-100.
+	std::array<uint8_t, CHR_STAT_COUNT>					// Stores the current calculated values for the character's seven major stats at the beginning of the battle.
+							stats;						
+	uint16_t				curHitpoints;				// Tracks the current HP for the character throughout the battle.
+	uint16_t				maxHitpoints;				// The maximum HP of the character at the time the battle began.
+	float_t					maxHitpointMultiplier;		// Multiplicative bonus to the character's current maximum HP that only applies for the current battle.
+	uint16_t				curMagicpoints;				// Tracks the current MP for the character throughout the battle.
+	uint16_t				maxMagicpoints;				// The maximum MP of the character at the time the battle began.
+	float_t					maxMagicpointMultiplier;	// Multiplicative bonus to the character's current maximum MP that only applies for the current battle.
+	std::vector<uint16_t>	activeSkills;				// A copy of the vector within the character instance that stores the skills they can use within a battle.
+	uint8_t					curNerveAilment;			// Stores the index value current nerve ailment that the character is afflicted with.
+	uint8_t					curMindAilment;				// Stores the index value for the current mind ailment that the character is afflicted with.
+	uint8_t					curSpecialAilment;			// Stores the current special ailment that is affecting the character (Ex. crippled for a turn).
+	bool					isActive;					// A single flag that denotes if the combatant is currently participating in the battle or not.
+	uint16_t				baseSpeed;					// A battle-only stat that is derived from a formula utilizing the character's level and agility stat. Determines their position within the turn order.
+	uint16_t				statModifiers;				// Current stat modifiers that are applied to the character. These can be: attack, defense, accuracy, evasion, and speed.
+	BaseCharacter*			character;					// A pointer to the character this combatant represents in case any data not found here needs to be referenced.
+	std::array<Affinity, MAIN_AFFINITY_COUNT>			// Stores a pair of values: the index value for the affinity, and the character's resistance/weakness to it.
+							resistances;				
+	ActiveSkill*			basicAttack;				// A pointer to the character's basic attack, which isn't found within the data structure containing normal active/passive skills.
 
 public: // Constructor/Destructor Declarations
 	Combatant();

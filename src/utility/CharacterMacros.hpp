@@ -38,6 +38,18 @@
 #define PCHR_SKILL_LIMIT				6ui64
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//
+//	Defines that represent what each index in the player character's "equipment" array is used for in the context of the character's	//
+//	current equipment. The final value is the size of that array.																		//
+// ------------------------------------------------------------------------------------------------------------------------------------	//
+
+#define PCHR_EQUIP_HEAD					0ui64
+#define PCHR_EQUIP_BODY					1ui64
+#define PCHR_EQUIP_LEGS					2ui64
+#define PCHR_EQUIP_WEAPON				3ui64
+#define PCHR_EQUIP_ACCESSORY			4ui64
+#define PCHR_TOTAL_EQUIP_SLOTS			5ui64
+
+// ------------------------------------------------------------------------------------------------------------------------------------	//
 //	Determines the maximum length of a character's name. The effective includes the null-terminator, and the effective name is how		//
 //	many visible characters can be in the name.																							//
 // ------------------------------------------------------------------------------------------------------------------------------------	//

@@ -42,7 +42,7 @@
     <ClCompile Include="src\singleton\PartyManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\struct\battle\Skill.cpp">
+    <ClCompile Include="src\struct\skill\Skill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\singleton\MenuManager.cpp">
@@ -108,10 +108,10 @@
     <ClCompile Include="src\object\dynamic\enemy\ObjTestEnemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\struct\battle\ActiveSkill.cpp">
+    <ClCompile Include="src\struct\skill\ActiveSkill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\struct\battle\PassiveSkill.cpp">
+    <ClCompile Include="src\struct\skill\PassiveSkill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,7 +161,7 @@
     <ClInclude Include="src\singleton\DataManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\struct\battle\Skill.hpp">
+    <ClInclude Include="src\struct\skill\Skill.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\menu\Menu.hpp">
@@ -263,10 +263,10 @@
     <ClInclude Include="src\object\dynamic\enemy\ObjTestEnemy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\struct\battle\ActiveSkill.hpp">
+    <ClInclude Include="src\struct\skill\ActiveSkill.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\struct\battle\PassiveSkill.hpp">
+    <ClInclude Include="src\struct\skill\PassiveSkill.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
