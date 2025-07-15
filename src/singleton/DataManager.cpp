@@ -35,7 +35,7 @@ bool DataManager::OnUserDestroy() {
 }
 
 bool DataManager::OnBeforeUserCreate() {
-	uint16_t _id = 0ui16; // THis valud is used for loading in all ID-based data. Resets back to 0 after each group has loaded.
+	uint16_t _id = 0ui16; // This value is used for loading in all ID-based data. Resets back to 0 after each group has loaded.
 	json _skills = json::parse(std::ifstream("res/data/skills.json"));
 
 	// Load in all active skills first. Skipping over malformed data within the JSON object.
@@ -52,11 +52,7 @@ bool DataManager::OnBeforeUserCreate() {
 	// Unload the JSON data now that it isn't required.
 	_skills.clear();
 
-	_id				= 0ui16; // Reset to 0 and load in the character data.
-	json _character = json::parse(std::ifstream("res/data/characters.json"));
-
-
-
+	characterData	= json::parse(std::ifstream("res/data/characters.json"));
 	encounterData	= json::parse(std::ifstream("res/data/encounters.json"));
 	animationData	= json::parse(std::ifstream("res/data/animations.json"));
 

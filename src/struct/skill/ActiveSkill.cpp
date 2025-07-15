@@ -82,7 +82,7 @@ bool ActiveSkill::AccuracyCheck(BattleScene* _scene, Combatant* _target) const {
 }
 
 bool ActiveSkill::CriticalCheck(BattleScene* _scene, Combatant* _target) const {
-
+	return false;
 }
 
 void ActiveSkill::AdditionalEffectCheck(Combatant* _target) {

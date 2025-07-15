@@ -48,7 +48,11 @@
 #define KEY_ENEMY_AI					"ai"
 // --- Keys that are unique to player characters --- //
 #define KEY_FRIENDLIES					"friendlies"
-#define KEY_EQUIPMENT					"equip"
+#define KEY_EQUIP_HEAD					"head"
+#define KEY_EQUIP_BODY					"body"
+#define KEY_EQUIP_LEGS					"legs"
+#define KEY_EQUIP_WEAPON				"weapon"
+#define KEY_EQUIP_ACCESSORY				"accessory"
 #define KEY_KNOWN_SKILLS				"kSkills"
 
 // ------------------------------------------------------------------------------------------------------------------------------------	//

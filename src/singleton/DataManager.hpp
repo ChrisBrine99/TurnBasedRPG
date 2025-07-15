@@ -75,8 +75,8 @@ private: // Hidden Member Variable Declarations
 	std::unordered_map<uint16_t, olc::Sprite*>		sprites;
 	std::unordered_map<uint16_t, Animation*>		animations;
 
-	//json characterData;
-	//json skillData;
+	json characterData;
+	json skillData;
 	json encounterData;
 	json animationData;
 };

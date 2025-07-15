@@ -62,18 +62,24 @@ bool BattleScene::OnUserCreate() {
 	battleUI = new BattleUI();
 	battleUI->OnUserCreate();
 
+	DataManager* _dManager = GET_SINGLETON(DataManager);
+	_dManager->LoadCharacterData(CHR_TEST_PLAYER);
+	_dManager->LoadCharacterData(CHR_TEST_PLAYER_2);
+	_dManager->LoadCharacterData(CHR_GREEN_SLIME);
+	_dManager->LoadCharacterData(CHR_RED_SLIME);
+
 	for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++)
 		combatants[i] = new Combatant();
 
-	PartyManager* _manager = GET_SINGLETON(PartyManager);
-	_manager->AddPartyMember(CHR_TEST_PLAYER);
-	_manager->AddPartyMember(CHR_TEST_PLAYER_2);
+	PartyManager* _pManager = GET_SINGLETON(PartyManager);
+	_pManager->AddPartyMember(CHR_TEST_PLAYER);
+	_pManager->AddPartyMember(CHR_TEST_PLAYER_2);
 
-	_manager->AddToPartyRoster(CHR_TEST_PLAYER);
-	_manager->AddToPartyRoster(CHR_TEST_PLAYER_2);
+	_pManager->AddToPartyRoster(CHR_TEST_PLAYER);
+	_pManager->AddToPartyRoster(CHR_TEST_PLAYER_2);
 
-	_manager->AddToActiveRoster(1ui64, 0ui64);
-	_manager->AddToActiveRoster(0ui64, 1ui64);
+	_pManager->AddToActiveRoster(1ui64, 0ui64);
+	_pManager->AddToActiveRoster(0ui64, 1ui64);
 
 	SetEncounterID(0ui16);
 
