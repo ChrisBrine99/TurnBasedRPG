@@ -112,11 +112,11 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		[[fallthrough]];
 	case TARGET_SINGLE_ENEMY:
 	case TARGET_SINGLE_ENEMY_SELF:
-		_indexOffset = BATTLE_MAX_PARTY_SIZE;
 		for (size_t i = BATTLE_MAX_PARTY_SIZE; i < BATTLE_TOTAL_COMBATANTS; i++) {
 			if (!_combatants[i]->isActive)
 				continue;
-			UpdateDisplayedTargetName(i - BATTLE_MAX_PARTY_SIZE, &_combatants[_indexOffset]->character->name[0ui64]);
+			UpdateDisplayedTargetName(_indexOffset, &_combatants[i]->character->name[0ui64]);
+			std::cout << std::string(&_combatants[i]->character->name[0ui64]) << std::endl;
 			validTargets.push_back(i);
 			_indexOffset++;
 		}
@@ -135,7 +135,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		for (size_t i = 0ui64; i < BATTLE_MAX_PARTY_SIZE; i++) {
 			if (!_combatants[i]->isActive || (_combatants[i] == _curCombatant && _shouldSkipCaster))
 				continue;
-			UpdateDisplayedTargetName(_indexOffset, &_combatants[_indexOffset]->character->name[0ui64]);
+			UpdateDisplayedTargetName(_indexOffset, &_combatants[i]->character->name[0ui64]);
 			validTargets.push_back(i);
 			_indexOffset++;
 		}
@@ -145,7 +145,7 @@ void BattleTargetMenu::DetermineValidTargets(uint8_t _targeting) {
 		for (size_t i = 0ui64; i < BATTLE_TOTAL_COMBATANTS; i++) {
 			if (!_combatants[i]->isActive || (_combatants[i] == _curCombatant && _targeting != TARGET_EVERYONE_SELF))
 				continue;
-			UpdateDisplayedTargetName(_indexOffset, &_combatants[_indexOffset]->character->name[0ui64]);
+			UpdateDisplayedTargetName(_indexOffset, &_combatants[i]->character->name[0ui64]);
 			validTargets.push_back(i);
 			_indexOffset++;
 		}

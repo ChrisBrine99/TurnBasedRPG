@@ -343,8 +343,9 @@ bool BattleScene::StatePostBattle() {
 }
 
 void BattleScene::ExecuteSkill(ActiveSkill* _skill) {
-	if (skillToUse) {
-		LOG_WARN("No skill was selected for use...");
+	if (!_skill) {
+		LOG_WARN("No skill was selected for use... Skipping turn...");
+		SET_NEXT_STATE(STATE_BATTLE_IS_ROUND_DONE);
 		return;
 	}
 

@@ -8,6 +8,8 @@
 #include "../../ui/battle/BattleUIElement.hpp"
 #include "../battle/Combatant.hpp"
 
+#define SKLL_PHYSICAL_CRIT_MULT			1.75f
+
 ActiveSkill::ActiveSkill() : 
 	Skill(),
 	basePower(0ui16),
@@ -82,7 +84,16 @@ bool ActiveSkill::AccuracyCheck(BattleScene* _scene, Combatant* _target) const {
 }
 
 bool ActiveSkill::CriticalCheck(BattleScene* _scene, Combatant* _target) const {
-	return false;
+	uint16_t _critChance	= uint16_t(critChance); // uint16_t(_scene->curCombatant->character->GetCurrentStatTotal(CHR_STAT_LUCK));
+
+	// TODO -- Check if crit chance has been increased by certain skills/passives.
+
+	bool _isCriticalHit		= (_critChance >= std::rand() % 0xFFui16);
+	if (_isCriticalHit){
+		size_t _index = _scene->targets[_scene->curSkillTarget];
+		_scene->battleUI->CreateText("CRITICAL", 0.0f, 60.0f, COLOR_LIGHT_RED, BattleScene::positions[_index].first + 16.0f, BattleScene::positions[_index].second + 24.0f);
+	}
+	return _isCriticalHit;
 }
 
 void ActiveSkill::AdditionalEffectCheck(Combatant* _target) {
@@ -103,6 +114,10 @@ void ActiveSkill::PhysicalDamageCalculation(BattleScene* _scene, Combatant* _tar
 	_damage				= (_damage / 2.0f) + (_damage * float_t(_caster->stats[CHR_STAT_STRENGTH]) / 15.0f);
 	_damage				= _damage * DamageBuffCalculation(_caster->GetCurrentStatModifier(ATTACK_MODIFIER) - _target->GetCurrentStatModifier(DEFENCE_MODIFIER));
 	_damage				= _damage / std::pow(float_t(_target->stats[CHR_STAT_ENDURANCE]), 0.2f);
+	
+	if (CriticalCheck(_scene, _target))
+		_damage			= _damage * SKLL_PHYSICAL_CRIT_MULT;
+
 	_damage				= DamageRandomize(_damage); // Randomly select a value between 95% and 105% of the calculated damage.
 	ResistanceEffect(_scene, _damage, _target);
 }
